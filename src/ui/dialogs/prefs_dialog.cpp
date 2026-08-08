@@ -6,8 +6,12 @@
 #include "core/session_store.hpp"
 #include "core/thread_pool.hpp"
 #include <map>
+#include <QClipboard>
 #include <QFileDialog>
+#include <QGuiApplication>
 #include <QInputDialog>
+#include <QLineEdit>
+#include <QListWidget>
 #include <QMessageBox>
 #include <QTextStream>
 
@@ -291,6 +295,61 @@ PrefsDialog::PrefsDialog(QWidget* parent) : QDialog(parent) {
     devicesScroll->setWidget(scrollWidget);
     devicesLayout->addWidget(devicesScroll);
     root->addWidget(devicesGroup);
+
+    // --- Account & Security (per-ACTIVE-account: refreshed on setClient) ---
+    auto* accountGroup = new QGroupBox("Account & Security", this);
+    auto* accountLayout = new QVBoxLayout(accountGroup);
+    accountIdentity_ = new QLabel("—", this);
+    accountIdentity_->setWordWrap(true);
+    accountLayout->addWidget(accountIdentity_);
+
+    auto* tokenRow = new QHBoxLayout;
+    tokenEdit_ = new QLineEdit(this);
+    tokenEdit_->setReadOnly(true);
+    tokenEdit_->setEchoMode(QLineEdit::Password);
+    tokenEdit_->setPlaceholderText("access token");
+    auto* revealCheck = new QCheckBox("Reveal", this);
+    auto* copyBtn = new QPushButton("Copy", this);
+    copyBtn->setToolTip("Copy this account's access token. Anyone with it can "
+                        "control the account — treat it like a password.");
+    tokenRow->addWidget(tokenEdit_, 1);
+    tokenRow->addWidget(revealCheck);
+    tokenRow->addWidget(copyBtn);
+    accountLayout->addLayout(tokenRow);
+    auto* tokenWarn = new QLabel("⚠ The access token grants full access to this "
+                                 "account until it is revoked (End session).", this);
+    tokenWarn->setWordWrap(true);
+    tokenWarn->setStyleSheet("color:#b0b0b0;");
+    accountLayout->addWidget(tokenWarn);
+    connect(revealCheck, &QCheckBox::toggled, this, [this](bool on) {
+        tokenEdit_->setEchoMode(on ? QLineEdit::Normal : QLineEdit::Password);
+    });
+    connect(copyBtn, &QPushButton::clicked, this, [this]() {
+        if (!client_ || !client_->isLoggedIn()) return;
+        QGuiApplication::clipboard()->setText(
+            QString::fromStdString(client_->account().accessToken));
+        QMessageBox::information(this, "Token copied",
+            QString("Access token copied to the clipboard (%1…).\n"
+                    "Anyone with it controls this account — keep it private.")
+                .arg(QString::fromStdString(client_->account().accessToken.substr(0, 8))));
+    });
+
+    auto* changePwBtn = new QPushButton("Change password…", this);
+    changePwBtn->setToolTip("Set a new password. The server logs out ALL other "
+                            "devices; this session stays.");
+    auto* logoutOthersBtn = new QPushButton("Log out other devices…", this);
+    logoutOthersBtn->setToolTip("List your other sessions and delete them "
+                                "(requires your password).");
+    accountLayout->addWidget(changePwBtn);
+    accountLayout->addWidget(logoutOthersBtn);
+    root->addWidget(accountGroup);
+
+    connect(changePwBtn, &QPushButton::clicked, this, [this]() {
+        onChangePassword();
+    });
+    connect(logoutOthersBtn, &QPushButton::clicked, this, [this]() {
+        onLogoutOtherDevices();
+    });
     // loadDevices runs from setClient() — the constructor runs before the
     // client is set (the "Not logged in." bug).
 
@@ -328,6 +387,179 @@ void PrefsDialog::runAsyncButton(QPushButton* btn, const QString& busyText,
             btn->setText(idleText);
             if (onDone) onDone(ok);
         });
+    });
+}
+
+void PrefsDialog::refreshAccountSection() {
+    if (!client_ || !client_->isLoggedIn()) {
+        if (accountIdentity_) accountIdentity_->setText("Not logged in.");
+        if (tokenEdit_) tokenEdit_->clear();
+        return;
+    }
+    const auto& acct = client_->account();
+    if (accountIdentity_) {
+        accountIdentity_->setText(
+            "Account: " + QString::fromStdString(acct.userId) + "\n"
+            + "Device:  " + QString::fromStdString(acct.deviceId) + "\n"
+            + "Server:  " + QString::fromStdString(acct.homeserverUrl));
+    }
+    if (tokenEdit_) {
+        tokenEdit_->setText(QString::fromStdString(acct.accessToken));
+        tokenEdit_->setEchoMode(QLineEdit::Password);
+    }
+}
+
+void PrefsDialog::onChangePassword() {
+    if (!client_ || !client_->isLoggedIn()) return;
+
+    QDialog dlg(this);
+    dlg.setWindowTitle("Change password");
+    auto* form = new QFormLayout(&dlg);
+    auto* current = new QLineEdit(&dlg);
+    current->setEchoMode(QLineEdit::Password);
+    auto* next = new QLineEdit(&dlg);
+    next->setEchoMode(QLineEdit::Password);
+    auto* confirm = new QLineEdit(&dlg);
+    confirm->setEchoMode(QLineEdit::Password);
+    form->addRow("Current password:", current);
+    form->addRow("New password:", next);
+    form->addRow("Repeat new password:", confirm);
+    auto* hint = new QLabel("The server logs out ALL other devices after the "
+                            "change (this session stays).", &dlg);
+    hint->setWordWrap(true);
+    hint->setStyleSheet("color:#b0b0b0;");
+    form->addRow(hint);
+    auto* btns = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, &dlg);
+    form->addRow(btns);
+    connect(btns, &QDialogButtonBox::accepted, &dlg, &QDialog::accept);
+    connect(btns, &QDialogButtonBox::rejected, &dlg, &QDialog::reject);
+    if (dlg.exec() != QDialog::Accepted) return;
+    if (next->text() != confirm->text()) {
+        QMessageBox::warning(this, "Change password", "The new passwords do not match.");
+        return;
+    }
+    if (next->text().size() < 8) {
+        QMessageBox::warning(this, "Change password",
+                             "The new password is too short (min 8 characters).");
+        return;
+    }
+
+    auto client = client_;
+    auto currentPw = current->text().toStdString();
+    auto newPw = next->text().toStdString();
+    auto* busy = new QLabel("Changing password…", this);
+    auto guard = QPointer<PrefsDialog>(this);
+    ThreadPool::instance().enqueue([guard, client, currentPw, newPw, busy]() {
+        auto r = client->changePassword(currentPw, newPw);
+        QMetaObject::invokeMethod(guard, [guard, r, busy]() {
+            if (guard.isNull()) return;
+            delete busy;
+            if (r.ok) {
+                QMessageBox::information(guard, "Password changed",
+                    "Your password was changed. All other devices were logged out "
+                    "by the server; this session stays active.");
+            } else {
+                QString reason = QString::fromStdString(r.error.message);
+                if (r.httpStatus == 403 && reason.contains("Invalid password", Qt::CaseInsensitive))
+                    reason = "Wrong current password.";
+                QMessageBox::warning(guard, "Change password",
+                    "Could not change the password (HTTP " + QString::number(r.httpStatus)
+                    + ").\n" + reason);
+            }
+        }, Qt::QueuedConnection);
+    });
+}
+
+void PrefsDialog::onLogoutOtherDevices() {
+    if (!client_ || !client_->isLoggedIn()) return;
+
+    auto client = client_;
+    auto guard = QPointer<PrefsDialog>(this);
+    auto* busy = new QLabel("Loading sessions…", this);
+    ThreadPool::instance().enqueue([guard, client, busy]() {
+        auto resp = client->listDevices();
+        QMetaObject::invokeMethod(guard, [guard, client, resp, busy]() {
+            if (guard.isNull()) return;
+            delete busy;
+            if (!resp.ok) {
+                QMessageBox::warning(guard, "Sessions",
+                    "Could not fetch sessions (HTTP " + QString::number(resp.httpStatus) + ").");
+                return;
+            }
+            std::string ourDeviceId = client->account().deviceId;
+            QList<std::pair<QString, QString>> others;
+            {
+                simdjson::dom::parser p;
+                auto doc = p.parse(resp.data);
+                if (doc.error() == simdjson::SUCCESS) {
+                    auto devs = doc.value()["devices"];
+                    for (auto dev : devs.get_array().value()) {
+                        std::string id;
+                        auto idv = dev["device_id"].get_string();
+                        if (idv.error() == simdjson::SUCCESS) id = std::string(idv.value());
+                        if (id.empty() || id == ourDeviceId) continue;
+                        std::string dn;
+                        auto dnv = dev["display_name"].get_string();
+                        if (dnv.error() == simdjson::SUCCESS) dn = std::string(dnv.value());
+                        if (dn.empty()) dn = id;
+                        others.append({QString::fromStdString(id), QString::fromStdString(dn)});
+                    }
+                }
+            }
+            if (others.isEmpty()) {
+                QMessageBox::information(guard, "Sessions", "No other sessions logged in.");
+                return;
+            }
+            QDialog dlg(guard);
+            dlg.setWindowTitle("Log out other devices");
+            auto* form = new QFormLayout(&dlg);
+            auto* list = new QListWidget(&dlg);
+            list->setSelectionMode(QAbstractItemView::MultiSelection);
+            for (const auto& [id, dn] : others)
+                list->addItem(dn + "  (" + id + ")");
+            form->addRow("Sessions to log out:", list);
+            auto* pw = new QLineEdit(&dlg);
+            pw->setEchoMode(QLineEdit::Password);
+            form->addRow("Password:", pw);
+            auto* btns = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, &dlg);
+            form->addRow(btns);
+            connect(btns, &QDialogButtonBox::accepted, &dlg, &QDialog::accept);
+            connect(btns, &QDialogButtonBox::rejected, &dlg, &QDialog::reject);
+            if (dlg.exec() != QDialog::Accepted) return;
+            QList<std::string> targets;
+            for (auto* item : list->selectedItems()) {
+                int idx = list->row(item);
+                if (idx >= 0 && idx < others.size()) targets.append(others[idx].first.toStdString());
+            }
+            if (targets.isEmpty()) return;
+            auto password = pw->text().toStdString();
+            if (password.empty()) {
+                QMessageBox::warning(guard, "Sessions", "Password required.");
+                return;
+            }
+            auto* busy2 = new QLabel("Logging out…", guard);
+            auto g2 = QPointer<PrefsDialog>(guard);
+            ThreadPool::instance().enqueue([g2, client, targets, password, busy2]() {
+                int failed = 0;
+                for (const auto& id : targets) {
+                    auto r = client->deleteDevice(id, password);
+                    if (!r.ok) failed++;
+                }
+                QMetaObject::invokeMethod(g2, [g2, failed, busy2, targets]() {
+                    if (g2.isNull()) return;
+                    delete busy2;
+                    if (failed == 0) {
+                        QMessageBox::information(g2, "Sessions",
+                            QString("Logged out %1 session(s).").arg(targets.size()));
+                    } else {
+                        QMessageBox::warning(g2, "Sessions",
+                            QString("Logged out %1 of %2 session(s); some failed "
+                                    "(wrong password or server error).")
+                                .arg(targets.size() - failed).arg(targets.size()));
+                    }
+                }, Qt::QueuedConnection);
+            });
+        }, Qt::QueuedConnection);
     });
 }
 

@@ -4,6 +4,7 @@
 #include <QSpinBox>
 #include <QCheckBox>
 #include <QLabel>
+#include <QLineEdit>
 #include <QSettings>
 #include <functional>
 #include <memory>
@@ -28,6 +29,7 @@ public:
         // The devices section is built in the constructor BEFORE setClient —
         // reload it now that the client exists (the "Not logged in." bug).
         if (devicesSection_) loadDevices(devicesSection_);
+        refreshAccountSection();
     }
     void setSessionStore(SessionStore* s) { store_ = s; }
     void setVerificationHandler(VerificationHandler* vh) { verifyHandler_ = vh; }
@@ -88,6 +90,12 @@ signals:
 
 private:
     void loadDevices(QVBoxLayout* sectionLayout);
+    // Account & Security: token reveal/copy, change password, logout other
+    // sessions. Populated from the CURRENT client (account switch = new
+    // setClient -> refresh), so the section always shows the ACTIVE account.
+    void refreshAccountSection();
+    void onChangePassword();
+    void onLogoutOtherDevices();
     // Run a security action (setup/reset) off the UI thread with a busy
     // button + marshalled result; the UIA password retry runs async too.
     void runSecurityAction(std::function<bool()> fn, QPushButton* btn,
@@ -100,6 +108,9 @@ private:
     std::shared_ptr<MatrixClient> client_;
     SessionStore* store_ = nullptr;
     QVBoxLayout* devicesSection_ = nullptr;
+    QVBoxLayout* accountSection_ = nullptr;
+    QLabel* accountIdentity_ = nullptr;
+    QLineEdit* tokenEdit_ = nullptr;
     VerificationHandler* verifyHandler_ = nullptr;
     Decryptor* decryptor_ = nullptr;
     SetupCrossSigningFn setupCrossSigningFn_;
