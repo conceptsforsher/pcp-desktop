@@ -60,6 +60,10 @@ void SessionBootstrap::start(const std::shared_ptr<MatrixClient>& client, const 
 
     sync->setClient(client);
     sync->setSessionStore(store);
+    // Developer settings -> core OTK claim policy (Element/Nheko parity).
+    sync->decryptor()->setOtkClaimRateLimitMs(
+        static_cast<int64_t>(PrefsDialog::otkClaimRateLimitMin()) * 60000LL);
+    sync->decryptor()->setOtkDrainBudget(PrefsDialog::otkDrainBudget());
     auto e2eeResult = sync->initializeE2EE();
     {
         bool ok = e2eeResult.e2eeOk;

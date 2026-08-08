@@ -172,20 +172,22 @@ int main() {
     {
         CHECK(!progressive::desktop::shouldReRequestKey(0, 40000),
               "retry: attempt 0 (initial) never re-requests");
-        CHECK(!progressive::desktop::shouldReRequestKey(1, 29000),
-              "retry: first retry needs >=30s");
-        CHECK(progressive::desktop::shouldReRequestKey(1, 31000),
-              "retry: first retry after 30s");
-        CHECK(!progressive::desktop::shouldReRequestKey(2, 119000),
-              "retry: second retry needs >=2min");
-        CHECK(progressive::desktop::shouldReRequestKey(2, 121000),
-              "retry: second retry after 2min");
-        CHECK(progressive::desktop::shouldReRequestKey(3, 601000),
-              "retry: third retry after 10min");
-        CHECK(progressive::desktop::shouldReRequestKey(4, 3601000),
-              "retry: fourth retry after 1h");
-        CHECK(!progressive::desktop::shouldReRequestKey(5, 3601000),
-              "retry: capped after 4 retries");
+        CHECK(!progressive::desktop::shouldReRequestKey(1, 9000),
+              "retry: first retry needs >=10s");
+        CHECK(progressive::desktop::shouldReRequestKey(1, 11000),
+              "retry: first retry after 10s");
+        CHECK(!progressive::desktop::shouldReRequestKey(2, 59000),
+              "retry: second retry needs >=1min");
+        CHECK(progressive::desktop::shouldReRequestKey(2, 61000),
+              "retry: second retry after 1min");
+        CHECK(progressive::desktop::shouldReRequestKey(3, 301000),
+              "retry: third retry after 5min");
+        CHECK(progressive::desktop::shouldReRequestKey(4, 901000),
+              "retry: fourth retry after 15min");
+        CHECK(progressive::desktop::shouldReRequestKey(5, 1801000),
+              "retry: fifth retry after 30min");
+        CHECK(!progressive::desktop::shouldReRequestKey(6, 3600000),
+              "retry: capped after 5 retries");
     }
 
     // --- encrypted media (file:) extraction ---

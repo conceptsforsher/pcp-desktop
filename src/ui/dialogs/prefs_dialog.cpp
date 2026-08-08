@@ -297,6 +297,27 @@ PrefsDialog::PrefsDialog(QWidget* parent) : QDialog(parent) {
     devicesLayout->addWidget(devicesScroll);
     root->addWidget(devicesGroup);
 
+    // --- Developer (OTK claim policy; Element/Nheko parity tunables) ---
+    auto* devGroup = new QGroupBox("Developer", this);
+    auto* devForm = new QFormLayout(devGroup);
+    otkClaimSpin_ = new QSpinBox(this);
+    otkClaimSpin_->setRange(0, 1440);
+    otkClaimSpin_->setValue(otkClaimRateLimitMin());
+    otkClaimSpin_->setSuffix(" min");
+    otkClaimSpin_->setToolTip("Rate limit for one-time-key claims per device "
+        "(0 = disabled). Claims permanently consume the peer's OTK pool — "
+        "Element/Nheko reuse sessions instead of re-claiming per share. "
+        "Key requests bypass this window.");
+    devForm->addRow("OTK claim rate limit:", otkClaimSpin_);
+    otkDrainSpin_ = new QSpinBox(this);
+    otkDrainSpin_->setRange(0, 2000);
+    otkDrainSpin_->setValue(otkDrainBudget());
+    otkDrainSpin_->setToolTip("How many stale one-time keys a single share may "
+        "claim+discard for a device whose pool holds keys from an older identity "
+        "(0 = disabled).");
+    devForm->addRow("OTK drain budget:", otkDrainSpin_);
+    root->addWidget(devGroup);
+
     // --- Account & Security (per-ACTIVE-account: refreshed on setClient) ---
     auto* accountGroup = new QGroupBox("Account & Security", this);
     auto* accountLayout = new QVBoxLayout(accountGroup);
@@ -751,6 +772,15 @@ void PrefsDialog::loadDevices(QVBoxLayout* sectionLayout) {
 }
 
 void PrefsDialog::onSave() {
+    if (otkClaimSpin_) {
+        QSettings s;
+        s.setValue("dev/otkClaimRateLimitMin", otkClaimSpin_->value());
+    }
+    if (otkDrainSpin_) {
+        QSettings s;
+        s.setValue("dev/otkDrainBudget", otkDrainSpin_->value());
+    }
+
     QSettings s;
     s.setValue("cache/imageCount", cacheSpin_->value());
     s.setValue("sync/pollTimeoutMs", syncTimeoutSpin_->value());

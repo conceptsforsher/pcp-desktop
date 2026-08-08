@@ -59,6 +59,16 @@ public:
         return s.value("cache/imageCount", 20).toInt();
     }
 
+    // Developer settings: OTK claim policy (see core Decryptor setters).
+    static int otkClaimRateLimitMin() {
+        QSettings s;
+        return s.value("dev/otkClaimRateLimitMin", 5).toInt();
+    }
+    static int otkDrainBudget() {
+        QSettings s;
+        return s.value("dev/otkDrainBudget", 200).toInt();
+    }
+
     static int pollTimeoutMs() {
         QSettings s;
         // Default 20000: the delivery latency equals the long-poll timeout
@@ -124,6 +134,8 @@ private:
     SetupCrossSigningWithPasswordFn setupCrossSigningWithPasswordFn_;
     UiaSessionFn uiaSessionFn_;
     QSpinBox* cacheSpin_;
+    QSpinBox* otkClaimSpin_ = nullptr;
+    QSpinBox* otkDrainSpin_ = nullptr;
     QSpinBox* syncTimeoutSpin_ = nullptr;
     QSpinBox* historySpin_ = nullptr;
     QCheckBox* invisibleCheck_ = nullptr;
