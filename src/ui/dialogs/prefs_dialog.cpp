@@ -7,6 +7,7 @@
 #include "core/thread_pool.hpp"
 #include <map>
 #include <QClipboard>
+#include <QDialogButtonBox>
 #include <QFileDialog>
 #include <QGuiApplication>
 #include <QInputDialog>
