@@ -252,6 +252,9 @@ void ToolbarHandler::onSettings() {
         dlg.setResetCrossSigningFn([this]() {
             return sync_ ? sync_->resetCrossSigning() : false;
         });
+        dlg.setResetDeviceKeysFn([this]() {
+            onResetDeviceKeys();
+        });
         dlg.setCreateKeyBackupFn([this]() {
             return sync_ ? sync_->createKeyBackupNow() : std::string();
         });
@@ -318,8 +321,11 @@ void ToolbarHandler::onResetDeviceKeys() {
         self->sync_->decryptor()->setAccountShared(false);
         // Outbound megolm sessions are bound to the OLD identity — drop the
         // persisted copies too, or a restart would reload them and every
-        // future send would carry a sender_key nobody can match.
+        // future send would carry a sender_key nobody can match. Same for
+        // the Olm 1:1 sessions: they encrypt to an identity we no longer
+        // hold ("sender encrypted to a key we no longer have").
         self->sync_->clearPersistedOutboundSessions();
+        self->sync_->clearPersistedOlmSessions();
         auto sync = self->sync_;
         ThreadPool::instance().enqueue([sync]() { sync->uploadDeviceKeys(); });
         QMetaObject::invokeMethod(self, [self, deleteNote]() {

@@ -16,6 +16,7 @@
 #include "handlers/auth_handler.hpp"
 
 #include <QMainWindow>
+#include <QTimer>
 #include <QListView>
 #include <QSplitter>
 #include <QLabel>
@@ -117,6 +118,9 @@ private:
     AttachmentHandler* attachmentHandler_ = nullptr;
     SlashCommandHandler* slashHandler_ = nullptr;
     AccountSwitcher* accountSwitcher_ = nullptr;
+    QLabel* keysBanner_ = nullptr;
+    QTimer* keysBannerTimer_ = nullptr;
+    void updateKeysBanner();
     VerificationHandler* verifyHandler_ = nullptr;
 };
 

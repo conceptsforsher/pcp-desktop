@@ -5,7 +5,11 @@
 #include "core/thread_pool.hpp"
 
 #include <QBuffer>
+#include <QCryptographicHash>
 #include <QDateTime>
+#include <QDir>
+#include <QFileInfo>
+#include <QStandardPaths>
 #include <QMetaObject>
 #include <QPointer>
 #include <QSet>
@@ -91,6 +95,52 @@ bool ImageLoader::beginFetch(const QString& key,
     return true;
 }
 
+QString ImageLoader::mediaCacheDir() {
+    return QStandardPaths::writableLocation(QStandardPaths::AppDataLocation)
+        + "/media_cache";
+}
+
+QString ImageLoader::cachePathFor(const QString& key) const {
+    QByteArray hash = QCryptographicHash::hash(key.toUtf8(), QCryptographicHash::Sha256).toHex();
+    return mediaCacheDir() + "/" + QString::fromLatin1(hash) + ".img";
+}
+
+bool ImageLoader::loadFromDiskCache(const QString& key, QByteArray& bytes) {
+    QString path = cachePathFor(key);
+    QFile f(path);
+    if (!f.open(QIODevice::ReadOnly)) return false;
+    bytes = f.readAll();
+    return !bytes.isEmpty();
+}
+
+void ImageLoader::evictIfOverBudget() {
+    QDir dir(mediaCacheDir());
+    if (!dir.exists()) return;
+    qint64 total = 0;
+    QFileInfoList infos;
+    const auto entries = dir.entryInfoList(QDir::Files, QDir::Time);  // newest first
+    for (const auto& fi : entries) {
+        total += fi.size();
+        infos.append(fi);
+    }
+    // Delete oldest beyond the budget.
+    for (int i = infos.size() - 1; i >= 0 && total > kMediaCacheBudget; --i) {
+        total -= infos[i].size();
+        QFile::remove(infos[i].absoluteFilePath());
+    }
+}
+
+void ImageLoader::saveToDiskCache(const QString& key, const QByteArray& bytes) {
+    if (bytes.isEmpty()) return;
+    QDir().mkpath(mediaCacheDir());
+    QFile f(cachePathFor(key));
+    if (f.open(QIODevice::WriteOnly)) {
+        f.write(bytes);
+        f.close();
+        evictIfOverBudget();
+    }
+}
+
 void ImageLoader::fetchThumbnail(const std::string& mxcUrl, int w, int h,
                                    std::function<void(const QImage&)> cb,
                                    const std::string& context) {
@@ -98,6 +148,20 @@ void ImageLoader::fetchThumbnail(const std::string& mxcUrl, int w, int h,
     if (auto* cached = imageCache_.object(key)) {
         cb(*cached);
         return;
+    }
+    // Persistent disk cache (Element/Nheko parity): media seen before stays
+    // visible even if the sender's server later purges the file.
+    {
+        QByteArray diskBytes;
+        if (loadFromDiskCache(key, diskBytes)) {
+            QImage diskImg;
+            diskImg.loadFromData(diskBytes);
+            if (!diskImg.isNull()) {
+                imageCache_.insert(key, new QImage(diskImg));
+                cb(diskImg);
+                return;
+            }
+        }
     }
     if (!client_) { cb(QImage()); return; }
     if (isFailed(key)) { cb(QImage()); return; }
@@ -129,6 +193,13 @@ void ImageLoader::fetchThumbnail(const std::string& mxcUrl, int w, int h,
                 if (!img.isNull()) {
                     self->imageCache_.insert(key, new QImage(img));
                     self->failedReason_.remove(key);
+                    QByteArray raw;
+                    {
+                        QBuffer buf(&raw);
+                        buf.open(QIODevice::WriteOnly);
+                        img.save(&buf, "PNG");
+                    }
+                    self->saveToDiskCache(key, raw);
                 } else if (httpStatus >= 400) {
                     // Only HTTP failures (404/5xx) are negative-cached — a
                     // decryption failure or network blip (status 0) must be
@@ -154,6 +225,19 @@ void ImageLoader::fetchEncryptedThumbnail(const std::string& mxcUrl,
         cb(*cached);
         return;
     }
+    // Persistent disk cache: store the DECRYPTED preview (same mxc = same keys).
+    {
+        QByteArray diskBytes;
+        if (loadFromDiskCache(qkey, diskBytes)) {
+            QImage diskImg;
+            diskImg.loadFromData(diskBytes);
+            if (!diskImg.isNull()) {
+                imageCache_.insert(qkey, new QImage(diskImg));
+                cb(diskImg);
+                return;
+            }
+        }
+    }
     if (!client_ || key.empty() || iv.empty()) {
         // Can never succeed as-is: a missing key/iv means no decrypt is
         // possible. Record the reason so the placeholder explains itself
@@ -178,6 +262,13 @@ void ImageLoader::fetchEncryptedThumbnail(const std::string& mxcUrl,
                 if (!img.isNull()) {
                     self->imageCache_.insert(qkey, new QImage(img));
                     self->failedReason_.remove(qkey);
+                    QByteArray raw;
+                    {
+                        QBuffer buf(&raw);
+                        buf.open(QIODevice::WriteOnly);
+                        img.save(&buf, "PNG");
+                    }
+                    self->saveToDiskCache(qkey, raw);
                 } else if (httpStatus >= 400) {
                     // Decrypt failures (status 0/200 — key not yet arrived)
                     // must NOT be negative-cached; only real HTTP failures.

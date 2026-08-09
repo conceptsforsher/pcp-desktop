@@ -93,6 +93,16 @@ private:
     QHash<QString, QString> failedReason_;
     // In-flight dedup: mxc -> queued callbacks waiting for the fetch.
     QHash<QString, QList<std::function<void(const QImage&)>>> inFlight_;
+
+    // Persistent disk media cache (Element/Nheko parity): downloaded previews
+    // survive restarts, so media stays visible even if the sender's server
+    // later purges the file. Keyed by mxc (one cached preview per mxc).
+    static QString mediaCacheDir();
+    QString cachePathFor(const QString& key) const;
+    bool loadFromDiskCache(const QString& key, QByteArray& bytes);
+    void saveToDiskCache(const QString& key, const QByteArray& bytes);
+    void evictIfOverBudget();
+    static constexpr qint64 kMediaCacheBudget = 384LL * 1024 * 1024;  // 384 MB
 };
 
 } // namespace progressive::desktop

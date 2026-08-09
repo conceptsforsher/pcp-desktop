@@ -431,8 +431,13 @@ void drawMessageBubble(QPainter* p, const QRect& rowRect, const QModelIndex& idx
                         }, "timeline image");
                 }
             } else {
+                // Plain media: prefer the sender's thumbnail/poster
+                // (info.thumbnail_url) — videos have no server-side
+                // thumbnail, so the poster is the preview.
+                std::string previewMxc = evt && !evt->thumbUrl.empty()
+                    ? evt->thumbUrl : mxcUrl.toStdString();
                 loader->fetchThumbnail(
-                    mxcUrl.toStdString(), kMaxImageW, kImageLoadedH,
+                    previewMxc, kMaxImageW, kImageLoadedH,
                     [mxcUrl, model = const_cast<QAbstractItemModel*>(idx.model())]
                     (const QImage& img) {
                         if (!img.isNull() && model) {

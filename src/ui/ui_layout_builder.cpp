@@ -68,6 +68,18 @@ UILayout buildMainWindowLayout(QWidget* window,
     ui.inviteHeader->hide();
     leftLayout->addWidget(ui.inviteHeader);
 
+    // Self-diagnosis banner: shown when peers keep encrypting to an identity
+    // we no longer hold (a reset that left stale sessions behind). Clicking
+    // it triggers the device-key reset.
+    ui.keysBanner = new QLabel(window);
+    ui.keysBanner->setText("<a href='repair' style='color:#fff;'>"
+        "Your encryption keys are out of sync — click to repair</a>");
+    ui.keysBanner->setStyleSheet("font-weight:600; padding:6px 12px; color:#fff; "
+        "background:#b05030; border-radius:4px;");
+    ui.keysBanner->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    ui.keysBanner->hide();
+    leftLayout->addWidget(ui.keysBanner);
+
     ui.roomList = new QListView(leftPanel);
     ui.roomList->setModel(roomModel);
     ui.roomList->setStyleSheet(

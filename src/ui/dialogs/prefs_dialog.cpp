@@ -362,8 +362,14 @@ PrefsDialog::PrefsDialog(QWidget* parent) : QDialog(parent) {
     auto* logoutOthersBtn = new QPushButton("Log out other devices…", this);
     logoutOthersBtn->setToolTip("List your other sessions and delete them "
                                 "(requires your password).");
+    auto* resetKeysBtn = new QPushButton("Reset device keys…", this);
+    resetKeysBtn->setToolTip("Regenerates the device identity + re-uploads keys. "
+                             "Fixes broken 1:1 sessions (messages stuck encrypted "
+                             "after an account reset). Peers re-establish sessions "
+                             "automatically; other clients must re-verify.");
     accountLayout->addWidget(changePwBtn);
     accountLayout->addWidget(logoutOthersBtn);
+    accountLayout->addWidget(resetKeysBtn);
     root->addWidget(accountGroup);
 
     connect(changePwBtn, &QPushButton::clicked, this, [this]() {
@@ -371,6 +377,9 @@ PrefsDialog::PrefsDialog(QWidget* parent) : QDialog(parent) {
     });
     connect(logoutOthersBtn, &QPushButton::clicked, this, [this]() {
         onLogoutOtherDevices();
+    });
+    connect(resetKeysBtn, &QPushButton::clicked, this, [this]() {
+        if (resetDeviceKeysFn_) resetDeviceKeysFn_();
     });
     // loadDevices runs from setClient() — the constructor runs before the
     // client is set (the "Not logged in." bug).

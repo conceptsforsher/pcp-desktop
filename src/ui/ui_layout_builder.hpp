@@ -27,6 +27,7 @@ struct UILayout {
     QLabel* statusLabel = nullptr;
     QLabel* roomListHeader = nullptr;
     QLabel* inviteHeader = nullptr;
+    QLabel* keysBanner = nullptr;
     QListView* roomList = nullptr;
     RoomListDelegate* roomListDelegate = nullptr;
     QListView* timelineView = nullptr;

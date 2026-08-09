@@ -116,6 +116,18 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent) {
     userLabel_ = ui.userLabel;
     statusLabel_ = ui.statusLabel;
     inviteHeader_ = ui.inviteHeader;
+    keysBanner_ = ui.keysBanner;
+    if (keysBanner_) {
+        connect(keysBanner_, &QLabel::linkActivated, this, [this](const QString&) {
+            keysBanner_->hide();
+            if (sync_.decryptor()) sync_.decryptor()->resetIdentityHintCount();
+            if (toolbarHandler_) toolbarHandler_->onResetDeviceKeys();
+        });
+        keysBannerTimer_ = new QTimer(this);
+        keysBannerTimer_->setInterval(2000);
+        connect(keysBannerTimer_, &QTimer::timeout, this, &MainWindow::updateKeysBanner);
+        keysBannerTimer_->start();
+    }
     roomList_ = ui.roomList;
     roomListDelegate_ = ui.roomListDelegate;
     timelineView_ = ui.timelineView;
@@ -486,6 +498,15 @@ void MainWindow::onMessageClicked(const QString& eventId) {
         QModelIndex idx = timelineModel_->index(row);
         timelineView_->selectionModel()->select(idx, QItemSelectionModel::ClearAndSelect);
     }
+}
+
+void MainWindow::updateKeysBanner() {
+    if (!keysBanner_) return;
+    if (!sync_.decryptor() || !sync_.decryptor()->isInitialized()) return;
+    // Peers encrypting to an identity we no longer hold (>=3 events) means a
+    // reset left stale state behind — surface the repair prompt.
+    const bool damaged = sync_.decryptor()->identityHintCount() >= 3;
+    keysBanner_->setVisible(damaged);
 }
 
 void MainWindow::onSyncState(SyncEngineState state, const SyncEngineStats& stats) {

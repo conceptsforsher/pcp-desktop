@@ -43,6 +43,10 @@ public:
     void setRoomHandler(RoomHandler* rh) { roomHandler_ = rh; }
     void setAuthHandler(AuthHandler* a) { authHandler_ = a; }
     void setVerificationHandler(VerificationHandler* vh) { verifyHandler_ = vh; }
+
+    // Regenerate the device identity (password-gated). Public so the
+    // self-diagnosis banner and Preferences can invoke the same flow.
+    void onResetDeviceKeys();
     void setInterfaceElements(QPushButton* chatLog, QPushButton* threadBtn) {
         chatLogBtn_ = chatLog; threadBtn_ = threadBtn;
     }
@@ -65,8 +69,6 @@ private slots:
     void onRoomSettings();
     void onRoomMembers();
     void onSettings();
-    void onResetDeviceKeys();
-
 private:
     std::shared_ptr<MatrixClient> client_;
     RoomListModel* roomModel_;
