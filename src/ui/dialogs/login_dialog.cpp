@@ -3,7 +3,10 @@
 #include "login_dialog.hpp"
 
 #include <QApplication>
+#include <QClipboard>
 #include <QDesktopServices>
+#include <QGuiApplication>
+#include <QMessageBox>
 #include <QUrl>
 #include <QFormLayout>
 #include <QHBoxLayout>
@@ -164,7 +167,23 @@ void LoginDialog::onRegisterClicked() {
         return;
     }
 
-    // If captcha is needed, fall back to browser
+    // The server wants a registration token we didn't supply — prompt for it
+    // IN-APP (no browser). The user asks their admin for the token, pastes it
+    // into the Reg token field and presses Register again.
+    if (result.error.code == "M_REGISTRATION_TOKEN_REQUIRED") {
+        tokenEdit_->setFocus();
+        tokenEdit_->selectAll();
+        tokenEdit_->setStyleSheet("border: 2px solid #e0a030;");
+        statusLabel_->setText(QString("This server requires a registration token "
+                                      "(registration is invite-only).\n"
+                                      "Enter the token from your server admin in "
+                                      "the \"Reg token\" field, then press Register again."));
+        return;
+    }
+
+    // Captcha: never open anything without asking — on weak devices an
+    // unexpected app/browser launch is confusing. Show the registration page
+    // URL and let the USER open it in their own browser.
     if (result.error.code == "M_NEEDS_CAPTCHA") {
         QString regUrl;
         if (server == "matrix.org" || server.contains("matrix.org")) {
@@ -172,11 +191,26 @@ void LoginDialog::onRegisterClicked() {
         } else {
             regUrl = "https://" + server + "/#/register";
         }
-        QDesktopServices::openUrl(QUrl(regUrl));
-        statusLabel_->setText(QString("This server requires captcha for registration.\n"
-                                      "Opened registration page in your browser:\n%1\n"
-                                      "After registering, come back here and login.")
-            .arg(regUrl));
+        auto box = QMessageBox(
+            QMessageBox::Question, "Registration requires captcha",
+            QString("This server asks for a Google captcha — no chat app can "
+                    "solve that in-app (Element does the same).\n\n"
+                    "Registration page:\n%1\n\n"
+                    "Open it in your browser yourself, register there, then "
+                    "come back and log in.").arg(regUrl),
+            QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel, this);
+        box.setButtonText(QMessageBox::Yes, "Copy the link");
+        box.setButtonText(QMessageBox::No, "Open in browser");
+        box.setButtonText(QMessageBox::Cancel, "Close");
+        box.exec();
+        if (box.clickedButton() == box.button(QMessageBox::Yes)) {
+            QGuiApplication::clipboard()->setText(regUrl);
+            statusLabel_->setText(QString("Registration link copied:\n%1").arg(regUrl));
+        } else if (box.clickedButton() == box.button(QMessageBox::No)) {
+            QDesktopServices::openUrl(QUrl(regUrl));
+            statusLabel_->setText(QString("Opened the registration page in your "
+                                          "browser:\n%1").arg(regUrl));
+        }
         return;
     }
 
