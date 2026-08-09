@@ -198,15 +198,54 @@ void LoginDialog::onRegisterClicked() {
                     "Registration page:\n%1\n\n"
                     "Open it in your browser yourself, register there, then "
                     "come back and log in.").arg(regUrl),
-            QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel, this);
-        box.setButtonText(QMessageBox::Yes, "Copy the link");
-        box.setButtonText(QMessageBox::No, "Open in browser");
-        box.setButtonText(QMessageBox::Cancel, "Close");
+            QMessageBox::NoButton, this);
+        auto* copyBtn = box.addButton("Copy the link", QMessageBox::ActionRole);
+        auto* openBtn = box.addButton("Open in browser", QMessageBox::ActionRole);
+        auto* closeBtn = box.addButton("Close", QMessageBox::RejectRole);
+        box.setDefaultButton(closeBtn);
         box.exec();
-        if (box.clickedButton() == box.button(QMessageBox::Yes)) {
+        if (box.clickedButton() == copyBtn) {
             QGuiApplication::clipboard()->setText(regUrl);
             statusLabel_->setText(QString("Registration link copied:\n%1").arg(regUrl));
-        } else if (box.clickedButton() == box.button(QMessageBox::No)) {
+        } else if (box.clickedButton() == openBtn) {
+            QDesktopServices::openUrl(QUrl(regUrl));
+            statusLabel_->setText(QString("Opened the registration page in your "
+                                          "browser:\n%1").arg(regUrl));
+        }
+        return;
+    }
+
+    // Server blocks in-app registration by policy (matrix.org: disabled,
+    // application-service only). Honest explanation + the page link the user
+    // can open themselves — never opened silently.
+    if (result.error.code == "M_REGISTRATION_DISABLED" ||
+        result.error.code == "M_REGISTRATION_FLOWS_UNSUPPORTED") {
+        QString regUrl;
+        if (server == "matrix.org" || server.contains("matrix.org")) {
+            regUrl = "https://app.element.io/#/register";
+        } else {
+            regUrl = "https://" + server + "/#/register";
+        }
+        auto box = QMessageBox(
+            QMessageBox::Question, "Registration is blocked on this server",
+            QString("This server has disabled direct registration "
+                    "(matrix.org accepts application-service registrations "
+                    "only) — no chat app and no browser can bypass that "
+                    "policy.\n\n"
+                    "You can register normally on servers that allow it, "
+                    "like progressive.chat.\n\n"
+                    "If you still want to look at this server's page:\n%1")
+                .arg(regUrl),
+            QMessageBox::NoButton, this);
+        auto* copyBtn = box.addButton("Copy the link", QMessageBox::ActionRole);
+        auto* openBtn = box.addButton("Open in browser", QMessageBox::ActionRole);
+        auto* closeBtn = box.addButton("Close", QMessageBox::RejectRole);
+        box.setDefaultButton(closeBtn);
+        box.exec();
+        if (box.clickedButton() == copyBtn) {
+            QGuiApplication::clipboard()->setText(regUrl);
+            statusLabel_->setText(QString("Registration link copied:\n%1").arg(regUrl));
+        } else if (box.clickedButton() == openBtn) {
             QDesktopServices::openUrl(QUrl(regUrl));
             statusLabel_->setText(QString("Opened the registration page in your "
                                           "browser:\n%1").arg(regUrl));
