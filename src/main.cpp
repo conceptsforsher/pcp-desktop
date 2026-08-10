@@ -30,6 +30,7 @@
 #include "core/memory_stats.hpp"
 #include "ui/main_window.hpp"
 #include "ui/dialogs/login_dialog.hpp"
+#include "ui/shared/proxy_settings.hpp"
 #include "ui/shared/theme.hpp"
 
 #include <simdjson.h>
@@ -282,8 +283,18 @@ int main(int argc, char** argv) {
     signal(SIGINT, onSigint);
     progressive::crash::installCrashHandler();
 
+    // QSettings needs the names even for the CLI subcommands below (they
+    // read the persisted proxy settings).
+    QCoreApplication::setOrganizationName("progressive.chat");
+    QCoreApplication::setApplicationName("progressive-desktop");
+
     // Initialize libcurl once for the whole process
     progressive::desktop::httpInit();
+
+    // Apply the persisted proxy (Tor/I2P) BEFORE any network activity —
+    // sync, media, well-known discovery, login and registration all route
+    // through it from this point on.
+    progressive::desktop::applyProxyFromSettings();
 
     if (argc >= 2) {
         std::string cmd = argv[1];

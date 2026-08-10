@@ -5,6 +5,7 @@
 #include "core/crypto/cross_sign.hpp"
 #include "core/session_store.hpp"
 #include "core/thread_pool.hpp"
+#include "../shared/proxy_settings.hpp"
 #include <map>
 #include <QClipboard>
 #include <QDialogButtonBox>
@@ -371,6 +372,15 @@ PrefsDialog::PrefsDialog(QWidget* parent) : QDialog(parent) {
     accountLayout->addWidget(logoutOthersBtn);
     accountLayout->addWidget(resetKeysBtn);
     root->addWidget(accountGroup);
+
+    // --- Network — proxy (Tor/I2P) ---
+    // Applied LIVE on every change (same widget as the login window), so
+    // traffic re-routes immediately without a restart.
+    auto* proxyGroup = new QGroupBox("Network — proxy (Tor/I2P)", this);
+    auto* proxyLayout = new QVBoxLayout(proxyGroup);
+    proxyWidget_ = new ProxySettingsWidget(nullptr, proxyGroup);
+    proxyLayout->addWidget(proxyWidget_);
+    root->addWidget(proxyGroup);
 
     connect(changePwBtn, &QPushButton::clicked, this, [this]() {
         onChangePassword();

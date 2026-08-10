@@ -19,6 +19,8 @@ class MatrixClient;
 class VerificationHandler;
 class Decryptor;
 
+class ProxySettingsWidget;
+
 class PrefsDialog : public QDialog {
     Q_OBJECT
 public:
@@ -138,6 +140,7 @@ private:
     UiaSessionFn uiaSessionFn_;
     QSpinBox* cacheSpin_;
     QSpinBox* otkClaimSpin_ = nullptr;
+        ProxySettingsWidget* proxyWidget_ = nullptr;
     QSpinBox* otkDrainSpin_ = nullptr;
     QSpinBox* syncTimeoutSpin_ = nullptr;
     QSpinBox* historySpin_ = nullptr;

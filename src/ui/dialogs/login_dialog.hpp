@@ -17,6 +17,8 @@
 
 namespace progressive::desktop {
 
+class ProxySettingsWidget;
+
 class LoginDialog : public QDialog {
     Q_OBJECT
 
@@ -42,6 +44,7 @@ private:
     QLineEdit* tokenEdit_ = nullptr;
     QLabel* statusLabel_;
     QCheckBox* showPassCheck_;
+        ProxySettingsWidget* proxyWidget_ = nullptr;
 };
 
 } // namespace progressive::desktop

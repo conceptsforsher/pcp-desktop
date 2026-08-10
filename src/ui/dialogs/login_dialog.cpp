@@ -14,9 +14,11 @@
 #include <QTimer>
 #include <QString>
 #include <QCheckBox>
+#include <QGroupBox>
 #include <QSettings>
 
 #include "core/utils.hpp"
+#include "../shared/proxy_settings.hpp"
 #include "core/debug_log.hpp"
 
 #include <filesystem>
@@ -67,6 +69,17 @@ LoginDialog::LoginDialog(MatrixClient* client, SessionStore* store, QWidget* par
                            "token. NOT used for login — registration tokens are "
                            "only for creating new accounts.");
     form->addRow("Reg token:", tokenEdit_);
+
+    // Proxy (Tor/I2P): applied LIVE on every change, so the well-known
+    // discovery, login and registration requests below already run through
+    // it. The test button probes the server through the proxy.
+    auto* proxyGroup = new QGroupBox("Network — proxy (Tor/I2P)", this);
+    auto* proxyLayout = new QVBoxLayout(proxyGroup);
+    proxyWidget_ = new ProxySettingsWidget(
+        [this]() { return serverCombo_->currentText().trimmed().toStdString(); },
+        proxyGroup);
+    proxyLayout->addWidget(proxyWidget_);
+    form->addRow("", proxyGroup);
 
     auto* loginBtn = new QPushButton("Login", this);
     loginBtn->setDefault(true);

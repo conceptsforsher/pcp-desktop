@@ -56,6 +56,7 @@ set(PROGRESSIVE_BUILD_TESTS ON CACHE BOOL "" FORCE)
 # --- UI widget layer (no deps on other UI libs) ---
 add_library(progressive_ui_widgets STATIC
     src/ui/shared/image_loader.cpp
+    src/ui/shared/proxy_settings.cpp
     src/ui/shared/theme.cpp
     src/ui/timeline/timeline_model.cpp
     src/ui/timeline/timeline_delegate.cpp
