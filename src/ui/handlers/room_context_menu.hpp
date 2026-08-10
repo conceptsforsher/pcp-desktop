@@ -12,6 +12,7 @@ class QLabel;
 namespace progressive::desktop {
 
 class MatrixClient;
+class RoomMembersDialog;
 class TimelineModel;
 class RoomListModel;
 class ThreadHandler;
@@ -34,6 +35,7 @@ public slots:
 
 signals:
     void roomLeft(const std::string& roomId);
+    void settingsRequested();
 
 private:
     std::shared_ptr<MatrixClient> client_;

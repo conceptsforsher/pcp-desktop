@@ -21,6 +21,7 @@
 #include "verification_handler.hpp"
 #include "../dialogs/network_log_dialog.hpp"
 #include "../dialogs/log_viewer_dialog.hpp"
+#include "../dialogs/room_activity_log_dialog.hpp"
 #include "../shared/image_loader.hpp"
 #include "../chat/chat_logger.hpp"
 
@@ -212,12 +213,57 @@ void ToolbarHandler::onRoomMembers() {
     dlg.exec();
 }
 
+void ToolbarHandler::openPreferences() {
+    if (!client_) return;
+    PrefsDialog dlg(parentWidget_);
+    dlg.setClient(client_);
+    dlg.setVerificationHandler(verifyHandler_);
+    if (sync_) dlg.setSessionStore(sync_->sessionStore());
+    if (sync_) dlg.setDecryptor(sync_->decryptor());
+    dlg.setSetupCrossSigningFn([this]() {
+        return sync_ ? sync_->setupCrossSigning() : false;
+    });
+    dlg.setSetupCrossSigningWithPasswordFn([this](const std::string& pw) {
+        return sync_ ? sync_->setupCrossSigningWithPassword(pw) : false;
+    });
+    dlg.setUiaSessionFn([this]() {
+        return sync_ ? sync_->uiaSession() : std::string();
+    });
+    dlg.setResetCrossSigningFn([this]() {
+        return sync_ ? sync_->resetCrossSigning() : false;
+    });
+    dlg.setResetDeviceKeysFn([this]() {
+        onResetDeviceKeys();
+    });
+    dlg.setCreateKeyBackupFn([this]() {
+        return sync_ ? sync_->createKeyBackupNow() : std::string();
+    });
+    dlg.setUploadKeyBackupFn([this]() {
+        return sync_ ? sync_->uploadKeyBackupNow() : false;
+    });
+    dlg.setDeleteKeyBackupFn([this]() {
+        return sync_ ? sync_->deleteKeyBackupNow() : false;
+    });
+    dlg.setRestoreKeyBackupFn([this](const std::string& key) {
+        return sync_ ? sync_->restoreKeyBackupNow(key) : 0;
+    });
+    dlg.setUploadSsssFn([this](const std::string& key) {
+        return sync_ ? sync_->uploadSsssSecrets(key) : false;
+    });
+    dlg.setRetrieveSsssFn([this](const std::string& key) {
+        return sync_ ? sync_->retrieveSsssSecrets(key) > 0 : false;
+    });
+    connect(&dlg, &PrefsDialog::settingsChanged, this, &ToolbarHandler::prefsChanged);
+    dlg.exec();
+}
+
 void ToolbarHandler::onSettings() {
     QMenu menu(parentWidget_);
     auto* aboutAction = menu.addAction("About");
     auto* profileAction = menu.addAction("My profile...");
     auto* prefsAction = menu.addAction("Preferences...");
     auto* shortcutsAction = menu.addAction("Shortcuts...");
+    auto* roomActivityAction = menu.addAction("Room activity log");
     menu.addSeparator();
     auto* colorsAction = menu.addAction("Colors...");
     auto* netLogAction = menu.addAction("Network log");
@@ -235,48 +281,12 @@ void ToolbarHandler::onSettings() {
         ProfileDialog dlg(client_.get(), parentWidget_);
         dlg.exec();
     } else if (selected == prefsAction) {
-        PrefsDialog dlg(parentWidget_);
-        dlg.setClient(client_);
-        dlg.setVerificationHandler(verifyHandler_);
-        if (sync_) dlg.setSessionStore(sync_->sessionStore());
-        if (sync_) dlg.setDecryptor(sync_->decryptor());
-        dlg.setSetupCrossSigningFn([this]() {
-            return sync_ ? sync_->setupCrossSigning() : false;
-        });
-        dlg.setSetupCrossSigningWithPasswordFn([this](const std::string& pw) {
-            return sync_ ? sync_->setupCrossSigningWithPassword(pw) : false;
-        });
-        dlg.setUiaSessionFn([this]() {
-            return sync_ ? sync_->uiaSession() : std::string();
-        });
-        dlg.setResetCrossSigningFn([this]() {
-            return sync_ ? sync_->resetCrossSigning() : false;
-        });
-        dlg.setResetDeviceKeysFn([this]() {
-            onResetDeviceKeys();
-        });
-        dlg.setCreateKeyBackupFn([this]() {
-            return sync_ ? sync_->createKeyBackupNow() : std::string();
-        });
-        dlg.setUploadKeyBackupFn([this]() {
-            return sync_ ? sync_->uploadKeyBackupNow() : false;
-        });
-        dlg.setDeleteKeyBackupFn([this]() {
-            return sync_ ? sync_->deleteKeyBackupNow() : false;
-        });
-        dlg.setRestoreKeyBackupFn([this](const std::string& key) {
-            return sync_ ? sync_->restoreKeyBackupNow(key) : 0;
-        });
-        dlg.setUploadSsssFn([this](const std::string& key) {
-            return sync_ ? sync_->uploadSsssSecrets(key) : false;
-        });
-        dlg.setRetrieveSsssFn([this](const std::string& key) {
-            return sync_ ? sync_->retrieveSsssSecrets(key) > 0 : false;
-        });
-        connect(&dlg, &PrefsDialog::settingsChanged, this, &ToolbarHandler::prefsChanged);
-        dlg.exec();
+        openPreferences();
     } else if (selected == shortcutsAction) {
         ShortcutsDialog dlg(parentWidget_);
+        dlg.exec();
+    } else if (selected == roomActivityAction) {
+        RoomActivityLogDialog dlg(parentWidget_);
         dlg.exec();
     } else if (selected == colorsAction) {
         ColorSettingsDialog dlg(parentWidget_);

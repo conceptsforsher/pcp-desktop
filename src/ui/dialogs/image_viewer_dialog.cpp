@@ -58,8 +58,11 @@ ImageViewerDialog::ImageViewerDialog(const QImage& image, const QByteArray& rawB
     zoomInBtn_ = new QPushButton("+", this);
     zoomOutBtn_ = new QPushButton("-", this);
     fitBtn_ = new QPushButton("Fit", this);
+    fitBtn_->setToolTip("Fit the image to the window.");
     saveBtn_ = new QPushButton("Save as…", this);
+    saveBtn_->setToolTip("Save the image to a file on this device.");
     openBtn_ = new QPushButton("Open externally", this);
+    openBtn_->setToolTip("Open the image with the system image viewer.");
     closeBtn_ = new QPushButton("Close", this);
     btnRow->addWidget(zoomInBtn_);
     btnRow->addWidget(zoomOutBtn_);

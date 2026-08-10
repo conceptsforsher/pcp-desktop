@@ -49,6 +49,13 @@ public:
     void addHiddenRoom(const std::string& roomId) { state_.hideRoom(roomId); }
     void clearHiddenRoom(const std::string& roomId) { state_.unhideRoom(roomId); }
 
+    // Pin / anchor a room: pinned rooms live in the top list band, anchored
+    // rooms in the second band (see RoomState ordering). Persisted in QSettings.
+    void setRoomPinned(const std::string& roomId, bool pinned);
+    void setRoomAnchored(const std::string& roomId, bool anchored);
+    bool isRoomPinned(const std::string& roomId) const;
+    bool isRoomAnchored(const std::string& roomId) const;
+
     enum Roles {
         NameRole = Qt::DisplayRole,
         LastMessageRole = Qt::UserRole + 1,

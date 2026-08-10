@@ -31,7 +31,9 @@ NetworkLogDialog::NetworkLogDialog(QWidget* parent) : QDialog(parent) {
         "border:1px solid " + Design::borderColor.name() + ";}");
 
     refreshBtn_ = new QPushButton("Refresh", this);
+    refreshBtn_->setToolTip("Reload the request log now.");
     clearBtn_ = new QPushButton("Clear", this);
+    clearBtn_->setToolTip("Empty the request log.");
     closeBtn_ = new QPushButton("Close", this);
 
     auto* btnRow = new QHBoxLayout;

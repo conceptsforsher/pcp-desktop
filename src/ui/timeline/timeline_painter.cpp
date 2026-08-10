@@ -240,19 +240,9 @@ void drawMessageBubble(QPainter* p, const QRect& rowRect, const QModelIndex& idx
     }
 
     QString decryptError = idx.data(TimelineModel::DecryptErrorRole).toString();
-    if (!decryptError.isEmpty()) {
-        // "Key missing" badge on the bubble — tooltip carries the reason.
-        QRect badgeR(bubbleX + bubbleW - 22, topY - 2, 18, 18);
-        p->setBrush(QColor("#F44336"));
-        p->setPen(Qt::NoPen);
-        p->drawEllipse(badgeR);
-        QFont bf = p->font();
-        bf.setPointSize(ds(kFontSizeSmall));
-        bf.setBold(true);
-        p->setFont(bf);
-        p->setPen(Qt::white);
-        p->drawText(badgeR, Qt::AlignCenter, "!");
-    }
+    // NOTE: the "key missing" badge is drawn AFTER the bubble (see below) so
+    // it is never covered by it — it used to sit on the bubble's top-right
+    // corner and was hidden on outgoing (own) messages.
 
     int bubbleY = topY + L.nameH;
 
@@ -266,6 +256,21 @@ void drawMessageBubble(QPainter* p, const QRect& rowRect, const QModelIndex& idx
     if (isEmote) bubbleColor = QColor(0, 0, 0, 0);
     if (bubbleColor.alpha() > 0) {
         drawBubble(p, bubbleX, bubbleY, bubbleW, L.bubbleH, bubbleColor, tl, tr, br, bl);
+    }
+
+    // "Key missing" badge ON TOP of the bubble's top-right corner (drawn
+    // after the bubble so it is always visible, including own messages).
+    if (!decryptError.isEmpty()) {
+        QRect badgeR(bubbleX + bubbleW - 20, bubbleY - 4, 18, 18);
+        p->setBrush(QColor("#F44336"));
+        p->setPen(Qt::NoPen);
+        p->drawEllipse(badgeR);
+        QFont bf = p->font();
+        bf.setPointSize(ds(kFontSizeSmall));
+        bf.setBold(true);
+        p->setFont(bf);
+        p->setPen(Qt::white);
+        p->drawText(badgeR, Qt::AlignCenter, "!");
     }
 
     int textX = bubbleX + kBubblePadding;

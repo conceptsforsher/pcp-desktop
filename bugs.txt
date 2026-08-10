@@ -1,0 +1,102 @@
+# Progressive Chat — bug tracker (running notes)
+
+Format: one paragraph per issue, newest at the bottom, with a timestamp.
+Fixed issues are marked DONE. This file is appended to, never rewritten.
+
+---
+
+## 2026-08-10 — Proxy (Tor/I2P) settings UI
+DONE. The desktop had no way to configure the proxy that progressive-cli
+already supported. Added a shared ProxySettingsWidget (login window +
+Preferences -> Network): type socks5h (Tor, DNS via proxy — recommended
+default) / socks5 (local DNS — visible warning that hostnames leak) / http,
+host/port (127.0.0.1:9050 default), optional auth, live apply, "Test
+connection" button, applied at startup before any network activity. Verified
+live with a logging SOCKS5 proxy: all traffic goes through it (hostnames
+intact — no local DNS), and a dead proxy makes requests FAIL instead of
+falling back to a direct connection.
+
+## 2026-08-10 — Room export / chat dumps
+The client cannot dump/export a chat room's history. Element Web can export
+a room as a JSON file (raw events) or a readable HTML/text file. We want at
+least the same: a room dump feature (menu entry + the exported file written
+locally), format at least as useful as Element's.
+
+## 2026-08-10 — "Reconnecting" status has no seconds counter
+The bottom-left status bar shows states like "Reconnecting" with no
+indication of how long it has been trying. The user wants a live seconds
+timer, e.g. "Reconnecting (5s)", so it is obvious how long the client has
+been stuck reconnecting.
+
+## 2026-08-10 — UI "Not responding" after clicking things (e.g. opening a chat)
+The window periodically freezes / shows "Not responding" when the user
+clicks around, e.g. when opening a chat room. It is clearly NOT a hardware
+problem — the process keeps working (console log keeps producing entries),
+so it is an optimization/blocking issue in the UI thread. Needs a root-cause
+investigation and a fix (history loading, layout, image loading on the UI
+thread, etc.).
+
+## 2026-08-10 — Own display name hard to find
+The user's own display name is only visible deep in the profile settings.
+It should be visible in the chat itself (e.g. in the composer header or the
+room header) so the user can see how they appear to others without digging
+into settings.
+
+## 2026-08-10 — "Cannot decrypt" badge hidden on own messages
+The "cannot decrypt" icon/badge on the user's OWN messages is mostly
+covered by the message bubble, so it is not visible. The badge must be
+rendered visibly (not hidden behind the bubble) on own messages too.
+
+## 2026-08-10 — Room list previews do not use the full panel width
+The message previews in the room list (left, collapsible panel) do not use
+all the available width of the panel — they look clipped/narrow. The
+preview should stretch to the full panel width.
+
+## 2026-08-10 — Tooltips on buttons (Load older, Save, etc.)
+Buttons like "Load older", "Save" and similar have no hover tooltips
+explaining what they do. Add tooltips to such buttons.
+
+## 2026-08-10 — Hundreds of "no key yet" messages in the 1:1 chat
+Between the two test accounts, the 1:1 room shows hundreds of "no key yet"
+(unable to decrypt) message placeholders, even though NEW messages decrypt
+fine in the already-created room. The old undecryptable placeholders should
+be cleaned up / re-decrypted once keys arrive, not stay forever as spam.
+
+## 2026-08-10 — Log spam: ed25519Verify FAILED / verifyOtk INVALID
+The console is spammed with:
+  [E2EE] ed25519Verify FAILED: BAD_MESSAGE_MAC
+  [E2EE] verifyOtk: INVALID
+These come from verifying against stale keys (old identity OTKs etc.) and
+repeat constantly. They should be silenced to an appropriate log level /
+de-duplicated so the log stays useful.
+
+## 2026-08-10 — About section too sparse
+The About dialog has almost no information. It should show the app version,
+git commit(s), core version, Qt/curl/olm/library versions, build type and
+similar details.
+
+## 2026-08-10 — ctest ran slowly
+The local ctest run took a very long time (the plain `ctest` without a
+per-test timeout hung for minutes). The test invocation should not hang —
+either the tests need per-test timeouts by default or a test waits
+unnecessarily long.
+
+## 2026-08-10 — FEATURE: dynamic message bubble width
+The message bubbles should size dynamically: short messages get a narrower
+bubble (like Element's bubble layout), long messages keep the full width.
+Currently all bubbles use the same fixed max width regardless of content
+length.
+
+## 2026-08-10 — FEATURE: room list right-click context menu
+Right-clicking a room in the room list (left panel) should offer, in
+addition to whatever is already there:
+  1. Copy room name
+  2. Copy room link (matrix.to link with via arguments)
+  3. Write a message (focus the composer)
+  4. Copy the last message (with a link to it)
+  5. Pin the room
+  6. Anchor the room (keep its list position fixed)
+  7. View the room's members (ideally also invited and banned, and
+     ideally everyone who was ever in the room, as far as the client
+     knows)
+  8. Go to settings

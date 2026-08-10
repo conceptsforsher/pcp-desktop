@@ -128,14 +128,20 @@ PrefsDialog::PrefsDialog(QWidget* parent) : QDialog(parent) {
     createBackupBtn->setToolTip("Generate a recovery key and create a server-side "
                                 "encrypted backup of your room keys.");
     auto* backupNowBtn = new QPushButton("Backup now", this);
+    backupNowBtn->setToolTip("Upload the current room keys to the server-side backup now.");
     auto* deleteBackupBtn = new QPushButton("Delete backup…", this);
+    deleteBackupBtn->setToolTip("Delete the server-side encrypted backup (needs the recovery key).");
     auto* restoreBtn = new QPushButton("Restore from recovery key…", this);
+    restoreBtn->setToolTip("Download the backup and decrypt it with your recovery key.");
     auto* ssssUploadBtn = new QPushButton("Sync secrets to my other devices…", this);
     ssssUploadBtn->setToolTip("Encrypt the cross-signing keys to account-data, "
                               "unlockable with the recovery key.");
     auto* ssssRetrieveBtn = new QPushButton("Retrieve secrets with recovery key…", this);
+    ssssRetrieveBtn->setToolTip("Download the encrypted secrets from account-data and unlock them with the recovery key.");
     auto* exportBtn = new QPushButton("Export room keys to file…", this);
+    exportBtn->setToolTip("Save the decryption keys for your rooms to a file (for backup/migration).");
     auto* importBtn = new QPushButton("Import room keys from file…", this);
+    importBtn->setToolTip("Load decryption keys from an exported file so old messages can be decrypted.");
     backupLayout->addWidget(backupStatus);
     backupLayout->addWidget(createBackupBtn);
     backupLayout->addWidget(backupNowBtn);

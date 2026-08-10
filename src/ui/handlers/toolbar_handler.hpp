@@ -69,6 +69,8 @@ private slots:
     void onRoomSettings();
     void onRoomMembers();
     void onSettings();
+public:
+    void openPreferences();
 private:
     std::shared_ptr<MatrixClient> client_;
     RoomListModel* roomModel_;

@@ -123,6 +123,7 @@ UILayout buildMainWindowLayout(QWidget* window,
     timelineToolbarLayout->setSpacing(4);
 
     ui.loadMoreBtn = new QPushButton(" Load older", rightPanel);
+    ui.loadMoreBtn->setToolTip("Load older messages of this chat from the server");
     ui.loadMoreBtn->setStyleSheet(
         "QPushButton{background:" + Design::incomingBubble.name() + ";color:" + Design::mutedTextColor.name() + ";border:1px solid " + Design::borderColor.name() + ";"
         "padding:2px 10px;border-radius:3px;font-size:11px;}"
@@ -131,6 +132,7 @@ UILayout buildMainWindowLayout(QWidget* window,
 
     ui.chatLogBtn = new QPushButton(" Save", rightPanel);
     ui.chatLogBtn->setCheckable(true);
+    ui.chatLogBtn->setToolTip("Save this chat's messages to a local file (chat log)");
     ui.chatLogBtn->setStyleSheet(
         "QPushButton{background:" + Design::incomingBubble.name() + ";color:" + Design::mutedTextColor.name() + ";border:1px solid " + Design::borderColor.name() + ";"
         "padding:2px 10px;border-radius:3px;font-size:11px;}"
@@ -139,6 +141,7 @@ UILayout buildMainWindowLayout(QWidget* window,
     ui.chatLogBtn->hide();
 
     ui.threadBtn = new QPushButton(" Threads", rightPanel);
+    ui.threadBtn->setToolTip("Show threaded replies in this chat");
     ui.threadBtn->setStyleSheet(
         "QPushButton{background:" + Design::incomingBubble.name() + ";color:" + Design::mutedTextColor.name() + ";border:1px solid " + Design::borderColor.name() + ";"
         "padding:2px 10px;border-radius:3px;font-size:11px;}"

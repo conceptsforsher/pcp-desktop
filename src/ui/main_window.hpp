@@ -55,6 +55,8 @@ public:
     void startWithSavedSession();
 
     void onSyncState(SyncEngineState state, const SyncEngineStats& stats);
+    void updateStatusText();
+    void refreshOwnDisplayName();
 
     QLabel* threadBanner() const { return threadBanner_; }
     QPushButton* threadBtn() const { return threadBtn_; }
@@ -65,6 +67,7 @@ public:
     QLabel* statusLabel() const { return statusLabel_; }
     QLabel* inviteHead() const { return inviteHeader_; }
     MessageEdit* messageEdit() const { return messageEdit_; }
+    ToolbarHandler* toolbarHandler() const { return toolbarHandler_; }
     QListView* timelineView() const { return timelineView_; }
     QLabel* placeholder() const { return timelinePlaceholder_; }
     QPushButton* loadMoreBtn() const { return loadMoreBtn_; }
@@ -121,6 +124,12 @@ private:
     QLabel* keysBanner_ = nullptr;
     QTimer* keysBannerTimer_ = nullptr;
     void updateKeysBanner();
+    // Status timer: "reconnecting (Ns)" while backing off, "synced (last
+    // sync Xs ago)" while running.
+    QTimer* statusTimer_ = nullptr;
+    int statusSeconds_ = 0;
+    SyncEngineState lastSyncState_ = SyncEngineState::Stopped;
+    SyncEngineStats lastStats_;
     VerificationHandler* verifyHandler_ = nullptr;
 };
 

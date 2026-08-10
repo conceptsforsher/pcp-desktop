@@ -57,6 +57,7 @@ set(PROGRESSIVE_BUILD_TESTS ON CACHE BOOL "" FORCE)
 add_library(progressive_ui_widgets STATIC
     src/ui/shared/image_loader.cpp
     src/ui/shared/proxy_settings.cpp
+    src/ui/shared/room_activity_log.cpp
     src/ui/shared/theme.cpp
     src/ui/timeline/timeline_model.cpp
     src/ui/timeline/timeline_delegate.cpp
@@ -82,6 +83,7 @@ add_library(progressive_ui_dialogs STATIC
     src/ui/dialogs/image_viewer_dialog.cpp
     src/ui/dialogs/room_directory_dialog.cpp
     src/ui/dialogs/room_settings_dialog.cpp
+    src/ui/dialogs/room_activity_log_dialog.cpp
     src/ui/dialogs/room_switcher_dialog.cpp
     src/ui/dialogs/threads_dialog.cpp
     src/ui/dialogs/shortcuts_dialog.cpp

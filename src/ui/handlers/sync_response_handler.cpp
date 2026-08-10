@@ -162,23 +162,18 @@ void SyncResponseHandler::handle(FastSyncResponse resp) {
 }
 
 // Render room-key activity as system rows in the open room's timeline.
-// Requested rows are capped at 3 per sync (+ a summary row) so a history
-// load with many missing sessions doesn't flood the chat.
+// ONE row per session — the text evolves with the event kind, so the
+// re-request loop (10s/1m/5m/15m/30m backoff) can never flood the chat
+// with hundreds of "No key yet" rows.
 void SyncResponseHandler::appendRoomKeyRows(std::vector<RoomKeyNotification> notifs,
                                             const std::string& curRoomId) {
     if (notifs.empty()) return;
-    int requestedRows = 0;
-    int withheldRows = 0;
     int skipped = 0;
     for (const auto& n : notifs) {
         if (n.roomId != curRoomId || n.roomId.empty()) continue;
-        if (n.kind == RoomKeyEventKind::Requested) {
-            if (requestedRows >= 3) { skipped++; continue; }
-            requestedRows++;
-        } else if (n.kind == RoomKeyEventKind::Withheld) {
-            if (withheldRows >= 3) { skipped++; continue; }
-            withheldRows++;
-        }
+        // Deterministic row id per session: "rk<sid8>". A session's row
+        // exists at most once — later notifications UPDATE its text.
+        std::string rowId = "rk" + n.sessionId.substr(0, 8);
         std::string who = n.fromUserId;
         if (roomHandler_) {
             auto it = roomHandler_->memberAvatarCache().find(n.fromUserId + "/name");
@@ -186,39 +181,32 @@ void SyncResponseHandler::appendRoomKeyRows(std::vector<RoomKeyNotification> not
         }
         std::string shortSid = n.sessionId.size() > 6
             ? n.sessionId.substr(0, 6) + "…" : n.sessionId;
+        std::string body;
+        if (n.kind == RoomKeyEventKind::Received) {
+            body = who + " sent us the room key (session " + shortSid + ")";
+        } else if (n.kind == RoomKeyEventKind::Withheld) {
+            body = who + " withheld the room key" +
+                   (n.detail.empty() ? std::string() : " (" + n.detail + ")");
+        } else if (n.kind == RoomKeyEventKind::GaveUp) {
+            body = "Gave up requesting the key from " + who +
+                   " — right-click the message \u2192 \u201cRequest the key again\u201d";
+        } else {
+            body = "No key yet — requested from " + who + " (session " + shortSid + ")";
+        }
         DisplayedEvent sys;
         sys.type = "progressive.system";
-        sys.eventId = "rk" + n.sessionId.substr(0, 8) + "_" + std::to_string(n.ts);
+        sys.eventId = rowId;
         sys.originServerTs = n.ts;
         sys.senderName = "system";
-        if (n.kind == RoomKeyEventKind::Received) {
-            sys.body = who + " sent us the room key (session " + shortSid + ")";
-        } else if (n.kind == RoomKeyEventKind::Withheld) {
-            sys.body = who + " withheld the room key" +
-                       (n.detail.empty() ? std::string() : " (" + n.detail + ")");
-        } else if (n.kind == RoomKeyEventKind::GaveUp) {
-            sys.body = "Gave up requesting the key from " + who +
-                       " — right-click the message \u2192 \u201cRequest the key again\u201d";
-        } else {
-            sys.body = "No key yet — requested from " + who +
-                       (n.attempt > 1 ? " again (session " : " (session ") +
-                       shortSid + ")";
+        sys.body = body;
+        int row = timelineModel_->findRow(rowId);
+        if (row >= 0) {
+            timelineModel_->updateBody(rowId, body);
+            continue;
         }
         timelineModel_->appendBack(sys);
     }
-    if (skipped > 0) {
-        DisplayedEvent sys;
-        sys.type = "progressive.system";
-        sys.eventId = "rksum" + std::to_string(
-            std::chrono::duration_cast<std::chrono::milliseconds>(
-                std::chrono::system_clock::now().time_since_epoch()).count());
-        sys.originServerTs = static_cast<int64_t>(
-            std::chrono::duration_cast<std::chrono::milliseconds>(
-                std::chrono::system_clock::now().time_since_epoch()).count());
-        sys.senderName = "system";
-        sys.body = "…and " + std::to_string(skipped) + " more key requests (see the E2EE log)";
-        timelineModel_->appendBack(sys);
-    }
+    (void)skipped;
 }
 
 } // namespace progressive::desktop

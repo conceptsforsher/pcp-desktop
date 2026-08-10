@@ -15,6 +15,8 @@
 Q_DECLARE_METATYPE(std::string)
 #endif
 
+class QLabel;
+
 namespace progressive::desktop {
 
 class MessageEdit : public QWidget {
@@ -33,6 +35,9 @@ public:
 
     // Set member names for @mention autocomplete
     void setMembers(const QStringList& names);
+
+    // Show the name OTHERS see for us above the composer ("Sending as: X").
+    void setSendingAsName(const QString& displayName);
 
 signals:
     void sendMessage(const std::string& body);
@@ -56,6 +61,7 @@ private:
     QCompleter* mentionCompleter_ = nullptr;
     QStringListModel* mentionModel_ = nullptr;
     bool completerSetup_ = false;
+    QLabel* identityLabel_ = nullptr;
 
     void setupUi();
 };

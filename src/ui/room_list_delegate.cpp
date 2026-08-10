@@ -145,7 +145,12 @@ void RoomListDelegate::paint(QPainter* painter, const QStyleOptionViewItem& opti
 
     // Text area (right of avatar)
     int textX = avatarRect.right() + padding;
-    int textWidth = option.rect.width() - textX - padding - kTextMargin;
+    // Reserve space on the right ONLY when something lives there: the unread
+    // badge or the invite accept/reject buttons. With neither, the preview
+    // stretches to the panel's right edge (kTextMargin reserved 60px
+    // unconditionally, so previews never used the full panel width).
+    int rightReserve = (unread > 0 || isInvite) ? kTextMargin : 8;
+    int textWidth = option.rect.width() - textX - padding - rightReserve;
     QRect nameRect(textX, option.rect.y() + kTextRowOff, textWidth, kSecondRowH);
     QRect msgRect(textX, option.rect.y() + kDescRowOff, textWidth, kSecondRowH);
 

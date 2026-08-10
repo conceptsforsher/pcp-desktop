@@ -2,6 +2,7 @@
 #include "room_handler.hpp"
 #include "thread_handler.hpp"
 #include "room_context_menu.hpp"
+#include "toolbar_handler.hpp"
 #include "../main_window.hpp"
 #include "core/debug_log.hpp"
 #include "../room/room_store.hpp"
@@ -14,6 +15,7 @@
 #include "../chat/chat_view.hpp"
 #include "../dialogs/room_settings_dialog.hpp"
 #include "../profile/room_members_dialog.hpp"
+#include "../shared/room_activity_log.hpp"
 
 #include <QInputDialog>
 #include <QMessageBox>
@@ -64,6 +66,11 @@ RoomHandler::RoomHandler(std::shared_ptr<MatrixClient> client, RoomStore* roomSt
     connect(contextMenu_, &RoomContextMenu::roomLeft, this, [this](const std::string& roomId) {
         if (currentRoomIdStr_ == roomId) { }
     });
+    connect(contextMenu_, &RoomContextMenu::settingsRequested, this, [this]() {
+        if (mainWindow_ && mainWindow_->toolbarHandler()) {
+            mainWindow_->toolbarHandler()->openPreferences();
+        }
+    });
 }
 
 RoomHandler::~RoomHandler() {
@@ -82,6 +89,7 @@ void RoomHandler::onRoomClicked(const QModelIndex& idx) {
     if (mainWindow_.isNull()) return;
 
     currentRoomIdStr_ = r->roomId;
+    logRoomOpen(r->roomId, r->name);
     if (r->unreadCount > 0 || r->highlightCount > 0) {
         RoomData* rd = const_cast<RoomData*>(r);
         rd->unreadCount = 0;

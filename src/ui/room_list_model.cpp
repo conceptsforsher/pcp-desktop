@@ -3,6 +3,7 @@
 #include "room_list_model.hpp"
 
 #include <QFontMetrics>
+#include <QSettings>
 #include <algorithm>
 
 namespace progressive::desktop {
@@ -54,7 +55,12 @@ QVariant RoomListModel::data(const QModelIndex& index, int role) const {
 }
 
 bool RoomListModel::upsertRoom(const RoomData& room) {
-    auto result = state_.upsertRoom(room);
+    // Re-apply the user's pin/anchor flags from QSettings (survives restarts
+    // and full model rebuilds).
+    RoomData withFlags = room;
+    withFlags.pinned = isRoomPinned(room.roomId);
+    withFlags.anchored = isRoomAnchored(room.roomId);
+    auto result = state_.upsertRoom(withFlags);
     int row = state_.upsertRow();
     switch (result) {
         case RoomState::UpsertResult::Updated:
@@ -67,6 +73,73 @@ bool RoomListModel::upsertRoom(const RoomData& room) {
         default:
             return false;
     }
+}
+
+void RoomListModel::setRoomPinned(const std::string& roomId, bool pinned) {
+    int row = state_.findRowByRoomId(roomId);
+    if (row < 0) return;
+    RoomData copy = *state_.at(row);
+    QSettings s;
+    s.setValue(QString("rooms/pinned/%1").arg(QString::fromStdString(roomId)), pinned);
+    if (copy.pinned == pinned) return;
+    copy.pinned = pinned;
+    copy.anchored = pinned ? false : copy.anchored;  // pin wins over anchor
+    if (pinned) s.setValue(QString("rooms/anchored/%1").arg(QString::fromStdString(roomId)), false);
+    // Remove + re-insert so the band ordering takes effect.
+    state_.removeRoom(roomId);
+    beginRemoveRows(QModelIndex(), row, row);
+    endRemoveRows();
+    auto result = state_.upsertRoom(copy);
+    int newRow = state_.upsertRow();
+    switch (result) {
+        case RoomState::UpsertResult::Inserted:
+            beginInsertRows(QModelIndex(), newRow, newRow);
+            endInsertRows();
+            break;
+        case RoomState::UpsertResult::Updated:
+            emit dataChanged(index(newRow), index(newRow));
+            break;
+        default:
+            break;
+    }
+}
+
+void RoomListModel::setRoomAnchored(const std::string& roomId, bool anchored) {
+    int row = state_.findRowByRoomId(roomId);
+    if (row < 0) return;
+    RoomData copy = *state_.at(row);
+    QSettings s;
+    s.setValue(QString("rooms/anchored/%1").arg(QString::fromStdString(roomId)), anchored);
+    if (copy.anchored == anchored) return;
+    copy.anchored = anchored;
+    copy.pinned = anchored ? false : copy.pinned;  // anchor wins over pin
+    if (anchored) s.setValue(QString("rooms/pinned/%1").arg(QString::fromStdString(roomId)), false);
+    state_.removeRoom(roomId);
+    beginRemoveRows(QModelIndex(), row, row);
+    endRemoveRows();
+    auto result = state_.upsertRoom(copy);
+    int newRow = state_.upsertRow();
+    switch (result) {
+        case RoomState::UpsertResult::Inserted:
+            beginInsertRows(QModelIndex(), newRow, newRow);
+            endInsertRows();
+            break;
+        case RoomState::UpsertResult::Updated:
+            emit dataChanged(index(newRow), index(newRow));
+            break;
+        default:
+            break;
+    }
+}
+
+bool RoomListModel::isRoomPinned(const std::string& roomId) const {
+    QSettings s;
+    return s.value(QString("rooms/pinned/%1").arg(QString::fromStdString(roomId)), false).toBool();
+}
+
+bool RoomListModel::isRoomAnchored(const std::string& roomId) const {
+    QSettings s;
+    return s.value(QString("rooms/anchored/%1").arg(QString::fromStdString(roomId)), false).toBool();
 }
 
 void RoomListModel::clear() {

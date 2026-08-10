@@ -12,6 +12,7 @@
 #include <QMenu>
 #include <QAbstractItemView>
 #include <QScrollBar>
+#include <QLabel>
 
 namespace progressive::desktop {
 
@@ -86,10 +87,19 @@ void MessageEdit::setupUi() {
 
     // Subclass key handling via eventFilter (since we can't override keyPressEvent
     // of QTextEdit directly when using composition)
+    auto* editColumn = new QVBoxLayout;
+    editColumn->setContentsMargins(0, 0, 0, 0);
+    editColumn->setSpacing(0);
+    identityLabel_ = new QLabel(this);
+    identityLabel_->setObjectName("sendingAsLabel");
+    identityLabel_->setStyleSheet("color:#8a8a8a; font-size:10px; padding-left:2px;");
+    identityLabel_->setVisible(false);
+    editColumn->addWidget(identityLabel_);
+    editColumn->addWidget(textEdit_, 1);
     layout->addWidget(attachBtn_);
     layout->addWidget(emojiBtn_);
     layout->addWidget(reactBtn);
-    layout->addWidget(textEdit_, 1);  // stretch factor 1 = fills width
+    layout->addLayout(editColumn, 1);  // stretch factor 1 = fills width
 
     connect(attachBtn_, &QPushButton::clicked, this, &MessageEdit::onAttachClicked);
     connect(emojiBtn_, &QPushButton::clicked, this, &MessageEdit::onEmojiClicked);
@@ -138,6 +148,18 @@ bool MessageEdit::eventFilter(QObject* obj, QEvent* event) {
         }
     }
     return QWidget::eventFilter(obj, event);
+}
+
+void MessageEdit::setSendingAsName(const QString& displayName) {
+    if (!identityLabel_) return;
+    if (displayName.isEmpty()) {
+        identityLabel_->setVisible(false);
+        return;
+    }
+    identityLabel_->setText("Sending as: " + displayName);
+    identityLabel_->setToolTip("This is the name others see for you in this chat. "
+                               "Change it in your profile.");
+    identityLabel_->setVisible(true);
 }
 
 void MessageEdit::setMembers(const QStringList& names) {

@@ -8,6 +8,7 @@
 #include "../timeline/timeline_handlers.hpp"
 #include "../room_list_model.hpp"
 #include "../main_window.hpp"
+#include "../profile/room_members_dialog.hpp"
 #include "core/crypto/decryptor.hpp"
 #include <QFileDialog>
 #include <QFile>
@@ -46,9 +47,25 @@ void RoomContextMenu::onRoomListContextMenu(const QPoint& pos, const std::string
     auto* rejectAction = menu.addAction("Reject invite");
     auto* forgetAction = menu.addAction("Forget room");
     auto* hideAction = menu.addAction("Hide from list");
+    menu.addSeparator();
+    auto* copyNameAction = menu.addAction("Copy room name");
+    auto* copyLinkAction = menu.addAction("Copy room link");
+    auto* writeAction = menu.addAction("Write a message");
+    auto* copyLastAction = menu.addAction("Copy last message");
+    menu.addSeparator();
+    auto* pinAction = menu.addAction(roomModel_->isRoomPinned(r->roomId)
+                                         ? "Unpin room" : "Pin room");
+    auto* anchorAction = menu.addAction(roomModel_->isRoomAnchored(r->roomId)
+                                            ? "Unanchor room" : "Anchor room");
+    menu.addSeparator();
+    auto* membersAction = menu.addAction("Room members...");
+    auto* settingsAction = menu.addAction("Settings...");
     if (r->isInvite) {
         leaveAction->setVisible(false);
         forgetAction->setVisible(false);
+        writeAction->setVisible(false);
+        copyLastAction->setVisible(false);
+        membersAction->setVisible(false);
     } else {
         acceptAction->setVisible(false);
         rejectAction->setVisible(false);
@@ -56,6 +73,76 @@ void RoomContextMenu::onRoomListContextMenu(const QPoint& pos, const std::string
 
     auto* selected = menu.exec(roomList_->mapToGlobal(pos));
     if (!selected) return;
+
+    if (selected == copyNameAction) {
+        QGuiApplication::clipboard()->setText(QString::fromStdString(r->name));
+        statusLabel_->setText(QString("Copied room name: %1").arg(QString::fromStdString(r->name)));
+        return;
+    }
+    if (selected == copyLinkAction) {
+        // matrix.to permalink with via servers: the room's own server + ours.
+        std::string roomId = r->roomId;
+        auto colon = roomId.find(':');
+        std::string via = colon != std::string::npos ? roomId.substr(colon + 1) : "";
+        std::string hs = client_ ? client_->account().homeserverUrl : "";
+        auto hc = hs.find("://");
+        if (hc != std::string::npos) hs = hs.substr(hc + 3);
+        auto slash = hs.find('/');
+        if (slash != std::string::npos) hs = hs.substr(0, slash);
+        std::string link = "https://matrix.to/#/" + roomId;
+        if (!via.empty()) link += "?via=" + via;
+        if (!hs.empty() && hs != via) link += "&via=" + hs;
+        QGuiApplication::clipboard()->setText(QString::fromStdString(link));
+        statusLabel_->setText(QString("Copied room link (with via)").arg(link.c_str()));
+        return;
+    }
+    if (selected == writeAction) {
+        if (mw_) mw_->messageEdit()->setFocus();
+        return;
+    }
+    if (selected == copyLastAction) {
+        // Last real message of the room + a permalink to it (when we have
+        // the event id from the open timeline).
+        std::string text = r->lastMessage;
+        std::string evId;
+        if (timelineModel_ && timelineModel_->rowCount() > 0) {
+            for (int i = timelineModel_->rowCount() - 1; i >= 0; --i) {
+                const auto* evt = timelineModel_->at(i);
+                if (evt && evt->type != "progressive.system" && !evt->eventId.empty()) {
+                    evId = evt->eventId;
+                    if (text.empty()) text = evt->body;
+                    break;
+                }
+            }
+        }
+        QString out = QString("%1 — %2").arg(QString::fromStdString(r->name),
+                                             QString::fromStdString(text));
+        if (!evId.empty()) {
+            out += "\n" + QString::fromStdString("https://matrix.to/#/" + r->roomId + "/" + evId);
+        }
+        QGuiApplication::clipboard()->setText(out);
+        statusLabel_->setText("Copied last message (with link).");
+        return;
+    }
+    if (selected == pinAction) {
+        roomModel_->setRoomPinned(r->roomId, !roomModel_->isRoomPinned(r->roomId));
+        return;
+    }
+    if (selected == anchorAction) {
+        roomModel_->setRoomAnchored(r->roomId, !roomModel_->isRoomAnchored(r->roomId));
+        return;
+    }
+    if (selected == membersAction) {
+        if (client_) {
+            RoomMembersDialog dlg(client_.get(), r->roomId, mw_.data());
+            dlg.exec();
+        }
+        return;
+    }
+    if (selected == settingsAction) {
+        emit settingsRequested();
+        return;
+    }
 
     if (selected == leaveAction) {
         auto reply = QMessageBox::question(mw_.data(), "Leave room",

@@ -11,6 +11,8 @@
 #include "dialogs/threads_dialog.hpp"
 #include "dialogs/prefs_dialog.hpp"
 #include "dialogs/room_switcher_dialog.hpp"
+#include "core/thread_pool.hpp"
+#include <simdjson.h>
 #include "chat/emoji_picker.hpp"
 
 #include <QCloseEvent>
@@ -302,6 +304,7 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent) {
                 int accountCount = accountSwitcher_->accountCount();
                 if (index < accountCount) {
                     accountSwitcher_->switchAccount(index);
+                    refreshOwnDisplayName();
                 } else if (index == accountCount + 1) {
                     accountCombo_->blockSignals(true);
                     accountCombo_->setCurrentIndex(accountSwitcher_->currentAccountIndex());
@@ -347,6 +350,28 @@ void MainWindow::wireSyncCallbacks() {
 void MainWindow::startWithSavedSession() {
     SessionBootstrap::start(client_, store_, &sync_, accountCombo_, userLabel_,
                             statusLabel_, imageLoader_, timelineDelegate_, &notifier_);
+    refreshOwnDisplayName();
+}
+
+void MainWindow::refreshOwnDisplayName() {
+    if (!client_ || !client_->isLoggedIn()) return;
+    std::string userId = client_->account().userId;
+    auto self = QPointer<MainWindow>(this);
+    ThreadPool::instance().enqueue([self, client = client_, userId]() {
+        auto r = client->getProfile(userId);
+        if (!r.ok) return;
+        std::string dn;
+        simdjson::dom::parser parser;
+        auto root = parser.parse(r.data);
+        if (root.error() == simdjson::SUCCESS) {
+            auto v = root.value()["displayname"].get_string();
+            if (v.error() == simdjson::SUCCESS) dn = std::string(v.value());
+        }
+        QMetaObject::invokeMethod(self, [self, dn]() {
+            if (self.isNull()) return;
+            self->messageEdit_->setSendingAsName(QString::fromStdString(dn));
+        }, Qt::QueuedConnection);
+    });
 }
 
 void MainWindow::closeEvent(QCloseEvent* e) {
@@ -510,14 +535,55 @@ void MainWindow::updateKeysBanner() {
 }
 
 void MainWindow::onSyncState(SyncEngineState state, const SyncEngineStats& stats) {
+    const bool enteredBackoff =
+        state == SyncEngineState::Backoff && lastSyncState_ != SyncEngineState::Backoff;
+    lastSyncState_ = state;
+    lastStats_ = stats;
+
+    if (!statusTimer_) {
+        statusTimer_ = new QTimer(this);
+        statusTimer_->setInterval(1000);
+        connect(statusTimer_, &QTimer::timeout, this, [this]() {
+            ++statusSeconds_;
+            updateStatusText();
+        });
+    }
+    if (state == SyncEngineState::Backoff) {
+        // Elapsed seconds since the reconnect started.
+        if (enteredBackoff) statusSeconds_ = 0;
+        if (!statusTimer_->isActive()) statusTimer_->start();
+    } else if (state == SyncEngineState::Running) {
+        // "last sync Xs ago" — reset on every successful sync.
+        statusSeconds_ = 0;
+        if (!statusTimer_->isActive()) statusTimer_->start();
+    } else {
+        statusTimer_->stop();
+        statusSeconds_ = 0;
+    }
+    updateStatusText();
+}
+
+void MainWindow::updateStatusText() {
+    if (!statusLabel_) return;
     const char* s = "?";
-    switch (state) {
+    switch (lastSyncState_) {
         case SyncEngineState::Stopped:     s = "stopped"; break;
         case SyncEngineState::InitialSync: s = "downloading chats..."; break;
         case SyncEngineState::Running:    s = "synced"; break;
-        case SyncEngineState::Backoff:     s = "reconnecting..."; break;
+        case SyncEngineState::Backoff:     s = "reconnecting"; break;
         case SyncEngineState::Paused:      s = "paused"; break;
     }
-    statusLabel_->setText(QString("%1 | %2 chats / %3 events").arg(s).arg(stats.roomsJoined).arg(stats.timelineEvents));
+    if (lastSyncState_ == SyncEngineState::Backoff) {
+        statusLabel_->setText(QString("%1 (%2s) | %3 chats / %4 events")
+            .arg(s).arg(statusSeconds_)
+            .arg(lastStats_.roomsJoined).arg(lastStats_.timelineEvents));
+    } else if (lastSyncState_ == SyncEngineState::Running) {
+        statusLabel_->setText(QString("%1 (last sync %2s ago) | %3 chats / %4 events")
+            .arg(s).arg(statusSeconds_)
+            .arg(lastStats_.roomsJoined).arg(lastStats_.timelineEvents));
+    } else {
+        statusLabel_->setText(QString("%1 | %2 chats / %3 events")
+            .arg(s).arg(lastStats_.roomsJoined).arg(lastStats_.timelineEvents));
+    }
 }
 } // namespace progressive::desktop
