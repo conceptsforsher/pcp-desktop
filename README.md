@@ -32,6 +32,8 @@ runtime-only bugs remain (images, a thread-reply-count edge case) plus Tier-1 fe
 
 Current phase: bug-zero clean-up toward v0.5 (see `memory/PROGRESS.md`).
 
+Last tested: commit `2e1e7fc` (2026-08-10 — "docs: bugs.txt — mark fixed items DONE, add new entries").
+
 CI test coverage today: 2 users × 1 device each, plus a multi-account/multi-device
 scenario (3 members, alice on 2 devices). 14/14 ctest green. Untested: full
 device-management UI flows and real-Element interop.
