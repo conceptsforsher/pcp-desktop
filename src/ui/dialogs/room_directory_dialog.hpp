@@ -8,7 +8,7 @@
 #include <QComboBox>
 #include "core/matrix_client.hpp"
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 class RoomDirectoryDialog : public QDialog {
     Q_OBJECT
@@ -42,4 +42,4 @@ private:
     void doSearch(const std::string& query, const std::string& server, const std::string& from);
 };
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

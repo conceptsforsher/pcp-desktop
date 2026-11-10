@@ -5,7 +5,7 @@
 class QComboBox;
 class QLabel;
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 class MatrixClient;
 class SessionStore;
@@ -22,4 +22,4 @@ public:
                       DesktopNotifier* notifier);
 };
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

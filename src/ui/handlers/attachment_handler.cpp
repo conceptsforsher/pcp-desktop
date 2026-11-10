@@ -14,7 +14,7 @@
 #include <chrono>
 #include <cstdlib>
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 namespace {
 
@@ -85,7 +85,7 @@ QString displayNameFor(const QString& body, const QString& msgtype,
 QString tempPathFor(const QString& name) {
     const char* tmpDir = getenv("TMPDIR");
     if (!tmpDir || !tmpDir[0]) tmpDir = "/tmp";
-    return QString::fromStdString(std::string(tmpDir) + "/progressive_") +
+    return QString::fromStdString(std::string(tmpDir) + "/pcp_") +
         QString::number(std::chrono::duration_cast<std::chrono::milliseconds>(
             std::chrono::system_clock::now().time_since_epoch()).count()) + "_" + name;
 }
@@ -194,4 +194,4 @@ void AttachmentHandler::openAttachment(const QString& eventId, const QString& mx
     });
 }
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

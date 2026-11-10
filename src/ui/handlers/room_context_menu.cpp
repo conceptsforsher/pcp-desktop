@@ -24,7 +24,7 @@
 #include <QPointer>
 #include <QListView>
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 RoomContextMenu::RoomContextMenu(std::shared_ptr<MatrixClient> client, TimelineModel* timelineModel,
                                    RoomListModel* roomModel, QListView* roomList,
@@ -108,7 +108,7 @@ void RoomContextMenu::onRoomListContextMenu(const QPoint& pos, const std::string
         if (timelineModel_ && timelineModel_->rowCount() > 0) {
             for (int i = timelineModel_->rowCount() - 1; i >= 0; --i) {
                 const auto* evt = timelineModel_->at(i);
-                if (evt && evt->type != "progressive.system" && !evt->eventId.empty()) {
+                if (evt && evt->type != "pcp.system" && !evt->eventId.empty()) {
                     evId = evt->eventId;
                     if (text.empty()) text = evt->body;
                     break;
@@ -326,7 +326,7 @@ void RoomContextMenu::showTimelineContextMenu(const QString& eventId,
             mediaKey = evt->mediaKey; mediaIv = evt->mediaIv; mediaSha = evt->mediaSha256;
             mediaBody = evt->body;
             isPinned = evt->isPinned;
-            isSystemEvent = (evt->type == "progressive.system");
+            isSystemEvent = (evt->type == "pcp.system");
             if (evt->threadReplyCount > 0) { canViewThread = true; threadRootForView = eventId; }
             else if (evt->isThreadReply && !evt->threadRootId.empty()) {
                 canViewThread = true; threadRootForView = QString::fromStdString(evt->threadRootId);
@@ -502,4 +502,4 @@ void RoomContextMenu::showTimelineContextMenu(const QString& eventId,
     }
 }
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

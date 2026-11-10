@@ -1,7 +1,7 @@
 #include <olm/outbound_group_session.h>
 #include <olm/inbound_group_session.h>
 #include <olm/olm.h>
-#include <progressive/olm.hpp>
+#include <pcp/olm.hpp>
 #include "core/crypto/megolm_store.hpp"
 #include "core/crypto/decryptor.hpp"
 #include <simdjson.h>
@@ -51,7 +51,7 @@ static std::string extractFirstOTK(const std::string& json) {
 // Catches #1 (wrong fn), #1b (double-decode), #2 (buffer clobber), #7 (session zeroing)
 
 static void test_megolm_roundtrip() {
-    using namespace progressive::desktop;
+    using namespace pcp::desktop;
 
     size_t size = ::olm_outbound_group_session_size();
     std::vector<uint8_t> memory(size);
@@ -100,15 +100,15 @@ static void test_megolm_roundtrip() {
     std::cout << "--- test_megolm_roundtrip PASSED ---\n";
 }
 
-// ---- Test 2: Olm wrapper roundtrip (progressive::OlmSession) ----
+// ---- Test 2: Olm wrapper roundtrip (pcp::OlmSession) ----
 // Catches #8 (Olm decrypt buffer clobber in OlmSession::decrypt)
 // Covers both type 0 (pre-key) and type 1 (normal message) paths.
 
 static void test_olm_wrapper_roundtrip() {
-    using namespace progressive;
+    using namespace pcp;
 
     // Bob creates account + OTK
-    progressive::OlmAccount bobAccount;
+    pcp::OlmAccount bobAccount;
     auto c = bobAccount.create();
     CHECK(c.success, "Bob account created");
 
@@ -122,11 +122,11 @@ static void test_olm_wrapper_roundtrip() {
     CHECK(bobCurve.success, "Got Bob curve25519");
 
     // Alice creates outbound session + encrypts type 0
-    progressive::OlmAccount aliceAccount;
+    pcp::OlmAccount aliceAccount;
     auto a = aliceAccount.create();
     CHECK(a.success, "Alice account created");
 
-    progressive::OlmSession aliceSession;
+    pcp::OlmSession aliceSession;
     auto out = aliceSession.createOutbound(aliceAccount, bobCurve.data, b64Key);
     CHECK(out.success, "Alice createOutbound");
 
@@ -137,7 +137,7 @@ static void test_olm_wrapper_roundtrip() {
 
     // Bob creates inbound + decrypts — THIS exercises OlmSession::decrypt (#8)
     std::string encCopy = enc.data;
-    progressive::OlmSession bobSession;
+    pcp::OlmSession bobSession;
     auto in = bobSession.createInbound(bobAccount, encCopy);
     CHECK(in.success, "Bob createInbound");
 
@@ -162,7 +162,7 @@ static void test_olm_wrapper_roundtrip() {
 // Catches #5 (double base64-encode) and #6 (session zeroing)
 
 static void test_outbound_encrypt_roundtrip() {
-    using namespace progressive::desktop;
+    using namespace pcp::desktop;
 
     Decryptor decryptor;
     bool ok = decryptor.init();
@@ -214,7 +214,7 @@ static void test_outbound_encrypt_roundtrip() {
 // old one — the strict (room, sender_key, session_id) lookup must fall back.
 
 static void test_sender_key_drift_fallback() {
-    using namespace progressive::desktop;
+    using namespace pcp::desktop;
 
     Decryptor decryptor;
     bool ok = decryptor.init();
@@ -263,7 +263,7 @@ static void test_sender_key_drift_fallback() {
 // carries the creating senderKey and unpickle drops mismatched entries.
 
 static void test_outbound_discard_on_identity_change() {
-    using namespace progressive::desktop;
+    using namespace pcp::desktop;
 
     Decryptor decryptor;
     bool ok = decryptor.init();

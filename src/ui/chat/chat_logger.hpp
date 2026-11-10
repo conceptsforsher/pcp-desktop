@@ -4,7 +4,7 @@
 #include <fstream>
 #include <memory>
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 class ChatLogger {
 public:

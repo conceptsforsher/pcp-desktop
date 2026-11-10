@@ -12,7 +12,7 @@ class QCheckBox;
 class QLineEdit;
 class QPushButton;
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 // In-app log viewer: shows the LOG() ring buffer (all channels) with
 // per-channel toggles and a text filter — no console needed.
@@ -33,4 +33,4 @@ private:
     std::set<uint64_t> shownSeqs_;  // seqs already in the list (dedup)
 };
 
-}  // namespace progressive::desktop
+}  // namespace pcp::desktop

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # scripts/build-pt2.sh — PineTab 2 build wrapper
-# Configures (if needed) and builds progressive-desktop natively on PineTab 2.
+# Configures (if needed) and builds pcp-desktop natively on PineTab 2.
 #
 # Usage:
 #   ./scripts/build-pt2.sh            # configure + build
@@ -37,7 +37,7 @@ fi
 echo ">> Building with -j$JOBS"
 cmake --build "$BUILD_DIR" -j"$JOBS"
 
-BINARY="$BUILD_DIR/progressive-desktop"
+BINARY="$BUILD_DIR/pcp-desktop"
 if [[ ! -f "$BINARY" ]]; then
     echo "!! Build finished but $BINARY not found"
     exit 1

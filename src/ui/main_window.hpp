@@ -29,7 +29,7 @@ class QToolBar;
 class QAction;
 class QLabel;
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 class ToolbarHandler;
 class RoomHandler;
@@ -133,4 +133,4 @@ private:
     VerificationHandler* verifyHandler_ = nullptr;
 };
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

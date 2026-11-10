@@ -6,7 +6,7 @@
 #include <functional>
 #include <memory>
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 using LifeToken = std::shared_ptr<bool>;
 
@@ -41,4 +41,4 @@ private:
     std::shared_ptr<SessionStore> store_;
 };
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

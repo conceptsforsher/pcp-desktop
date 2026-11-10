@@ -10,7 +10,7 @@ class QGraphicsPixmapItem;
 class QWheelEvent;
 class QMouseEvent;
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 // Element-style lightbox: maximized dark viewer, wheel/double-click zoom
 // centered on the cursor, click-outside to close, Save-as with the ORIGINAL
@@ -51,4 +51,4 @@ private:
     double zoomLevel_ = 1.0;
 };
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

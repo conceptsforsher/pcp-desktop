@@ -31,7 +31,7 @@
 
 #include <simdjson.h>
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 
 // Sync-time refresh of the open room's encryption flag (a room can become
@@ -110,7 +110,7 @@ void RoomHandler::onRoomClicked(const QModelIndex& idx) {
     mainWindow_->threadBtn()->show();
     loadMoreBtn_->parentWidget()->show();
     messageEdit_->setFocus();
-    mainWindow_->setWindowTitle(QString("Progressive Chat — %1").arg(QString::fromStdString(r->name)));
+    mainWindow_->setWindowTitle(QString("PCP — %1").arg(QString::fromStdString(r->name)));
 
     std::vector<std::string> senderIds;
     for (int i = 0; i < timelineModel_->rowCount(QModelIndex()); ++i) {
@@ -254,7 +254,7 @@ void RoomHandler::onLoadMoreClicked() {
                     auto body = SyncApplier::makeSystemBody(de.type, de.contentJson, stateKey);
                     if (!body.empty()) {
                         DisplayedEvent sys;
-                        sys.type = "progressive.system";
+                        sys.type = "pcp.system";
                         sys.eventId = de.eventId;
                         sys.senderName = "system";
                         sys.originServerTs = de.originServerTs;
@@ -411,4 +411,4 @@ void RoomHandler::rejectInvite(const QString& roomId) {
     });
 }
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

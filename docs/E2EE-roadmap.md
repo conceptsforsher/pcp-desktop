@@ -103,7 +103,7 @@ decrypts, cross-signing publishing verified across devices.
       derivation (sodium seed_keypair segfaults on AArch64), PrefsDialog
       sync/retrieve buttons, unit + live roundtrip tests
 
-## X1 — Qt-free progressive_engine extraction ✅ (Aug 4)
+## X1 — Qt-free pcp_engine extraction ✅ (Aug 4)
 - [x] Phase 1: engine_types.hpp (DisplayedEvent/ReactionData/RoomData, QImage out)
 - [x] Phase 2: TimelineState + RoomState; models are thin wrappers (UI-thread copies)
 - [x] Phase 3: SyncApplier (prepareRoomSyncUpdate + helpers) + sync_applier unit test

@@ -5,7 +5,7 @@
 #include <chrono>
 #include <mutex>
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 namespace {
 constexpr size_t kMaxEntries = 500;
@@ -33,4 +33,4 @@ std::vector<RoomOpenEntry> roomOpenLogSnapshot() {
     return out;
 }
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

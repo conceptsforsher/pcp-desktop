@@ -15,9 +15,9 @@
 #include <QPainterPath>
 #include <QPalette>
 #include <QTextDocument>
-#include <progressive/markdown.hpp>
+#include <pcp/markdown.hpp>
 
-namespace progressive::desktop::timeline_render {
+namespace pcp::desktop::timeline_render {
 
 using namespace timeline_layout;
 
@@ -49,7 +49,7 @@ void drawRichText(QPainter* p, const QRect& r, const QString& body,
         QString html = "<s style='color:" + Design::deletedTextColor.name() + ";'>" + body.toHtmlEscaped() + "</s>";
         doc.setHtml(html);
     } else if (msgtype == "m.text" || msgtype == "m.emote" || msgtype.isEmpty()) {
-        std::string html = progressive::markdownToHtml(body.toStdString());
+        std::string html = pcp::markdownToHtml(body.toStdString());
         if (html.empty()) doc.setPlainText(body);
         else doc.setHtml(QString::fromStdString(html));
         if (isOutgoing)
@@ -179,7 +179,7 @@ void drawSystemRow(QPainter* p, const QRect& rect, const QModelIndex& idx,
     p->setFont(f);
 
     QString text;
-    if (type == "progressive.system") {
+    if (type == "pcp.system") {
         QString body = idx.data(TimelineModel::BodyRole).toString();
         int64_t ts = idx.data(TimelineModel::TimeRole).toLongLong();
         QString timeStr = formatTime(ts);
@@ -506,4 +506,4 @@ void drawMessageBubble(QPainter* p, const QRect& rowRect, const QModelIndex& idx
     }
 }
 
-} // namespace progressive::desktop::timeline_render
+} // namespace pcp::desktop::timeline_render

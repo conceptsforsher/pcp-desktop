@@ -22,7 +22,7 @@ static int failures = 0;
 } while (0)
 
 static void test_megolm_empty_pickle() {
-    progressive::desktop::MegolmStore store;
+    pcp::desktop::MegolmStore store;
     std::string pkl = store.pickleAll("empty-key");
     CHECK(pkl == "[]" || pkl.empty(),
         "pickleAll on empty store returns [] or empty");
@@ -33,13 +33,13 @@ static void test_megolm_empty_pickle() {
 }
 
 static void test_megolm_garbage_unpickle() {
-    progressive::desktop::MegolmStore store;
+    pcp::desktop::MegolmStore store;
     bool ok = store.unpickleAll("garbage-key", "not valid json at all");
     CHECK(!ok, "unpickleAll with garbage data returns false");
 }
 
 static void test_stale_device_cap() {
-    progressive::desktop::Decryptor dec;
+    pcp::desktop::Decryptor dec;
     dec.init();
 
     // Insert 1000 entries — should all be stale
@@ -66,7 +66,7 @@ static void test_stale_device_cap() {
 // Export/import roundtrip: outbound session appears in the envelope; a
 // hand-built envelope imports into the store.
 static void test_key_export_import() {
-    progressive::desktop::Decryptor dec;
+    pcp::desktop::Decryptor dec;
     CHECK(dec.init(), "xport: decryptor init");
 
     // Create an outbound session -> the self-echo inbound appears in the export.
@@ -89,7 +89,7 @@ static void test_key_export_import() {
     CHECK(!encContent.empty(), "xport: encrypted a message");
 
     // Full roundtrip: import into a second decryptor and DECRYPT the message.
-    progressive::desktop::Decryptor dec2;
+    pcp::desktop::Decryptor dec2;
     CHECK(dec2.init(), "xport: decryptor2 init");
     int n = dec2.importKeys(envelope);
     CHECK(n > 0, "xport: import returns count > 0");
@@ -104,7 +104,7 @@ static void test_key_export_import() {
 // Rotation: with rotation_period_msgs=1, sending a message then re-requesting
 // the outbound session must yield a NEW session id.
 static void test_megolm_rotation() {
-    progressive::desktop::Decryptor dec;
+    pcp::desktop::Decryptor dec;
     CHECK(dec.init(), "rot: init");
     std::string s1 = dec.getOrCreateOutboundSession("!r:test");
     CHECK(!s1.empty(), "rot: session created");
@@ -126,28 +126,28 @@ static void test_megolm_rotation() {
 
 // Cross-signing: keygen, sign/verify roundtrip, tamper rejection, builders.
 static void test_cross_signing() {
-    auto keys = progressive::desktop::generateCrossSigningKeys();
+    auto keys = pcp::desktop::generateCrossSigningKeys();
     CHECK(!keys.masterPub.empty() && !keys.selfPriv.empty(), "xs: keys generated");
     CHECK(keys.selfPub != keys.masterPub && keys.selfPub != keys.userPub,
           "xs: distinct keypairs");
 
     std::string msg = "hello-cross-sign";
-    std::string sig = progressive::desktop::signEd25519(keys.masterPriv, msg);
+    std::string sig = pcp::desktop::signEd25519(keys.masterPriv, msg);
     CHECK(!sig.empty(), "xs: signature produced");
-    CHECK(progressive::desktop::verifyEd25519(keys.masterPub, msg, sig),
+    CHECK(pcp::desktop::verifyEd25519(keys.masterPub, msg, sig),
           "xs: signature verifies");
-    CHECK(!progressive::desktop::verifyEd25519(keys.masterPub, msg + "x", sig),
+    CHECK(!pcp::desktop::verifyEd25519(keys.masterPub, msg + "x", sig),
           "xs: tampered message rejected");
-    CHECK(!progressive::desktop::verifyEd25519(keys.selfPub, msg, sig),
+    CHECK(!pcp::desktop::verifyEd25519(keys.selfPub, msg, sig),
           "xs: wrong key rejected");
 
-    std::string content = progressive::desktop::buildCrossSigningContent(
+    std::string content = pcp::desktop::buildCrossSigningContent(
         "m.cross_signing.self_signing", keys.selfPub,
         keys.masterPub, keys.masterPriv, "@alice:test");
     CHECK(content.find("\"signatures\"") != std::string::npos
           && content.find("@alice:test") != std::string::npos,
           "xs: content has signatures map with our user");
-    std::string canonical = progressive::desktop::crossSigningKeysCanonical(keys.selfPub);
+    std::string canonical = pcp::desktop::crossSigningKeysCanonical(keys.selfPub);
     CHECK(canonical.find("ed25519:" + keys.selfPub) != std::string::npos,
           "xs: canonical keys object");
 
@@ -163,19 +163,19 @@ static void test_cross_signing() {
     }
     CHECK(!contentSig.empty(), "xs: extracted content signature");
     // The signature is over the FULL canonical CrossSigningKey (keys + usage + user_id).
-    std::string fullCanonical = progressive::desktop::crossSigningKeyCanonical(
+    std::string fullCanonical = pcp::desktop::crossSigningKeyCanonical(
         keys.selfPub, "self_signing", "@alice:test");
-    CHECK(progressive::desktop::verifyEd25519(keys.masterPub, fullCanonical, contentSig),
+    CHECK(pcp::desktop::verifyEd25519(keys.masterPub, fullCanonical, contentSig),
           "xs: content signature verifies with the master key");
     // And it must NOT verify over the keys-only canonical (regression guard).
-    CHECK(!progressive::desktop::verifyEd25519(keys.masterPub, canonical, contentSig),
+    CHECK(!pcp::desktop::verifyEd25519(keys.masterPub, canonical, contentSig),
           "xs: keys-only canonical does NOT verify (full canonical required)");
 }
 
 // Trust computation: SSK-signed device -> Trusted, unsigned -> Unverified,
 // no cross-signing published -> empty result.
 static void test_trust_computation() {
-    using namespace progressive::desktop;
+    using namespace pcp::desktop;
     auto keys = generateCrossSigningKeys();
 
     // A device whose keys are SSK-signed (canonical device_keys).
@@ -244,7 +244,7 @@ static void test_trust_computation() {
 
 // Verified-devices lifecycle: save -> clear -> gone.
 static void test_verified_devices_clear() {
-    progressive::desktop::SessionStore store;
+    pcp::desktop::SessionStore store;
     if (!store.open("/tmp/pd_test_verified.db")) { CHECK(false, "vd: open store"); return; }
     CHECK(store.saveVerifiedDevice("@alice:test", "DEVA"), "vd: save verified device");
     CHECK(store.isDeviceVerified("@alice:test", "DEVA"), "vd: device verified");
@@ -256,7 +256,7 @@ static void test_verified_devices_clear() {
 
 // Phase 7: recovery key + backup crypto roundtrip.
 static void test_key_backup_crypto() {
-    using namespace progressive::desktop;
+    using namespace pcp::desktop;
 
     // base58 roundtrip.
     std::vector<uint8_t> bytes = {0x00, 0x01, 0x02, 0xFE, 0xFF};
@@ -303,7 +303,7 @@ static void test_key_backup_crypto() {
 // Phase 7: REAL megolm export -> backup encrypt -> restore decrypt -> import
 // into a second decryptor -> decrypt a real message. Plus the store registry.
 static void test_key_backup_full_roundtrip() {
-    using namespace progressive::desktop;
+    using namespace pcp::desktop;
 
     // Sender decryptor with a real session + message.
     Decryptor sender;
@@ -380,7 +380,7 @@ static void test_key_backup_full_roundtrip() {
 
 // SSSS: key derivation + secret encrypt/decrypt roundtrip + verification.
 static void test_ssss_crypto() {
-    using namespace progressive::desktop;
+    using namespace pcp::desktop;
 
     auto seed = recoveryKeySeed(generateRecoveryKey());
     std::string keyId = generateSsssKeyId();

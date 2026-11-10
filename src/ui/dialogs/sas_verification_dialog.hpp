@@ -8,7 +8,7 @@
 class QLabel;
 class QPushButton;
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 struct VerificationEmoji;
 
@@ -36,4 +36,4 @@ private:
     QPushButton* cancelBtn_ = nullptr;
 };
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

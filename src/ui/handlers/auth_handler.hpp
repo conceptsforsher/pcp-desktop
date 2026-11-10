@@ -7,7 +7,7 @@
 
 class QLabel;
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 class MatrixClient;
 class SessionStore;
@@ -41,4 +41,4 @@ private:
     QLabel* statusLabel_;
 };
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

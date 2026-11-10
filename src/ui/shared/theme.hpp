@@ -1,4 +1,4 @@
-// src/ui/theme.hpp — dark theme + design tokens for progressive-desktop.
+// src/ui/theme.hpp — dark theme + design tokens for pcp-desktop.
 #pragma once
 
 #include <QColor>
@@ -7,7 +7,7 @@
 
 class QApplication;
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 // Design tokens — single source of truth for all visual constants.
 // Used by timeline delegate, room list delegate, and future UI components.
@@ -118,4 +118,4 @@ inline QColor colorFromId(const QString& id) {
     return QColor::fromHsl(static_cast<int>(hash % 360), 180, 140);
 }
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

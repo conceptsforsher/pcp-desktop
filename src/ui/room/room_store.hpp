@@ -10,7 +10,7 @@
 #include <QWidget>
 #include "../room_list_model.hpp"
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 using LifeToken = std::shared_ptr<bool>;
 
@@ -79,4 +79,4 @@ std::string msgBody(std::string_view json);
 std::string extractThreadRootId(std::string_view contentJson);
 std::string extractReplyToId(std::string_view contentJson);
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

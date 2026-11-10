@@ -16,7 +16,7 @@
 
 class QListView;
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 class ImageLoader;
 
@@ -111,4 +111,4 @@ private:
     QPointer<QListView> view_;
 };
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

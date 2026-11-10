@@ -19,7 +19,7 @@
 
 #include <chrono>
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 // ---- persistence helpers ----
 
@@ -222,7 +222,7 @@ void ProxySettingsWidget::runTest() {
         // Public well-known probe, through the global proxy (applyNow above
         // already pushed the user's settings into the core — if the proxy is
         // down this request FAILS instead of falling back to direct).
-        auto resp = progressive::desktop::httpGet(url, {}, 20000);
+        auto resp = pcp::desktop::httpGet(url, {}, 20000);
         auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(
             std::chrono::steady_clock::now() - t0).count();
         QMetaObject::invokeMethod(self, [self, url, resp, ms]() {
@@ -242,4 +242,4 @@ void ProxySettingsWidget::runTest() {
     });
 }
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

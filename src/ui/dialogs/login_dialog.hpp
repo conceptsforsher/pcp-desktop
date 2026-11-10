@@ -15,7 +15,7 @@
 #include <QPushButton>
 #include <QCheckBox>
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 class ProxySettingsWidget;
 
@@ -47,4 +47,4 @@ private:
         ProxySettingsWidget* proxyWidget_ = nullptr;
 };
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

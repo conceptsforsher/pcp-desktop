@@ -11,7 +11,7 @@
 #include <QScrollArea>
 #include <QFrame>
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 ColorSettingsDialog::ColorSettingsDialog(QWidget* parent) : QDialog(parent) {
     setWindowTitle("Colors");
@@ -95,4 +95,4 @@ void ColorSettingsDialog::onSave() {
     Theme::reapply();
 }
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

@@ -1,4 +1,4 @@
-// tests/bench_sync_parse.cpp — benchmark progressive_native's slow JSON parser
+// tests/bench_sync_parse.cpp — benchmark pcp_native's slow JSON parser
 // vs the desktop fast_sync.cpp simdjson-based parser.
 //
 // Usage:
@@ -26,9 +26,9 @@
 #include "core/session_store.hpp"
 #include "core/fast_sync.hpp"
 
-#include <progressive/sync_models.hpp>
+#include <pcp/sync_models.hpp>
 
-using namespace progressive::desktop;
+using namespace pcp::desktop;
 
 namespace {
 
@@ -56,10 +56,10 @@ void writeFile(const std::string& path, const std::string& content) {
 
 int record() {
     SessionStore s;
-    s.open("/tmp/progressive-desktop-test.db");
+    s.open("/tmp/pcp-desktop-test.db");
     auto acct_opt = s.loadAccount();
     if (!acct_opt) {
-        std::cerr << "no saved session. Run: ./build/progressive-desktop --login user pass\n";
+        std::cerr << "no saved session. Run: ./build/pcp-desktop --login user pass\n";
         return 1;
     }
     MatrixClient c;
@@ -104,13 +104,13 @@ int bench() {
 
     std::cout << "fixture: " << json.size() << " bytes\n\n";
 
-    // --- Slow path: progressive_native parser ---
+    // --- Slow path: pcp_native parser ---
     long rssBefore = getRssKb();
     std::vector<std::chrono::microseconds> slowTimes;
     slowTimes.reserve(BENCH_ITERS);
     for (int i = 0; i < BENCH_ITERS; ++i) {
         auto t0 = std::chrono::high_resolution_clock::now();
-        auto resp = progressive::parseSyncResponse(json);
+        auto resp = pcp::parseSyncResponse(json);
         auto t1 = std::chrono::high_resolution_clock::now();
         slowTimes.push_back(std::chrono::duration_cast<std::chrono::microseconds>(t1 - t0));
         if (i == 0) {
@@ -150,7 +150,7 @@ int bench() {
     int64_t fastMed = medianUs(fastTimes);
 
     std::cout << "\n=== Benchmark results (" << BENCH_ITERS << " iters each) ===\n";
-    std::cout << "  progressive_native parser (slow):  median " << slowMed << " us";
+    std::cout << "  pcp_native parser (slow):  median " << slowMed << " us";
     std::cout << "  (RSS " << (rssAfterSlow - rssBefore) << " KB delta)\n";
     std::cout << "  simdjson fast path:                 median " << fastMed << " us";
     std::cout << "  (RSS " << (rssAfterFast - rssAfterSlow) << " KB delta)\n";

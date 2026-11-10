@@ -17,7 +17,7 @@
 #include <QWheelEvent>
 #include <QShowEvent>
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 namespace {
 inline constexpr int kViewerW = 800;
@@ -163,7 +163,7 @@ void ImageViewerDialog::openExternally() {
     if (image_.isNull()) return;
     QString tmpDir = QStandardPaths::writableLocation(QStandardPaths::TempLocation);
     if (tmpDir.isEmpty()) tmpDir = "/tmp";
-    QString path = tmpDir + "/progressive-desktop-image" + fallbackSuffix(suggestedName_);
+    QString path = tmpDir + "/pcp-desktop-image" + fallbackSuffix(suggestedName_);
     bool ok;
     if (!rawBytes_.isEmpty()) {
         QFile f(path);
@@ -179,4 +179,4 @@ void ImageViewerDialog::openExternally() {
     QDesktopServices::openUrl(QUrl::fromLocalFile(path));
 }
 
-}  // namespace progressive::desktop
+}  // namespace pcp::desktop

@@ -13,7 +13,7 @@
 #include <QStatusBar>
 #include <QWidget>
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 VerificationHandler::VerificationHandler(QWidget* parent)
     : QObject(parent) {
@@ -163,4 +163,4 @@ void VerificationHandler::closeDialog() {
     dialogTxnId_.clear();
 }
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

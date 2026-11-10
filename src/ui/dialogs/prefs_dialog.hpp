@@ -9,11 +9,11 @@
 #include <functional>
 #include <memory>
 
-namespace progressive::desktop { class SessionStore; }
+namespace pcp::desktop { class SessionStore; }
 
 class QVBoxLayout;
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 class MatrixClient;
 class VerificationHandler;
@@ -149,4 +149,4 @@ private:
     QLabel* xsStatusLabel_ = nullptr;
 };
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

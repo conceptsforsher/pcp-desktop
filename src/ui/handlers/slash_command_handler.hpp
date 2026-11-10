@@ -6,7 +6,7 @@
 #include <string>
 #include <vector>
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 class MatrixClient;
 class TimelineModel;
@@ -54,4 +54,4 @@ private:
     std::vector<Command> commands_;
 };
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop
