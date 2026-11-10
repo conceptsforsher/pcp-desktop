@@ -11,7 +11,7 @@
 #include <ctime>
 #include <cstdio>
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 RoomActivityLogDialog::RoomActivityLogDialog(QWidget* parent)
     : QDialog(parent) {
@@ -53,4 +53,4 @@ RoomActivityLogDialog::RoomActivityLogDialog(QWidget* parent)
     connect(closeBtn, &QPushButton::clicked, this, &QDialog::accept);
 }
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

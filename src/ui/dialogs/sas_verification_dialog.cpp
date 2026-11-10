@@ -8,7 +8,7 @@
 #include <QPushButton>
 #include <QFrame>
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 SasVerificationDialog::SasVerificationDialog(const std::string& txnId,
     const std::string& otherUser, const std::vector<VerificationEmoji>& emojis,
@@ -67,4 +67,4 @@ void SasVerificationDialog::setStatus(const QString& text) {
     if (statusLabel_) statusLabel_->setText(text);
 }
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

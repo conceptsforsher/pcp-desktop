@@ -13,9 +13,9 @@
 #include <QJsonArray>
 #include "core/thread_pool.hpp"
 
-#include <progressive/json_parser.hpp>
+#include <pcp/json_parser.hpp>
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 namespace {
 inline constexpr int kDirectoryW   = 700;
@@ -127,10 +127,10 @@ void RoomDirectoryDialog::doSearch(const std::string& query, const std::string& 
                 std::string obj = body.substr(objStart, objEnd - objStart);
 
                 // Extract fields
-                auto roomId = progressive::parseJsonStringValue(obj, "room_id");
-                auto name = progressive::parseJsonStringValue(obj, "name");
-                auto topic = progressive::parseJsonStringValue(obj, "topic");
-                auto alias = progressive::parseJsonStringValue(obj, "canonical_alias");
+                auto roomId = pcp::parseJsonStringValue(obj, "room_id");
+                auto name = pcp::parseJsonStringValue(obj, "name");
+                auto topic = pcp::parseJsonStringValue(obj, "topic");
+                auto alias = pcp::parseJsonStringValue(obj, "canonical_alias");
 
                 // Extract member count
                 auto mcPos = obj.find("\"num_joined_members\"");
@@ -209,4 +209,4 @@ void RoomDirectoryDialog::onJoinClicked(QListWidgetItem* item) {
     });
 }
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

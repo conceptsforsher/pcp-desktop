@@ -5,7 +5,7 @@
 #include <QSystemTrayIcon>
 #include <memory>
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 class DesktopNotifier : public QObject {
     Q_OBJECT
@@ -32,4 +32,4 @@ private:
     QSystemTrayIcon* tray_ = nullptr;
 };
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

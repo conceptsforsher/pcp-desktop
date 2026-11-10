@@ -7,7 +7,7 @@
 #include <QStringList>
 #include <vector>
 
-namespace progressive::desktop::timeline_layout {
+namespace pcp::desktop::timeline_layout {
 
 inline constexpr int kAvatarSize    = 36;
 inline constexpr int kMargin        = 8;
@@ -100,4 +100,4 @@ int ds(double pt);
 int calcTextHeight(const QString& body, const QString& msgtype, int textWidth);
 BubbleLayout computeLayout(const QModelIndex& idx, const QString& myUserId, int bubbleW);
 
-} // namespace progressive::desktop::timeline_layout
+} // namespace pcp::desktop::timeline_layout

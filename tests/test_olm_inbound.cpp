@@ -1,5 +1,5 @@
 #include <olm/olm.h>
-#include <progressive/olm.hpp>
+#include <pcp/olm.hpp>
 #include "core/crypto/olm_account.hpp"
 #include <iostream>
 #include <string>
@@ -197,7 +197,7 @@ static void test_real_account_roundtrip(const std::string& pickleRaw, const std:
     // Step 1: Load Bob's real account from session.db
     std::cout << "  pickle raw size=" << pickleRaw.size() << " key=" << pickleKey << "\n";
 
-    progressive::OlmAccount bob;
+    pcp::OlmAccount bob;
     auto up = bob.unpickle(pickleKey, pickleRaw);
     CHECK(up.success, "Unpickle Bob's real account");
 
@@ -216,11 +216,11 @@ static void test_real_account_roundtrip(const std::string& pickleRaw, const std:
     std::cout << "  Bob fresh OTK: " << b64Key.substr(0, 8) << "...\n";
 
     // Step 3: Alice creates outbound session using Bob's fresh OTK
-    progressive::OlmAccount aliceAccount;
+    pcp::OlmAccount aliceAccount;
     auto a = aliceAccount.create();
     CHECK(a.success, "Alice account created");
 
-    progressive::OlmSession aliceSession;
+    pcp::OlmSession aliceSession;
     auto out = aliceSession.createOutbound(aliceAccount, bobCurveB64, b64Key);
     CHECK(out.success, "Alice createOutbound with Bob's real account + fresh OTK");
 
@@ -232,7 +232,7 @@ static void test_real_account_roundtrip(const std::string& pickleRaw, const std:
     // Step 4: Bob's real account receives and decrypts
     // createInbound mutates the pre-key buffer — copy before, restore before decrypt
     std::string encCopy = enc.data;
-    progressive::OlmSession bobSession;
+    pcp::OlmSession bobSession;
     auto in = bobSession.createInbound(bob, encCopy);
     CHECK(in.success, "Bob real account createInbound");
 

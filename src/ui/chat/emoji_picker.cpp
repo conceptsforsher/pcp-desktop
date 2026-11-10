@@ -13,7 +13,7 @@
 #include <algorithm>
 #include <cstdio>
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 namespace {
 inline constexpr int kPickerW      = 420;
@@ -396,4 +396,4 @@ void EmojiPicker::onEmojiClicked(const QString& emoji) {
     accept();
 }
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

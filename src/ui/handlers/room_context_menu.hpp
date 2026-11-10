@@ -9,7 +9,7 @@ class QListView;
 class QPoint;
 class QLabel;
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 class MatrixClient;
 class RoomMembersDialog;
@@ -47,4 +47,4 @@ private:
     QPointer<MainWindow> mw_;
 };
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

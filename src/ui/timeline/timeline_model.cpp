@@ -6,9 +6,9 @@
 #include <QScrollBar>
 #include <QListView>
 
-Q_DECLARE_METATYPE(progressive::desktop::ReactionData)
+Q_DECLARE_METATYPE(pcp::desktop::ReactionData)
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 
 
@@ -234,4 +234,4 @@ int TimelineModel::findRow(const std::string& eventId) const {
     return state_.findRow(eventId);
 }
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

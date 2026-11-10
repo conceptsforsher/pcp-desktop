@@ -13,7 +13,7 @@ static int failures = 0;
     else { std::cout << "ok: " << msg << "\n"; } \
 } while (0)
 
-using namespace progressive::desktop;
+using namespace pcp::desktop;
 
 int main() {
     std::string k1, iv1, k2, iv2;

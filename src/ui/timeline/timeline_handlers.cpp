@@ -18,7 +18,7 @@
 #include "core/thread_pool.hpp"
 #include <cstdio>
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 void handleReaction(QPointer<QWidget> parent, const std::shared_ptr<MatrixClient>& client,
                      const std::string& roomId, const std::string& eventId,
@@ -158,4 +158,4 @@ void handleCopyLink(QPointer<QWidget> parent, const std::string& roomId,
     if (statusLabel) statusLabel->setText("Permalink copied.");
 }
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

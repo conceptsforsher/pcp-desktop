@@ -6,7 +6,7 @@
 class QLineEdit;
 class QListWidget;
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 class RoomListModel;
 
@@ -27,4 +27,4 @@ private:
     QListWidget* roomList_;
 };
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

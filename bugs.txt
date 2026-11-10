@@ -1,4 +1,4 @@
-# Progressive Chat — bug tracker (running notes)
+# PCP — bug tracker (running notes)
 
 Format: one paragraph per issue, newest at the bottom, with a timestamp.
 Fixed issues are marked DONE. This file is appended to, never rewritten.
@@ -6,7 +6,7 @@ Fixed issues are marked DONE. This file is appended to, never rewritten.
 ---
 
 ## 2026-08-10 — Proxy (Tor/I2P) settings UI
-DONE. The desktop had no way to configure the proxy that progressive-cli
+DONE. The desktop had no way to configure the proxy that pcp-cli
 already supported. Added a shared ProxySettingsWidget (login window +
 Preferences -> Network): type socks5h (Tor, DNS via proxy — recommended
 default) / socks5 (local DNS — visible warning that hostnames leak) / http,

@@ -19,10 +19,10 @@ static int failures = 0;
     else { std::cout << "ok: " << msg << "\n"; } \
 } while (0)
 
-using progressive::desktop::VerificationManager;
-using progressive::desktop::VerificationState;
-using progressive::desktop::CancelCode;
-using progressive::desktop::sasCreate;
+using pcp::desktop::VerificationManager;
+using pcp::desktop::VerificationState;
+using pcp::desktop::CancelCode;
+using pcp::desktop::sasCreate;
 
 namespace {
 

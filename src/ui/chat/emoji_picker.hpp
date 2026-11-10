@@ -8,7 +8,7 @@
 #include <QVector>
 #include <QHash>
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 struct EmojiEntry {
     QString emoji;
@@ -39,4 +39,4 @@ private:
     void buildGrid();
 };
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

@@ -9,7 +9,7 @@
 #include <QComboBox>
 #include "core/matrix_client.hpp"
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 class RoomSettingsDialog : public QDialog {
     Q_OBJECT
@@ -40,4 +40,4 @@ private:
     void showMemberMenu(const QString& userId, const QPoint& globalPos);
 };
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

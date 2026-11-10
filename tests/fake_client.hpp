@@ -3,7 +3,7 @@
 #include <string>
 #include <QString>
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 struct FakeResult {
     bool ok = false;

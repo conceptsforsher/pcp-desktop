@@ -16,7 +16,7 @@
 #include <QThread>
 #include <QString>
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 // Bounds the GIF movie pool — otherwise it grows without limit on small devices.
 static const int kMaxCachedMovies = 20;
@@ -342,4 +342,4 @@ QImage ImageLoader::getCached(const std::string& mxcUrl) const {
     return {};
 }
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

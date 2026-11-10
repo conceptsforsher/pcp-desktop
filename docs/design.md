@@ -1,6 +1,6 @@
 # docs/design.md — Design Tokens (single source of truth)
 
-> Written Aug 2, 2026 so a future GTK frontend (progressive-gui-gtk) can match the Qt UI
+> Written Aug 2, 2026 so a future GTK frontend (pcp-gui-gtk) can match the Qt UI
 > without reading code. Source of truth is the code: `src/ui/shared/theme.hpp` (colors +
 > dimensions) and `src/ui/timeline/timeline_layout.hpp` (layout constants). If code changes,
 > update this doc. Dark theme is current; light theme planned (auto = follow system).

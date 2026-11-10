@@ -11,7 +11,7 @@
 #include <string>
 #include "core/matrix_client.hpp"
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 struct MemberInfo {
     std::string userId;
@@ -20,7 +20,7 @@ struct MemberInfo {
     std::string membership;
 };
 
-namespace progressive::desktop { class SessionStore; }
+namespace pcp::desktop { class SessionStore; }
 
 class TimelineModel;
 
@@ -66,4 +66,4 @@ private:
     void startVerifyForUser(const QString& userId);
 };
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

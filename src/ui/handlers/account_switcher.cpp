@@ -16,7 +16,7 @@
 #include <QLabel>
 #include <QWidget>
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 AccountSwitcher::AccountSwitcher(std::shared_ptr<MatrixClient> client, std::shared_ptr<SessionStore> store, SyncEngine* sync,
                     QComboBox* accountCombo, QLabel* userLabel, QLabel* statusLabel,
@@ -177,4 +177,4 @@ int AccountSwitcher::currentAccountIndex() {
     return 0;
 }
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

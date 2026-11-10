@@ -20,7 +20,7 @@ class QLineEdit;
 class QPushButton;
 class QSpinBox;
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 struct ProxyConfig;
 
@@ -67,4 +67,4 @@ private:
     std::function<std::string()> testUrlFn_;
 };
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

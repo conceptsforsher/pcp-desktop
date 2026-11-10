@@ -1,7 +1,7 @@
 // tests/test_phase1.cpp — Phase 1 unit tests (no Qt, no network).
 //
 // Tests the parts that can be exercised without a live homeserver:
-//   - progressive_native parser modules (login_flow, well_known, matrix_error, sync_models)
+//   - pcp_native parser modules (login_flow, well_known, matrix_error, sync_models)
 //   - SessionStore (in-memory SQLite)
 //   - Audit classifier consistency
 //
@@ -15,16 +15,16 @@
 
 #include "core/session_store.hpp"
 
-#include <progressive/login_flow.hpp>
-#include <progressive/matrix_error.hpp>
-#include <progressive/sync_models.hpp>
-#include <progressive/well_known.hpp>
-#include <progressive/json_parser.hpp>
+#include <pcp/login_flow.hpp>
+#include <pcp/matrix_error.hpp>
+#include <pcp/sync_models.hpp>
+#include <pcp/well_known.hpp>
+#include <pcp/json_parser.hpp>
 
 #include "core/debug_log.hpp"
 
-using namespace progressive::desktop;
-using namespace progressive;
+using namespace pcp::desktop;
+using namespace pcp;
 
 static int failures = 0;
 #define CHECK(cond, msg) do { \
@@ -34,31 +34,31 @@ static int failures = 0;
 
 static void test_well_known() {
     std::cout << "--- test_well_known ---\n";
-    auto r = progressive::parseServerDiscovery(
+    auto r = pcp::parseServerDiscovery(
         R"({"m.homeserver":{"base_url":"https://matrix.example.org"}})");
     CHECK(r.isValid, "well-known with homeserver → valid");
     CHECK(r.homeserverBaseUrl == "https://matrix.example.org", "extracts base_url");
 
-    auto r2 = progressive::parseServerDiscovery("{}");
+    auto r2 = pcp::parseServerDiscovery("{}");
     CHECK(!r2.isValid, "empty well-known → invalid");
 
-    auto formatted = progressive::formatServerUrl("matrix.org");
+    auto formatted = pcp::formatServerUrl("matrix.org");
     CHECK(formatted == "https://matrix.org", "formatServerUrl adds https://");
 
-    auto formatted2 = progressive::formatServerUrl("https://matrix.org/");
+    auto formatted2 = pcp::formatServerUrl("https://matrix.org/");
     CHECK(formatted2 == "https://matrix.org", "formatServerUrl strips trailing slash");
 }
 
 static void test_login_flow_parse() {
     std::cout << "--- test_login_flow_parse ---\n";
-    auto r = progressive::parseLoginFlows(
+    auto r = pcp::parseLoginFlows(
         R"({"flows":[{"type":"m.login.password"},{"type":"m.login.sso","identity_providers":[{"id":"google","name":"Google"}]}]})");
     CHECK(r.flows.size() >= 2, "parses 2 flows");
 }
 
 static void test_matrix_error_parse() {
     std::cout << "--- test_matrix_error_parse ---\n";
-    auto e = progressive::parseMatrixErrorJson(
+    auto e = pcp::parseMatrixErrorJson(
         R"({"errcode":"M_FORBIDDEN","error":"You are not allowed to do that"})");
     CHECK(e.valid, "parsed error is valid");
     CHECK(e.code == "M_FORBIDDEN", "extracts errcode");
@@ -68,12 +68,12 @@ static void test_matrix_error_parse() {
 static void test_sync_parse_minimal() {
     std::cout << "--- test_sync_parse_minimal ---\n";
     // Empty sync response — just nextBatch
-    auto r = progressive::parseSyncResponse(R"({"next_batch":"s1_123","rooms":{}})");
+    auto r = pcp::parseSyncResponse(R"({"next_batch":"s1_123","rooms":{}})");
     CHECK(r.nextBatch == "s1_123", "extracts next_batch");
     CHECK(r.rooms.join.empty(), "no joined rooms");
 
     // Sync with one joined room and one timeline event
-    auto r2 = progressive::parseSyncResponse(
+    auto r2 = pcp::parseSyncResponse(
         R"({"next_batch":"s1_124","rooms":{"join":{"!room:server":{"timeline":{"events":[{"type":"m.room.message","content":{"body":"hi","msgtype":"m.text"}}],"limited":false}}}}})");
     CHECK(r2.nextBatch == "s1_124", "extracts next_batch 2");
     CHECK(r2.rooms.join.size() == 1, "one joined room");

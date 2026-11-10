@@ -24,7 +24,7 @@
 #include <QSizePolicy>
 #include <QAbstractItemView>
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 namespace {
 inline constexpr int kRoomListMinW = 280;
@@ -184,4 +184,4 @@ UILayout buildMainWindowLayout(QWidget* window,
     return ui;
 }
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

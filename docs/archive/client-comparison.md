@@ -1,13 +1,13 @@
 # docs/client-comparison.md — Matrix Client Feature Comparison
 
-> Research: July 27, 2026. Shows where Progressive Chat stands vs. other Matrix clients.
+> Research: July 27, 2026. Shows where PCP stands vs. other Matrix clients.
 > Sources: GitHub READMEs, changelogs, Matrix v1.19 spec, explore agent research.
 
 ---
 
 ## Feature Comparison
 
-| Feature | Progressive Chat (Jul 27) | Nheko 0.12 | FluffyChat 2.4 | Element Desktop | Cinny 4.5 |
+| Feature | PCP (Jul 27) | Nheko 0.12 | FluffyChat 2.4 | Element Desktop | Cinny 4.5 |
 |---|---|---|---|---|---|
 | **Platform** | Qt6 Widgets (C++20) | Qt6 (C++17) | Flutter | Web + Electron | Web (React) |
 | **Target** | PineTab 2 / Desktop | Desktop (Linux/Mac/Win) | Mobile + Desktop | Desktop | Web |
@@ -67,11 +67,11 @@ Nheko current (v0.12.1, Aug 2025) added:
 - Custom sticker/emote packs
 - jdenticon avatars
 
-**Progressive Chat vs Nheko alpha:** We have everything Nheko's alpha had PLUS E2EE recovery chain, self-echo, multi-account (partially), image viewer, reactions, thread support (buggy), message edit/delete. We're missing keyboard nav, cross-signing, and outbound session persistence.
+**PCP vs Nheko alpha:** We have everything Nheko's alpha had PLUS E2EE recovery chain, self-echo, multi-account (partially), image viewer, reactions, thread support (buggy), message edit/delete. We're missing keyboard nav, cross-signing, and outbound session persistence.
 
 ---
 
-## What Makes Progressive Chat Unique
+## What Makes PCP Unique
 
 | Feature | Details |
 |---|---|

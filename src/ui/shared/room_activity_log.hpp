@@ -10,7 +10,7 @@
 #include <string>
 #include <vector>
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 struct RoomOpenEntry {
     int64_t ts = 0;          // unix ms
@@ -24,4 +24,4 @@ void logRoomOpen(const std::string& roomId, const std::string& roomName);
 // Snapshot of the recorded entries, newest first.
 std::vector<RoomOpenEntry> roomOpenLogSnapshot();
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

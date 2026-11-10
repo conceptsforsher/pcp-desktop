@@ -1,4 +1,4 @@
-# Progressive Chat — Development Progress Tracker
+# PCP — Development Progress Tracker
 
 > Personal motivation log. Not shipped. See DREAM.md for vision, AGENTS.md for rules.
 

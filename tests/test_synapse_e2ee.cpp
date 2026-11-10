@@ -41,14 +41,14 @@ static int failures = 0;
     else { std::cout << "ok: " << msg << "\n"; } \
 } while (0)
 
-using namespace progressive::desktop;
+using namespace pcp::desktop;
 
 static const char* envOr(const char* name, const char* def) {
     const char* v = std::getenv(name);
     return (v && *v) ? v : def;
 }
 
-// ---- Small JSON helpers (no progressive_native parser dependency) ----
+// ---- Small JSON helpers (no pcp_native parser dependency) ----
 
 static std::string jsonStr(const simdjson::dom::element& el, const char* key) {
     auto v = el[key].get_string();
@@ -148,15 +148,15 @@ static bool loginUser(TestUser& u, const std::string& hs, const std::string& una
 
 // Generate + publish cross-signing keys (endpoint, UIA retry) + re-upload
 // device_keys with the SSK signature. Returns the keys (empty on failure).
-static progressive::desktop::CrossSigningKeys publishCrossSigning(TestUser& u) {
-    auto keys = progressive::desktop::generateCrossSigningKeys();
+static pcp::desktop::CrossSigningKeys publishCrossSigning(TestUser& u) {
+    auto keys = pcp::desktop::generateCrossSigningKeys();
     if (keys.masterPub.empty()) return {};
-    auto master = progressive::desktop::buildCrossSigningContent(
+    auto master = pcp::desktop::buildCrossSigningContent(
         "m.cross_signing.master", keys.masterPub, "", "", u.userId);
-    auto self = progressive::desktop::buildCrossSigningContent(
+    auto self = pcp::desktop::buildCrossSigningContent(
         "m.cross_signing.self_signing", keys.selfPub,
         keys.masterPub, keys.masterPriv, u.userId);
-    auto user = progressive::desktop::buildCrossSigningContent(
+    auto user = pcp::desktop::buildCrossSigningContent(
         "m.cross_signing.user_signing", keys.userPub,
         keys.masterPub, keys.masterPriv, u.userId);
     std::string body = "{\"master_key\":" + master
@@ -375,10 +375,10 @@ static bool test_multiaccount_multidevice(const std::string& hs,
         std::vector<uint8_t> blob;
         for (int i = 0; i < 128; ++i) blob.push_back(static_cast<uint8_t>((i * 7) & 0xff));
         std::string key, iv;
-        CHECK(progressive::desktop::generateMediaKeyIv(key, iv), "media: key+iv generated");
-        auto cipher = progressive::desktop::aesCtrCrypt(blob, key, iv);
+        CHECK(pcp::desktop::generateMediaKeyIv(key, iv), "media: key+iv generated");
+        auto cipher = pcp::desktop::aesCtrCrypt(blob, key, iv);
         CHECK(!cipher.empty() && cipher != blob, "media: ciphertext differs");
-        std::string sha = progressive::desktop::sha256Base64(blob);
+        std::string sha = pcp::desktop::sha256Base64(blob);
         auto up = alice.client.uploadMedia(cipher, "test.bin", "application/octet-stream");
         std::cerr << "[media] upload status=" << up.httpStatus << " mxc=" << up.data
                   << " err=" << up.error.message << "\n";
@@ -460,7 +460,7 @@ static void sasSendToDevice(TestUser& u, const std::string& type,
     u.client.sendToDevice(type, "sas" + txnId, body);
 }
 
-static progressive::desktop::VerificationManager::DeviceKeyResolverFn
+static pcp::desktop::VerificationManager::DeviceKeyResolverFn
 makeSasResolver(TestUser& u) {
     return [&u](const std::string& user, const std::string& dev,
                 std::string& ed, std::string& curve) -> bool {
@@ -483,9 +483,9 @@ makeSasResolver(TestUser& u) {
 }
 
 // Sync + dispatch m.key.verification.* until the txn reaches the wanted state.
-static bool waitVState(TestUser& u, progressive::desktop::VerificationManager& mgr,
+static bool waitVState(TestUser& u, pcp::desktop::VerificationManager& mgr,
                        std::string& since, const std::string& txnId,
-                       progressive::desktop::VerificationState want, int rounds = 20) {
+                       pcp::desktop::VerificationState want, int rounds = 20) {
     for (int r = 0; r < rounds; ++r) {
         auto resp = u.client.syncFast(since, 2000, false);
         if (resp.ok) {
@@ -506,7 +506,7 @@ static bool waitVState(TestUser& u, progressive::desktop::VerificationManager& m
 }
 
 static bool test_sas_verified_policy(const std::string& hs, TestUser& alice, TestUser& bob) {
-    using namespace progressive::desktop;
+    using namespace pcp::desktop;
     std::string pass = "synapse_test_pass_42";
 
     // Fresh login -> alice's new device (A3) + an encrypted room with A1 + A3.
@@ -704,7 +704,7 @@ static bool test_sas_verified_policy(const std::string& hs, TestUser& alice, Tes
 
     // Cross-sign bob's master key with A1's USK (the sync engine does this
     // automatically on a SAS Done with the MSK exchange).
-    std::string xsContent = progressive::desktop::buildCrossSigningContent(
+    std::string xsContent = pcp::desktop::buildCrossSigningContent(
         "m.cross_signing.master", bobKeys.masterPub,
         a1Keys.userPub, a1Keys.userPriv, bob.userId, alice.userId);
     // The server's _process_other_signatures looks up the target's master key
@@ -718,9 +718,9 @@ static bool test_sas_verified_policy(const std::string& hs, TestUser& alice, Tes
           "sas: bob's master key carries A1's USK signature");
     // The trust computation must upgrade bob's devices to Verified via our USK.
     bool bobIdentityVerified = false;
-    for (const auto& tr : progressive::desktop::computeDeviceTrust(
+    for (const auto& tr : pcp::desktop::computeDeviceTrust(
             qBob.data, bob.userId, alice.userId, a1Keys.userPub)) {
-        if (tr.trust == progressive::desktop::DeviceTrust::Verified) bobIdentityVerified = true;
+        if (tr.trust == pcp::desktop::DeviceTrust::Verified) bobIdentityVerified = true;
     }
     CHECK(bobIdentityVerified, "sas: bob's devices Verified via our USK cross-signature");
     return true;
@@ -729,7 +729,7 @@ static bool test_sas_verified_policy(const std::string& hs, TestUser& alice, Tes
 // Live key-backup API roundtrip: create version -> upload -> restore into a
 // fresh decryptor -> decrypt a real message.
 static bool test_key_backup_api(const std::string& hs, TestUser& alice) {
-    using namespace progressive::desktop;
+    using namespace pcp::desktop;
     std::string pass = "synapse_test_pass_42";
 
     // A room with a real outbound session + one encrypted message.
@@ -816,7 +816,7 @@ static bool test_key_backup_api(const std::string& hs, TestUser& alice) {
 // recovery key, then retrieve + verify them (the sync engine's upload/
 // retrieve logic replicated — it needs a full SyncEngine otherwise).
 static bool test_ssss_api(const std::string& hs, TestUser& alice) {
-    using namespace progressive::desktop;
+    using namespace pcp::desktop;
 
     auto keys = publishCrossSigning(alice);  // alice's current cross-signing keys
     CHECK(!keys.masterPriv.empty(), "ssss-api: cross-signing keys present");
@@ -890,16 +890,16 @@ static bool test_ssss_api(const std::string& hs, TestUser& alice) {
 // re-upload with SSK signature -> GET account_data + device_keys -> verify
 // the SSK signature over the canonical device_keys.
 static bool test_cross_signing_setup(const std::string& hs, TestUser& alice) {
-    auto keys = progressive::desktop::generateCrossSigningKeys();
+    auto keys = pcp::desktop::generateCrossSigningKeys();
     CHECK(!keys.masterPub.empty(), "xs-setup: keys generated");
 
     // Publish via POST /keys/device_signing/upload (the spec mechanism).
-    auto master = progressive::desktop::buildCrossSigningContent(
+    auto master = pcp::desktop::buildCrossSigningContent(
         "m.cross_signing.master", keys.masterPub, "", "", alice.userId);
-    auto self = progressive::desktop::buildCrossSigningContent(
+    auto self = pcp::desktop::buildCrossSigningContent(
         "m.cross_signing.self_signing", keys.selfPub,
         keys.masterPub, keys.masterPriv, alice.userId);
-    auto user = progressive::desktop::buildCrossSigningContent(
+    auto user = pcp::desktop::buildCrossSigningContent(
         "m.cross_signing.user_signing", keys.userPub,
         keys.masterPub, keys.masterPriv, alice.userId);
     std::string upBody = "{\"master_key\":" + master
@@ -981,7 +981,7 @@ static bool test_cross_signing_setup(const std::string& hs, TestUser& alice) {
             + "\",\"ed25519:" + std::string(did.value()) + "\":\"" + std::string(ek.value())
             + "\"},\"user_id\":\"" + std::string(uid.value()) + "\"}";
     }
-    CHECK(progressive::desktop::verifyEd25519(keys.selfPub, canonical, sskSig),
+    CHECK(pcp::desktop::verifyEd25519(keys.selfPub, canonical, sskSig),
           "xs-setup: SSK signature verifies over canonical device_keys");
     return true;
 }

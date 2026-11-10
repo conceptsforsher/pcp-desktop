@@ -4,7 +4,7 @@
 #include <QTextEdit>
 #include <QPushButton>
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 class NetworkLogDialog : public QDialog {
     Q_OBJECT
@@ -22,4 +22,4 @@ private:
     QPushButton* closeBtn_;
 };
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

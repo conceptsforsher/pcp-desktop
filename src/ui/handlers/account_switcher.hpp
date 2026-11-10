@@ -6,7 +6,7 @@ class QComboBox;
 class QLabel;
 class QWidget;
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 class MatrixClient;
 class SessionStore;
@@ -57,4 +57,4 @@ private:
     QWidget* messageEdit_;
 };
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

@@ -11,7 +11,7 @@
 #include <QPainter>
 #include <QFont>
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 namespace {
 inline constexpr int kTrayIconW = 32;
@@ -42,7 +42,7 @@ bool DesktopNotifier::init() {
     pp.drawText(pix.rect(), Qt::AlignCenter, "P");
     pp.end();
     tray_->setIcon(QIcon(pix));
-    tray_->setToolTip("Progressive Chat");
+    tray_->setToolTip("PCP");
     tray_->show();
     return true;
 }
@@ -52,4 +52,4 @@ void DesktopNotifier::notify(const QString& title, const QString& body) {
     tray_->showMessage(title, body, QSystemTrayIcon::Information, kNotifyMs);
 }
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

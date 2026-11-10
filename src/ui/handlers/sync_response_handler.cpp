@@ -15,7 +15,7 @@
 #include <QPushButton>
 #include <QWidget>
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 SyncResponseHandler::SyncResponseHandler(std::shared_ptr<MatrixClient> client, RoomStore* roomStore,
                          RoomListModel* roomModel, TimelineModel* timelineModel,
@@ -194,7 +194,7 @@ void SyncResponseHandler::appendRoomKeyRows(std::vector<RoomKeyNotification> not
             body = "No key yet — requested from " + who + " (session " + shortSid + ")";
         }
         DisplayedEvent sys;
-        sys.type = "progressive.system";
+        sys.type = "pcp.system";
         sys.eventId = rowId;
         sys.originServerTs = n.ts;
         sys.senderName = "system";
@@ -209,4 +209,4 @@ void SyncResponseHandler::appendRoomKeyRows(std::vector<RoomKeyNotification> not
     (void)skipped;
 }
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

@@ -62,7 +62,7 @@
 | **Room settings** | `room_settings_dialog.cpp` | Full file |
 | **Slash commands** | `slash_command_handler.cpp` | Full file |
 | **Emoji picker** | `emoji_picker.cpp` | Full file |
-| **Markdown rendering** | `progressive/markdown.hpp` | cmark-gfm wrapper |
+| **Markdown rendering** | `pcp/markdown.hpp` | cmark-gfm wrapper |
 | **Dark theme** | `theme.cpp` + `theme.hpp` | Design struct — all colors, font sizes |
 | **Memory diagnostics** | `memory_stats.cpp` + `main.cpp:143-188` | `memory_stats.cpp` |
 

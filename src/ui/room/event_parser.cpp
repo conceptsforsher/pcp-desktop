@@ -3,7 +3,7 @@
 #include "../timeline/timeline_model.hpp"
 #include <QDateTime>
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 static std::string sv(simdjson::dom::element e) {
     auto r = e.get_string();
@@ -35,4 +35,4 @@ std::string dateDividerLabel(int64_t originServerTs) {
     return dt.toString("ddd dd MMM").toStdString();
 }
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

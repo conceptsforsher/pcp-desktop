@@ -29,7 +29,7 @@
 #include "core/debug_log.hpp"
 #include <simdjson.h>
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 namespace {
 inline constexpr int kPrefsW   = 500;
@@ -679,7 +679,7 @@ void PrefsDialog::loadDevices(QVBoxLayout* sectionLayout) {
     struct DeviceRow {
         std::string deviceId;
         std::string displayName;
-        progressive::desktop::DeviceTrust trust;
+        pcp::desktop::DeviceTrust trust;
     };
     QPointer<PrefsDialog> guard(this);
     auto client = client_;
@@ -689,7 +689,7 @@ void PrefsDialog::loadDevices(QVBoxLayout* sectionLayout) {
                                      queryBody, sectionLayout, this]() {
         std::vector<DeviceRow> rows;
         std::string fetchError;
-        progressive::desktop::DeviceTrust selfTrust = progressive::desktop::DeviceTrust::Unverified;
+        pcp::desktop::DeviceTrust selfTrust = pcp::desktop::DeviceTrust::Unverified;
         auto resp = client->queryKeys(queryBody);
         if (!resp.ok) {
             fetchError = "Could not fetch devices. (HTTP " +
@@ -700,8 +700,8 @@ void PrefsDialog::loadDevices(QVBoxLayout* sectionLayout) {
             // red = unverified. A user whose master carries OUR USK signature
             // upgrades all their devices to Verified.
             std::string ourUsk = store ? store->loadUserSigningPub(ourUserId) : "";
-            std::map<std::string, progressive::desktop::DeviceTrust> trustByDev;
-            for (const auto& r : progressive::desktop::computeDeviceTrust(
+            std::map<std::string, pcp::desktop::DeviceTrust> trustByDev;
+            for (const auto& r : pcp::desktop::computeDeviceTrust(
                     resp.data, ourUserId, ourUserId, ourUsk))
                 trustByDev[r.deviceId] = r.trust;
             auto selfIt = trustByDev.find(ourDeviceId);
@@ -725,7 +725,7 @@ void PrefsDialog::loadDevices(QVBoxLayout* sectionLayout) {
                         row.displayName = displayName;
                         auto it = trustByDev.find(deviceId);
                         row.trust = it != trustByDev.end() ? it->second
-                            : progressive::desktop::DeviceTrust::Unverified;
+                            : pcp::desktop::DeviceTrust::Unverified;
                         rows.push_back(std::move(row));
                     }
                 }
@@ -747,7 +747,7 @@ void PrefsDialog::loadDevices(QVBoxLayout* sectionLayout) {
             // The current device's status: cross-signing published? device
             // signed by the account's SSK? (answers "why is my device not
             // logged in / verified" in-app).
-            bool selfSigned = selfTrust == progressive::desktop::DeviceTrust::Trusted;
+            bool selfSigned = selfTrust == pcp::desktop::DeviceTrust::Trusted;
             QString selfState;
             QColor selfColor = QColor("#F44336");
             if (selfSigned) {
@@ -769,7 +769,7 @@ void PrefsDialog::loadDevices(QVBoxLayout* sectionLayout) {
             if (rows.empty()) return;
             for (const auto& row : rows) {
                 bool sasVerified = store_ && store_->isDeviceVerified(ourUserId, row.deviceId);
-                bool sskTrusted = row.trust == progressive::desktop::DeviceTrust::Trusted;
+                bool sskTrusted = row.trust == pcp::desktop::DeviceTrust::Trusted;
                 QString shieldColor = sasVerified ? "#4CAF50" : (sskTrusted ? "#9E9E9E" : "#F44336");
                 auto* rowL = new QHBoxLayout;
                 auto* shield = new QLabel("●", this);
@@ -816,4 +816,4 @@ void PrefsDialog::onSave() {
     emit settingsChanged();
 }
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

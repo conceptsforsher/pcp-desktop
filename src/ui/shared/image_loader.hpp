@@ -8,7 +8,7 @@
 #include <functional>
 #include <string>
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 class MatrixClient;
 
@@ -105,4 +105,4 @@ private:
     static constexpr qint64 kMediaCacheBudget = 384LL * 1024 * 1024;  // 384 MB
 };
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop
