@@ -9,7 +9,7 @@
 #include <sstream>
 #include <utility>
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 namespace {
 
@@ -58,7 +58,7 @@ FastEvent buildFastEvent(simdjson::dom::element evt,
     e.originServerTs = getIntOrZero(evt, "origin_server_ts");
 
     // contentJson — serialize the "content" object back to JSON so
-    // progressive_native's parsers (which take const std::string&) can
+    // pcp_native's parsers (which take const std::string&) can
     // extract fields from it. We store the string in ownedStrings (deque,
     // stable back-inserts) and store a view into it.
     auto contentResult = evt["content"];
@@ -272,4 +272,4 @@ FastSyncResponse parseSyncResponseFast(std::string json, std::string& errorMessa
     return resp;
 }
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

@@ -1,10 +1,10 @@
 // android/log.h — desktop shim
-// Replaces Android NDK <android/log.h> so progressive_native modules
+// Replaces Android NDK <android/log.h> so pcp_native modules
 // (eventdb.cpp, olm_session.cpp, sas_verification.cpp, etc.) compile
 // unchanged on Linux desktop. Maps __android_log_print -> fprintf(stderr).
 //
 // This is NOT part of the public API. It exists only to keep the
-// progressive_native source tree bit-identical across Android and desktop.
+// pcp_native source tree bit-identical across Android and desktop.
 #pragma once
 
 #include <cstdio>

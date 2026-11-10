@@ -8,7 +8,7 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT"
 
 echo ">> Cleaning submodule changes..."
-cd third_party/progressive-android-experiments
+cd third_party/pcp-android-experiments
 git checkout -- .
 cd "$ROOT"
 

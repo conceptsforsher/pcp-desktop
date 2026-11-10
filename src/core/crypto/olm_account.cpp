@@ -1,10 +1,10 @@
 // src/core/crypto/olm_account.cpp — OlmAccount lifecycle implementation.
 //
-// Wraps progressive::OlmAccount which in turn wraps libolm's OlmAccount C API.
+// Wraps pcp::OlmAccount which in turn wraps libolm's OlmAccount C API.
 
 #include "olm_account.hpp"
 
-#include <progressive/olm.hpp>
+#include <pcp/olm.hpp>
 #include <olm/olm.h>
 
 #include <cstring>
@@ -12,7 +12,7 @@
 #include <random>
 #include <vector>
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 // ---- Base64 helpers ----
 
@@ -56,34 +56,34 @@ std::string base64Decode(const std::string& in) {
 // ---- OlmAccountStore ----
 
 OlmAccountStore::OlmAccountStore() {
-    account_ = new progressive::OlmAccount();
+    account_ = new pcp::OlmAccount();
 }
 
 OlmAccountStore::~OlmAccountStore() {
-    delete static_cast<progressive::OlmAccount*>(account_);
+    delete static_cast<pcp::OlmAccount*>(account_);
 }
 
 bool OlmAccountStore::create() {
-    auto* acc = static_cast<progressive::OlmAccount*>(account_);
+    auto* acc = static_cast<pcp::OlmAccount*>(account_);
     auto r = acc->create();
     return r.success;
 }
 
 bool OlmAccountStore::load(const std::string& pickle, const std::string& key) {
-    auto* acc = static_cast<progressive::OlmAccount*>(account_);
+    auto* acc = static_cast<pcp::OlmAccount*>(account_);
     auto r = acc->unpickle(key, pickle);
     return r.success;
 }
 
 std::string OlmAccountStore::save(const std::string& key) {
-    auto* acc = static_cast<progressive::OlmAccount*>(account_);
+    auto* acc = static_cast<pcp::OlmAccount*>(account_);
     auto r = acc->pickle(key);
     return r.success ? r.data : std::string{};
 }
 
 OlmIdentityKeys OlmAccountStore::identityKeys() const {
     OlmIdentityKeys keys;
-    auto* acc = static_cast<progressive::OlmAccount*>(account_);
+    auto* acc = static_cast<pcp::OlmAccount*>(account_);
     auto r = acc->identityKeys();
     if (!r.success) return keys;
     // r.data is JSON: {"curve25519":"...","ed25519":"..."}
@@ -103,34 +103,34 @@ OlmIdentityKeys OlmAccountStore::identityKeys() const {
 }
 
 std::string OlmAccountStore::curve25519Key() const {
-    auto* acc = static_cast<progressive::OlmAccount*>(account_);
+    auto* acc = static_cast<pcp::OlmAccount*>(account_);
     auto r = acc->curve25519Key();
     return r.success ? r.data : std::string{};
 }
 
 std::string OlmAccountStore::ed25519Key() const {
-    auto* acc = static_cast<progressive::OlmAccount*>(account_);
+    auto* acc = static_cast<pcp::OlmAccount*>(account_);
     auto r = acc->ed25519Key();
     return r.success ? r.data : std::string{};
 }
 
 std::string OlmAccountStore::sign(const std::string& message) const {
-    auto* acc = static_cast<progressive::OlmAccount*>(account_);
+    auto* acc = static_cast<pcp::OlmAccount*>(account_);
     auto r = acc->sign(message);
     return r.success ? r.data : std::string{};
 }
 
 std::string OlmAccountStore::generateOneTimeKeys(int count) {
-    auto* acc = static_cast<progressive::OlmAccount*>(account_);
+    auto* acc = static_cast<pcp::OlmAccount*>(account_);
     auto r = acc->generateOneTimeKeys(count);
     if (!r.success) return {};
     return r.data;  // JSON with one-time key keys + values
 }
 
 void OlmAccountStore::markOneTimeKeysPublished() {
-    auto* acc = static_cast<progressive::OlmAccount*>(account_);
+    auto* acc = static_cast<pcp::OlmAccount*>(account_);
     if (!acc) return;
     acc->markKeysAsPublished();
 }
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

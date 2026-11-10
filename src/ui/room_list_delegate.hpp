@@ -6,7 +6,7 @@
 class QPainter;
 class QModelIndex;
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 class ImageLoader;
 
@@ -34,4 +34,4 @@ private:
                     const QImage& img) const;
 };
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

@@ -2,7 +2,7 @@
 #pragma once
 #include <string>
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 // Verify an Ed25519 signature. All inputs are base64-encoded.
 //   pubKeyBase64: the signer's Ed25519 public key (43 chars base64)
@@ -21,4 +21,4 @@ inline bool ed25519VerifyJson(const std::string& pubKeyBase64,
     return ed25519Verify(pubKeyBase64, canonicalJson, signatureBase64);
 }
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

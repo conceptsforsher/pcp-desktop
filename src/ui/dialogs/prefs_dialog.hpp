@@ -5,7 +5,7 @@
 #include <QCheckBox>
 #include <QSettings>
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 class PrefsDialog : public QDialog {
     Q_OBJECT
@@ -45,4 +45,4 @@ private:
     QCheckBox* invisibleCheck_ = nullptr;
 };
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

@@ -1,6 +1,6 @@
 // src/core/fast_sync.hpp — zero-copy /sync parser using simdjson.
 //
-// Phase 3a.1 Layer 2: bypasses progressive_native's hand-rolled JSON parser
+// Phase 3a.1 Layer 2: bypasses pcp_native's hand-rolled JSON parser
 // (which does O(N) string scans per field lookup × 5000+ lookups per sync).
 //
 // Uses simdjson's DOM API to parse the /sync response ONCE, then walks the
@@ -9,11 +9,11 @@
 // which is in turn owned by FastSyncResponse).
 //
 // Memory: ~10MB per 5MB /sync response (5MB original string + 5MB padded
-// internal simdjson buffer). progressive_native's parser creates ~15-20MB
+// internal simdjson buffer). pcp_native's parser creates ~15-20MB
 // of intermediate string copies. ~50% reduction.
 //
 // Speed: simdjson parses at 1-3 GB/s on Cortex-A55. 5MB sync → ~5-10ms parse.
-// progressive_native's hand-rolled parser takes ~500ms-2s on the same input.
+// pcp_native's hand-rolled parser takes ~500ms-2s on the same input.
 // 50-200x speedup.
 
 #pragma once
@@ -28,7 +28,7 @@
 // Forward declaration to avoid including simdjson.h in the header (it's large).
 namespace simdjson::dom { class parser; class element; }
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 struct FastEvent {
     std::string_view type;
@@ -109,9 +109,9 @@ struct FastSyncResponse {
 // On error, returns a FastSyncResponse with empty buffer and sets errorMessage.
 FastSyncResponse parseSyncResponseFast(std::string json, std::string& errorMessage);
 
-// Convenience: convert a FastEvent to progressive::Event (copies strings).
-// Use this only when passing to progressive_native parsers that require
+// Convenience: convert a FastEvent to pcp::Event (copies strings).
+// Use this only when passing to pcp_native parsers that require
 // std::string. For UI display, extract fields directly via simdjson instead.
-// (Defined in fast_sync.cpp — needs progressive::Event full definition.)
+// (Defined in fast_sync.cpp — needs pcp::Event full definition.)
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

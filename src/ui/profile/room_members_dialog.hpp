@@ -10,7 +10,7 @@
 #include <string>
 #include "core/matrix_client.hpp"
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 struct MemberInfo {
     std::string userId;
@@ -44,4 +44,4 @@ private:
     void applyFilter();
 };
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

@@ -1,7 +1,7 @@
 // src/core/thread_pool.cpp — bounded thread pool implementation.
 #include "thread_pool.hpp"
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 ThreadPool::ThreadPool(size_t numThreads) {
     for (size_t i = 0; i < numThreads; ++i) {
@@ -45,4 +45,4 @@ size_t ThreadPool::pending() const {
     return tasks_.size();
 }
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

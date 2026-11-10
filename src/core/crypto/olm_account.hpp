@@ -1,6 +1,6 @@
 // src/core/crypto/olm_account.hpp — OlmAccount lifecycle + device keys.
 //
-// Wraps progressive::OlmAccount (libolm) for desktop use:
+// Wraps pcp::OlmAccount (libolm) for desktop use:
 //   - Create/load account, generate identity keys + one-time keys
 //   - Upload device keys via /keys/upload
 //   - Sign JSON for device verification
@@ -10,7 +10,7 @@
 #include <string>
 #include <optional>
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 struct OlmIdentityKeys {
     std::string curve25519;  // identity key for 1:1 Olm sessions
@@ -60,11 +60,11 @@ public:
 
     bool isValid() const { return account_ != nullptr; }
 
-    // Access the underlying progressive::OlmAccount for OlmSession operations.
+    // Access the underlying pcp::OlmAccount for OlmSession operations.
     void* rawAccount() { return account_; }
 
 private:
-    void* account_ = nullptr;  // progressive::OlmAccount*
+    void* account_ = nullptr;  // pcp::OlmAccount*
     bool shared_ = false;
     int uploadedKeyCount_ = 0;
     friend class Decryptor;
@@ -74,4 +74,4 @@ private:
 std::string base64Encode(const std::string& data);
 std::string base64Decode(const std::string& b64);
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

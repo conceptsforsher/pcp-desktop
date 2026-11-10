@@ -17,7 +17,7 @@
 #include <mutex>
 #include <unordered_set>
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 struct DecryptionResult {
     bool ok = false;
@@ -220,4 +220,4 @@ private:
     std::mutex reDecryptedMtx_;
 };
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

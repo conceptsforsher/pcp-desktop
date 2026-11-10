@@ -12,7 +12,7 @@
 #include <vector>
 #include <unordered_map>
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 struct RoomData {
     std::string roomId;
@@ -97,4 +97,4 @@ private:
     std::unordered_set<std::string> hiddenRoomIds_;
 };
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

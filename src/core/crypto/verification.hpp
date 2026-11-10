@@ -10,7 +10,7 @@
 #include <mutex>
 #include <functional>
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 enum class VerificationState {
     Idle, RequestSent, RequestReceived, Ready, Started, Accepted,
@@ -105,4 +105,4 @@ private:
         const std::string& txnId, const std::string& keyId) const;
 };
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

@@ -1,4 +1,4 @@
-# AGENTS.md — Critical Coding Rules for Progressive Chat
+# AGENTS.md — Critical Coding Rules for PCP
 
 **Read this file, code_map.json, and memory/REFERENCE.md before any code change.**
 **memory/DREAM.md explains WHY the architecture exists.**
@@ -62,11 +62,11 @@ grep -rn "= new.*client_" src/ --include="*.cpp"
 **B21, B38, B39 (RoomContextMenu), B40 (ThreadHandler) — all fixed by adding setClient() + propagation.**
 
 ### 5. cd to project root first
-All paths relative to project root: `src/ui/room_store.cpp` not `/home/user/progressive-desktop/...`
+All paths relative to project root: `src/ui/room_store.cpp` not `/home/user/pcp-desktop/...`
 
 ### 6. Read before edit. Build after each change.
 ```bash
-ninja -C build CMakeFiles/progressive-desktop.dir/src/ui/<path>/<file>.cpp.o
+ninja -C build CMakeFiles/pcp-desktop.dir/src/ui/<path>/<file>.cpp.o
 ```
 If build or tests fail → revert. Never push broken code.
 
@@ -76,13 +76,13 @@ If build or tests fail → revert. Never push broken code.
 
 ```bash
 # After each change (fast):
-ninja -C build CMakeFiles/progressive-desktop.dir/src/ui/handlers/room_handler.cpp.o
+ninja -C build CMakeFiles/pcp-desktop.dir/src/ui/handlers/room_handler.cpp.o
 
 # Full build + tests (before push):
 ./scripts/build.sh all
 
 # User's command on PineTab:
-git pull && cmake --preset pinetab2 && cmake --build build -j4 && ./build/progressive-desktop
+git pull && cmake --preset pinetab2 && cmake --build build -j4 && ./build/pcp-desktop
 ```
 
 ---
@@ -103,17 +103,17 @@ git pull && cmake --preset pinetab2 && cmake --build build -j4 && ./build/progre
 ### src/core/ portability (Qt-free)
 
 `src/core/` MUST remain Qt-free. Rationale: Android NDK and WebAssembly
-builds link `progressive_core` without Qt — any Qt include in core fails
-the build (link-time enforcement: `progressive_core` does not link Qt).
+builds link `pcp_core` without Qt — any Qt include in core fails
+the build (link-time enforcement: `pcp_core` does not link Qt).
 CI guard: `scripts/check_no_qt_in_core.sh` (grep-based, runs in <1s).
-This protects the sister-project design (`progressive-android-next`)
-and a future WASM target (JS UI + Embind to progressive_core).
+This protects the sister-project design (`pcp-android-next`)
+and a future WASM target (JS UI + Embind to pcp_core).
 
 ## Code Rules
 
 ### Every .hpp file
 - `#pragma once`
-- `namespace progressive::desktop { ... }`
+- `namespace pcp::desktop { ... }`
 - `Q_OBJECT` if QObject-derived
 - Forward-declare dependencies, max 5 `#include`s
 - Max 350 lines (UI), 300 (core) — split if larger
@@ -187,7 +187,7 @@ for (auto [key, value] : obj) { if (key == "...") ... }
 ```cpp
 #include "core/debug_log.hpp"
 LOG(LogChannel::GUI, "msg=%s", str);
-PROGRESSIVE_ASSERT(cond, "reason");
+PCP_ASSERT(cond, "reason");
 TraceFn _t("functionName");  // -> on enter, <- on exit
 ```
 Channels: GUI, SYNC, E2EE, NET, MEM, DBG. F12 = dump state.
@@ -298,7 +298,7 @@ If a class calls `httpPost`/`httpPut` with auth headers (`makeAuthHeaders(token)
 See `docs/E2EE.md` for full multi-account E2EE architecture and the 167 stale OTKs cautionary tale.
 
 ### E2EE Submodule Audit — FAKE Boilerplate Trap Warning
-The `third_party/progressive-android-experiments/` submodule has ~90 E2EE-relevant files. ~12 are REAL (libolm-backed, safe to port). ~30+ are FAKE (auto-generated JSON-echo boilerplate). **Do NOT port files named `*_v4.cpp`, `crypto_ops.cpp`, `sas_manager.cpp`, `backup_controller.cpp`, `gossip_manager.cpp`, `key_export_utils.cpp`, `dehydrate_utils.cpp`, or `secret_*` without verifying they contain real crypto logic.** These have plausible names and large file sizes but are no-ops. A filename-based audit badly overstates what's there. See `docs/E2EE.md` for the full REAL/FAKE inventory.
+The `third_party/pcp-android-experiments/` submodule has ~90 E2EE-relevant files. ~12 are REAL (libolm-backed, safe to port). ~30+ are FAKE (auto-generated JSON-echo boilerplate). **Do NOT port files named `*_v4.cpp`, `crypto_ops.cpp`, `sas_manager.cpp`, `backup_controller.cpp`, `gossip_manager.cpp`, `key_export_utils.cpp`, `dehydrate_utils.cpp`, or `secret_*` without verifying they contain real crypto logic.** These have plausible names and large file sizes but are no-ops. A filename-based audit badly overstates what's there. See `docs/E2EE.md` for the full REAL/FAKE inventory.
 
 ### REAL submodule files safe to port:
 - `sas_verification.cpp` (212L) — OlmSAS wrapper (13 `olm_sas_*` calls)
@@ -328,5 +328,5 @@ See `docs/E2EE.md` for full implementation notes, common mistakes, recovery chai
 ```bash
 git push 2>&1 | grep -q "Everything up-to-date\|-> main" || { echo "NOT PUSHED"; false; }
 ctest --test-dir build 2>&1 | grep -q "100% tests passed" || { echo "TESTS BROKEN"; false; }
-echo "[OK] Pushed. git pull && cmake --preset pinetab2 && cmake --build build -j4 && ./build/progressive-desktop"
+echo "[OK] Pushed. git pull && cmake --preset pinetab2 && cmake --build build -j4 && ./build/pcp-desktop"
 ```

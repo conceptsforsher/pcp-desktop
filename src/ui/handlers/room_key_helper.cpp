@@ -8,7 +8,7 @@
 #include <vector>
 #include <string>
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 bool shareRoomKeyForRoom(MatrixClient& client, Decryptor& dec,
                            const std::string& roomId) {
@@ -50,4 +50,4 @@ bool shareRoomKeyForRoom(MatrixClient& client, Decryptor& dec,
     return shared;
 }
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

@@ -5,7 +5,7 @@
 #include "../sync_engine.hpp"
 #include "../debug_log.hpp"
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 void VerificationController::setVerificationManager(VerificationManager* vm) {
     vm_ = vm;
@@ -88,4 +88,4 @@ void VerificationController::cancelVerification(const std::string& txnId,
     vm_->removeTransaction(txnId);
 }
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

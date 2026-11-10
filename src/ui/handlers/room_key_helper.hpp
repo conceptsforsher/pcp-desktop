@@ -2,7 +2,7 @@
 #pragma once
 #include <string>
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 class MatrixClient;
 class Decryptor;
@@ -14,4 +14,4 @@ class Decryptor;
 bool shareRoomKeyForRoom(MatrixClient& client, Decryptor& dec,
                           const std::string& roomId);
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

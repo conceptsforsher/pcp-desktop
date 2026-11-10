@@ -4,7 +4,7 @@
 #include <string>
 #include <functional>
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 class MatrixClient;
 class VerificationManager;
@@ -44,4 +44,4 @@ private:
     SyncEngine* sync_ = nullptr;
 };
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

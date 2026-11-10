@@ -15,7 +15,7 @@
 #include <QPushButton>
 #include <QCheckBox>
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 class LoginDialog : public QDialog {
     Q_OBJECT
@@ -44,4 +44,4 @@ private:
     QCheckBox* showPassCheck_;
 };
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

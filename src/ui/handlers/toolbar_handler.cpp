@@ -35,7 +35,7 @@
 #include <cstdlib>
 #include "core/thread_pool.hpp"
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 ToolbarHandler::ToolbarHandler(std::shared_ptr<MatrixClient> client, RoomListModel* roomModel,
                                  RoomStore* roomStore, TimelineModel* timelineModel,
@@ -201,7 +201,7 @@ void ToolbarHandler::onSettings() {
 
     if (selected == aboutAction) {
         QMessageBox::information(parentWidget_, "About",
-            "Progressive Chat — Desktop\n\nVersion: " PROGRESSIVE_DESKTOP_VERSION);
+            "PCP — Desktop\n\nVersion: " PCP_DESKTOP_VERSION);
     } else if (selected == profileAction) {
         if (!client_ || !client_->isLoggedIn()) return;
         ProfileDialog dlg(client_.get(), parentWidget_);
@@ -326,4 +326,4 @@ void ToolbarHandler::toggleThreadPanel() {
     dlg.exec();
 }
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

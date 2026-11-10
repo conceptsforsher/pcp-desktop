@@ -21,7 +21,7 @@
 | 8 | Grammar correction | Fix articles/spelling/verb forms; NOT slang, case, punctuation |
 | 9 | AI coder commits/pushes | I do NOT commit — delegate to AI coder |
 | 9a | Exception: docs/memory | I CAN commit docs/, memory/, AGENTS.md (verify: no Russian, no secrets) |
-| 10 | Test accounts by ROLE | Progressive, Element/Faraday, FluffyChat, Element Web |
+| 10 | Test accounts by ROLE | PCP, Element/Faraday, FluffyChat, Element Web |
 | 11 | User tests on PineTab 2 | ARM64, DanctNIX |
 | 11a | 9-step log analysis | startup → upload → crashes → incoming → recovery → Olm → OTK → switch → outbound |
 | 12 | Multi-device context | Check if other device (Faraday) can decrypt |
@@ -143,7 +143,7 @@ Code files (src/, tests/, scripts/) — still delegate to AI coder.
 The user creates FRESH test accounts for each testing session. Don't
 reference specific account names (@t1s3, @t0n1a, @offcrise) as permanent
 fixtures. They change. The currently active accounts are:
-  Progressive (PineTab) — the user's own client
+  PCP (PineTab) — the user's own client
   Element/Faraday (phone) — reference implementation for testing
   FluffyChat (phone) — cross-implementation testing
   Element Web (desktop) — easier device key inspection
@@ -151,7 +151,7 @@ Refer to them by ROLE, not by name.
 
 ## 11. User tests on PineTab 2
 All testing happens on a PineTab 2 (ARM64, DanctNIX). Build command:
-  git pull && cmake --preset pinetab2 && cmake --build build -j4 && ./build/progressive-desktop
+  git pull && cmake --preset pinetab2 && cmake --build build -j4 && ./build/pcp-desktop
 Logs are captured via stderr redirect. User pastes logs — analyze them.
 Use grep to find relevant lines, don't ask the user to read full logs.
 
@@ -189,10 +189,10 @@ The grep commands for each step are in `docs/E2EE-troubleshooting.md` ("Log grep
 
 ## 12. Multiple devices context
 The user often has the SAME account on multiple devices:
-  Progressive on PineTab + Element/Faraday on phone = same user, different devices
+  PCP on PineTab + Element/Faraday on phone = same user, different devices
 When analyzing "can't decrypt" issues, check if the OTHER device can
-decrypt. If Faraday decrypts but Progressive doesn't → the issue is
-Progressive-specific (stale OTKs, missing room_key delivery).
+decrypt. If Faraday decrypts but PCP doesn't → the issue is
+PCP-specific (stale OTKs, missing room_key delivery).
 
 ## 13. User can be tired — be efficient
 If the user says they're tired, be concise. Skip the detailed analysis

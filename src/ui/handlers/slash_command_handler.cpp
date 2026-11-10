@@ -2,7 +2,7 @@
 #include "../timeline/timeline_model.hpp"
 #include "auth_handler.hpp"
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 SlashCommandHandler::SlashCommandHandler(TimelineModel* timelineModel, AuthHandler* auth,
                                          QObject* parent)
@@ -24,4 +24,4 @@ void SlashCommandHandler::handleCommand(const std::string& cmd, const std::strin
     }
 }
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

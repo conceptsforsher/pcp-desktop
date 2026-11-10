@@ -8,7 +8,7 @@
 class QTextDocument;
 class QMovie;
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 class ImageLoader;
 
@@ -41,4 +41,4 @@ private:
     mutable std::unordered_set<std::string> pendingFetches_;
 };
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

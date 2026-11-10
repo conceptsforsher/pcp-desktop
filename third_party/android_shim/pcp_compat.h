@@ -1,6 +1,6 @@
-// third_party/android_shim/progressive_compat.h
+// third_party/android_shim/pcp_compat.h
 //
-// Force-included via -include to fix missing STL includes in progressive_native
+// Force-included via -include to fix missing STL includes in pcp_native
 // modules. The Android NDK's <string>, <vector>, etc. transitively include
 // <algorithm>, <cctype>, <numeric>, etc. Strict gcc/clang (e.g. gcc 16 on
 // DanctNIX Linux) does NOT — so modules using std::remove/std::find/std::sort

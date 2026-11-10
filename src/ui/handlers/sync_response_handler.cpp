@@ -12,7 +12,7 @@
 #include <QPushButton>
 #include <QWidget>
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 SyncResponseHandler::SyncResponseHandler(std::shared_ptr<MatrixClient> client, RoomStore* roomStore,
                          RoomListModel* roomModel, TimelineModel* timelineModel,
@@ -101,4 +101,4 @@ void SyncResponseHandler::handle(FastSyncResponse resp) {
     firstSync = false;
 }
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

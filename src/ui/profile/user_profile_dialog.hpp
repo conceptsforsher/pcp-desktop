@@ -5,7 +5,7 @@
 #include <QPushButton>
 #include "core/matrix_client.hpp"
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 class UserProfileDialog : public QDialog {
     Q_OBJECT
@@ -42,4 +42,4 @@ private:
     void loadProfile();
 };
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

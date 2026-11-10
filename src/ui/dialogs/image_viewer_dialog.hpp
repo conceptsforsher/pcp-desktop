@@ -8,7 +8,7 @@
 class QGraphicsView;
 class QGraphicsScene;
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 class ImageViewerDialog : public QDialog {
     Q_OBJECT
@@ -35,4 +35,4 @@ private:
     double zoomLevel_ = 1.0;
 };
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

@@ -11,7 +11,7 @@
 #include <unordered_set>
 #include <unordered_map>
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 struct ReactionData {
     std::string emoji;
@@ -134,4 +134,4 @@ private:
     std::unordered_map<std::string, int> rowIndex_;
 };
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

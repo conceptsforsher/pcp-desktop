@@ -1,7 +1,7 @@
-diff --git a/progressive/src/main/cpp/src/room_name.cpp b/progressive/src/main/cpp/src/room_name.cpp
+diff --git a/pcp/src/main/cpp/src/room_name.cpp b/pcp/src/main/cpp/src/room_name.cpp
 index 5bf959e..4946078 100644
---- a/progressive/src/main/cpp/src/room_name.cpp
-+++ b/progressive/src/main/cpp/src/room_name.cpp
+--- a/pcp/src/main/cpp/src/room_name.cpp
++++ b/pcp/src/main/cpp/src/room_name.cpp
 @@ -189,14 +189,16 @@ std::string roomNameToJson(const RoomName& name) {
  
  std::string parseRoomNameContent(const std::string& contentJson) {

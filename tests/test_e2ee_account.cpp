@@ -1,5 +1,5 @@
 #include "core/crypto/olm_account.hpp"
-#include <progressive/olm.hpp>
+#include <pcp/olm.hpp>
 #include <iostream>
 #include <string>
 #include <cstring>
@@ -15,7 +15,7 @@ static int failures = 0;
 } while (0)
 
 static void test_shared_flag_lifecycle() {
-    progressive::desktop::OlmAccountStore store;
+    pcp::desktop::OlmAccountStore store;
     CHECK(store.create(), "create() succeeds");
     CHECK(!store.shared(), "shared() false after create");
     store.markAsShared();
@@ -27,7 +27,7 @@ static void test_shared_flag_lifecycle() {
 }
 
 static void test_key_lifecycle() {
-    progressive::desktop::OlmAccountStore store;
+    pcp::desktop::OlmAccountStore store;
     CHECK(store.create(), "create() succeeds");
     std::string curve = store.curve25519Key();
     std::string ed = store.ed25519Key();
@@ -43,7 +43,7 @@ static void test_key_lifecycle() {
 }
 
 static void test_count_tracking() {
-    progressive::desktop::OlmAccountStore store;
+    pcp::desktop::OlmAccountStore store;
     CHECK(store.create(), "create() succeeds");
     CHECK_EQ(store.uploadedKeyCount(), 0, "uploadedKeyCount() 0 after create");
     store.setUploadedKeyCount(42);
@@ -53,7 +53,7 @@ static void test_count_tracking() {
 }
 
 static void test_save_load_roundtrip() {
-    progressive::desktop::OlmAccountStore store1;
+    pcp::desktop::OlmAccountStore store1;
     CHECK(store1.create(), "store1 create()");
     store1.markAsShared();
     store1.setUploadedKeyCount(77);
@@ -63,7 +63,7 @@ static void test_save_load_roundtrip() {
     std::string pickle = store1.save("roundtrip-key");
     CHECK(!pickle.empty(), "save() returns non-empty pickle");
 
-    progressive::desktop::OlmAccountStore store2;
+    pcp::desktop::OlmAccountStore store2;
     CHECK(store2.load(pickle, "roundtrip-key"), "store2 load() succeeds");
     CHECK_EQ(store2.curve25519Key(), curveKey, "curve25519 matches after load");
     CHECK_EQ(store2.ed25519Key(), edKey, "ed25519 matches after load");

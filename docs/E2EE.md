@@ -9,7 +9,7 @@
 
 ## Architecture Overview
 
-Progressive Chat's E2EE is a pure C++20 implementation using libolm. Qt-free core (`src/core/crypto/`).
+PCP's E2EE is a pure C++20 implementation using libolm. Qt-free core (`src/core/crypto/`).
 
 ### Component layers
 
@@ -441,7 +441,7 @@ std::string pickleOlmSessions(const std::string& key) {
 
 ### The Problem: Why Multi-Account Broke E2EE
 
-Progressive Chat supports multiple Matrix accounts within a single app instance. Each account has its own Olm identity (curve25519/ed25519 key pair), its own Megolm sessions, and its own Olm 1:1 sessions.
+PCP supports multiple Matrix accounts within a single app instance. Each account has its own Olm identity (curve25519/ed25519 key pair), its own Megolm sessions, and its own Olm 1:1 sessions.
 
 The original implementation stored all E2EE state in a **shared SQLite database** with **global keys** — not scoped per account. This caused 5 compounding bugs:
 
@@ -583,7 +583,7 @@ megolm_->unpickleAll(pickleKey, *data);
 
 ### Multi-Device Handling (1 user, 2+ devices)
 
-When a user has multiple devices (e.g., Progressive on PineTab + Element on phone):
+When a user has multiple devices (e.g., PCP on PineTab + Element on phone):
 
 1. `/keys/query` returns ALL devices for the user (different device_ids, different curve25519 keys)
 2. `shareRoomKey` queries `/keys/query` for all room members, finds ALL devices
@@ -605,7 +605,7 @@ size_t olm_ed25519_verify(OlmUtility*, void const* key, size_t keyLen,
     void const* message, size_t msgLen, void* signature, size_t sigLen);
 ```
 - All inputs are base64 (key, signature). Message is raw bytes. Returns 0 on success.
-- The progressive submodule's `ed25519Verify` was a STUB returning `true`. Replaced with real libolm call.
+- The pcp submodule's `ed25519Verify` was a STUB returning `true`. Replaced with real libolm call.
 - The foundation for: OTK sig verify, device key sig verify, cross-signing signature verification, SAS MAC verification.
 - Implementation: `src/core/crypto/ed25519.hpp` (free functions `ed25519Verify` / `ed25519VerifyJson`).
 
@@ -654,7 +654,7 @@ Full `m.sas.v1` device verification (the "make the red shield go away" feature).
 
 ### FAKE Boilerplate Trap Warning — DO NOT PORT THESE FILES
 
-The progressive submodule has ~30+ FAKE files that look like implementations but are auto-generated JSON-echo no-ops. A filename-and-line-count audit badly overstates what's there.
+The pcp submodule has ~30+ FAKE files that look like implementations but are auto-generated JSON-echo no-ops. A filename-and-line-count audit badly overstates what's there.
 
 **FAKE files (DO NOT PORT):**
 - All `*_v4.cpp` files (~220 KB total): `verification_v4.cpp`, `cross_sign_v4.cpp`, `key_backup_v4.cpp`, `secret_store_v4.cpp`, etc.
@@ -672,7 +672,7 @@ Previously marked "blocked on submodule" (P4). The submodule HAS a real implemen
 
 ### Architecture Comparison — Multi-Account E2EE
 
-| Aspect | matrix-rust-sdk | FluffyChat | Progressive Chat |
+| Aspect | matrix-rust-sdk | FluffyChat | PCP |
 |---|---|---|---|
 | Account storage | Per-account crypto store | Per-account SQLite DB | Shared SQLite, scoped keys |
 | `shared` flag | On Account struct, pickled | Implicit (pickle exists) | On OlmAccountStore, DB column |
@@ -711,7 +711,7 @@ One-time operation accessible from Settings menu. Requires password authenticati
 | `src/ui/handlers/account_switcher.cpp` | Account switch: save/Load Olm pickle + megolm/olm sessions per account |
 | `src/ui/handlers/toolbar_handler.cpp` | "Reset device keys" action → `deleteDevice()` API |
 | `src/ui/chat/chat_view.cpp` | `doSend` — encrypts + sends with room_id in Megolm plaintext |
-| `third_party/progressive-android-experiments/.../olm.hpp` | `OlmAccount` class — libolm wrapper |
+| `third_party/pcp-android-experiments/.../olm.hpp` | `OlmAccount` class — libolm wrapper |
 | `build/_deps/olm-src/src/` | libolm C source — verify quirks here before adding encode/decode |
 
 ---

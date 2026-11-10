@@ -7,7 +7,7 @@
 #include <condition_variable>
 #include <functional>
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 class ThreadPool {
 public:
@@ -30,4 +30,4 @@ private:
     bool stop_ = false;
 };
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

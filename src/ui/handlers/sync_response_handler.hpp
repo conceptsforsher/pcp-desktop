@@ -11,7 +11,7 @@ class QLabel;
 class QPushButton;
 class QWidget;
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 class MatrixClient;
 class RoomStore;
@@ -56,4 +56,4 @@ private:
     Decryptor* decryptor_ = nullptr;
 };
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

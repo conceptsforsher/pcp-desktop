@@ -9,7 +9,7 @@ A working Matrix chat client GUI on top of the Phase 1 core:
 | `src/ui/login_dialog.{hpp,cpp}` | Modal login dialog. Calls `discoverHomeserver` + `loginWithPassword`. Persists session via `SessionStore`. |
 | `src/ui/main_window.{hpp,cpp}` | Top-level window. Sidebar (room list) + timeline + message edit. Owns the `SyncEngine` and wires its callbacks to UI-thread slots via `QMetaObject::invokeMethod(Qt::QueuedConnection)`. |
 | `src/ui/room_list_model.{hpp,cpp}` | `QAbstractListModel` for joined rooms. Updates incrementally on each /sync. Sorted by last activity (descending). |
-| `src/ui/timeline_view.{hpp,cpp}` | `QTextBrowser` rendering messages as HTML via `progressive::markdownToHtml`. Handles `m.room.message` (text/emote/notice/image), `m.room.encrypted` (placeholder until Phase 4), `m.room.member` (joins/leaves), `m.room.redaction`. Deduplicates by event_id. |
+| `src/ui/timeline_view.{hpp,cpp}` | `QTextBrowser` rendering messages as HTML via `pcp::markdownToHtml`. Handles `m.room.message` (text/emote/notice/image), `m.room.encrypted` (placeholder until Phase 4), `m.room.member` (joins/leaves), `m.room.redaction`. Deduplicates by event_id. |
 | `src/ui/message_edit.{hpp,cpp}` | `QTextEdit` — Enter to send, Shift+Enter for newline. Routes `/cmd args` to `slashCommand` signal, plain text to `sendMessage` signal. |
 
 ## New MatrixClient methods
@@ -44,14 +44,14 @@ Added 3 endpoints to `src/core/matrix_client.{hpp,cpp}`:
                 Status bar: sync state + stats
 ```
 
-`PROGRESSIVE_MOBILE=ON` (pinetab2 preset) → fullscreen frameless window.
+`PCP_MOBILE=ON` (pinetab2 preset) → fullscreen frameless window.
 
 ## How to test on PineTab 2
 
 ### Build
 
 ```bash
-cd progressive-desktop
+cd pcp-desktop
 git pull --recurse-submodules
 ./scripts/build-pt2.sh rebuild    # ccache warm → ~2 min
 ```
@@ -59,22 +59,22 @@ git pull --recurse-submodules
 ### Run GUI
 
 ```bash
-./build/progressive-desktop
+./build/pcp-desktop
 ```
 
 First launch: shows login dialog (server default = `matrix.org`, enter your Matrix user + password). After login, the main window opens and starts syncing.
 
-Second launch onwards: detects saved session at `~/.local/share/progressive-desktop/session.db` and skips the login dialog.
+Second launch onwards: detects saved session at `~/.local/share/pcp-desktop/session.db` and skips the login dialog.
 
 ### Verify each piece
 
 | Test | Command | Expected |
 |---|---|---|
-| Link test | `./build/progressive-desktop --smoke` | All 4 components + markdown probe |
-| Discovery | `./build/progressive-desktop --discover matrix.org` | 19 server versions + 3 login flows |
+| Link test | `./build/pcp-desktop --smoke` | All 4 components + markdown probe |
+| Discovery | `./build/pcp-desktop --discover matrix.org` | 19 server versions + 3 login flows |
 | Unit tests | `ctest --test-dir build --output-on-failure` | 5/5 pass |
-| Login + sync (CLI) | `./build/progressive-desktop --login user pass && ./build/progressive-desktop --sync 3` | 3 syncs received |
-| Login + sync (GUI) | `./build/progressive-desktop` | Login dialog → main window with rooms + timeline |
+| Login + sync (CLI) | `./build/pcp-desktop --login user pass && ./build/pcp-desktop --sync 3` | 3 syncs received |
+| Login + sync (GUI) | `./build/pcp-desktop` | Login dialog → main window with rooms + timeline |
 
 ### Try the GUI
 

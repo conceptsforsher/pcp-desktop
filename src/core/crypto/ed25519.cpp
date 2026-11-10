@@ -6,7 +6,7 @@
 #include <vector>
 #include <string>
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 bool ed25519Verify(const std::string& pubKeyBase64,
                     const std::string& message,
@@ -31,4 +31,4 @@ bool ed25519Verify(const std::string& pubKeyBase64,
     return true;
 }
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

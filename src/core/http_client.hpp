@@ -1,6 +1,6 @@
-// src/core/http_client.hpp — libcurl-based HTTP client for progressive-desktop.
+// src/core/http_client.hpp — libcurl-based HTTP client for pcp-desktop.
 //
-// Replaces the JNI-based http_client.cpp in progressive_native (which
+// Replaces the JNI-based http_client.cpp in pcp_native (which
 // delegates TLS to Android's javax.net.ssl.SSLSocket via tls_bridge.cpp).
 // On desktop we use libcurl directly — supports TLS, SOCKS5 (Tor/I2P),
 // HTTP proxy, redirects, timeouts.
@@ -15,7 +15,7 @@
 #include <functional>
 #include <cstdint>
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 struct HttpRequest {
     std::string method = "GET";                // GET / POST / PUT / DELETE
@@ -92,4 +92,4 @@ HttpResponse httpPut(const std::string& url,
                      const std::unordered_map<std::string, std::string>& headers = {},
                      int timeoutMs = 30000);
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

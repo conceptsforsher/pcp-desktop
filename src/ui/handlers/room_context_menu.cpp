@@ -17,7 +17,7 @@
 #include <QPointer>
 #include <QListView>
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 RoomContextMenu::RoomContextMenu(std::shared_ptr<MatrixClient> client, TimelineModel* timelineModel,
                                    RoomListModel* roomModel, QListView* roomList,
@@ -300,4 +300,4 @@ void RoomContextMenu::showTimelineContextMenu(const QString& eventId,
     }
 }
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

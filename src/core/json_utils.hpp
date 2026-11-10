@@ -3,8 +3,8 @@
 #include <string>
 #include <string_view>
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 std::string jsonUnescape(std::string_view s);
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

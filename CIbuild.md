@@ -15,7 +15,7 @@
 - Added `rootSnapshot` + `hasRootSnapshot` to inner lambda + `#include "core/debug_log.hpp"`
 
 ### `841a710` (thread flags + use-after-move) — LINK ERROR
-- **Error**: `undefined symbol: progressive::desktop::extractThreadRootId`
+- **Error**: `undefined symbol: pcp::desktop::extractThreadRootId`
 - **Root cause**: Declared `extractThreadRootId` in `room_store.hpp` but the
   implementation in `room_store.cpp` was still named `threadRootId` (no rename)
 - **Fix**: `b49d554` renamed `threadRootId` -> `extractThreadRootId` in .cpp

@@ -5,13 +5,13 @@
 
 //
 // Compile-time toggles (set via CMake -D flags, optional):
-//   PROGRESSIVE_DISABLE_ASSERT  — removes all PROGRESSIVE_ASSERT checks
-//   PROGRESSIVE_DISABLE_LOG     — removes all LOG() output
+//   PCP_DISABLE_ASSERT  — removes all PCP_ASSERT checks
+//   PCP_DISABLE_LOG     — removes all LOG() output
 // By default (no flags): everything is ON for debug builds.
 //
 
-#ifndef PROGRESSIVE_DISABLE_ASSERT
-#define PROGRESSIVE_ASSERT(cond, msg) \
+#ifndef PCP_DISABLE_ASSERT
+#define PCP_ASSERT(cond, msg) \
     do { \
         if (!(cond)) { \
             std::fprintf(stderr, "[ASSERT] %s:%d: FAILED %s — %s\n", \
@@ -20,7 +20,7 @@
         } \
     } while(0)
 #else
-#define PROGRESSIVE_ASSERT(cond, msg) ((void)0)
+#define PCP_ASSERT(cond, msg) ((void)0)
 #endif
 
 enum class LogChannel {
@@ -32,7 +32,7 @@ enum class LogChannel {
     DBG
 };
 
-#ifndef PROGRESSIVE_DISABLE_LOG
+#ifndef PCP_DISABLE_LOG
 #define LOG(ch, fmt, ...) \
     do { \
         switch (ch) { \

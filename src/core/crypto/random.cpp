@@ -2,7 +2,7 @@
 #include "random.hpp"
 #include <random>
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 namespace {
 std::function<void(uint8_t*, size_t)>& providerRef() {
@@ -25,4 +25,4 @@ void setCryptoRandomProvider(std::function<void(uint8_t*, size_t)> provider) {
     providerRef() = std::move(provider);
 }
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

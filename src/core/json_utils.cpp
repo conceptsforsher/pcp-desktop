@@ -1,7 +1,7 @@
 // src/core/json_utils.cpp — JSON string unescape (merged from room_handler + room_store).
 #include "json_utils.hpp"
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 std::string jsonUnescape(std::string_view s) {
     std::string out;
@@ -48,4 +48,4 @@ std::string jsonUnescape(std::string_view s) {
     return out;
 }
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

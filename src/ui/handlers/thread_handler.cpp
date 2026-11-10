@@ -20,7 +20,7 @@
 #include <simdjson.h>
 #include <chrono>
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 inline constexpr int kTruncLen = 100;
 
@@ -293,4 +293,4 @@ void ThreadHandler::sendThreadReply(const std::string& roomId,
     });
 }
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

@@ -2,7 +2,7 @@
 
 > **When to run**: After all P0-P3 E2EE fixes are pushed. Each phase builds on the previous.
 > **Setup**: Create FRESH test accounts (not @t1s3/@t0n1a — those have 167 stale OTKs from the broken period).
-> **Run with**: `./build/progressive-desktop 2>&1 | tee test-$(date +%Y%m%d-%H%M).log`
+> **Run with**: `./build/pcp-desktop 2>&1 | tee test-$(date +%Y%m%d-%H%M).log`
 
 ---
 
@@ -10,8 +10,8 @@
 
 | Account | Client | Role |
 |---|---|---|
-| `@test_alpha_1:matrix.org` | Progressive (PineTab) | Main test — our client |
-| `@test_alpha_2:matrix.org` | Element/Faraday (phone/desktop) | Sends TO Progressive — tests inbound |
+| `@test_alpha_1:matrix.org` | PCP (PineTab) | Main test — our client |
+| `@test_alpha_2:matrix.org` | Element/Faraday (phone/desktop) | Sends TO PCP — tests inbound |
 | `@test_alpha_3:matrix.org` | FluffyChat (phone) | Cross-implementation test |
 | `@test_alpha_1:matrix.org` on Faraday | Element (phone) | Multi-device — same user, different device |
 
@@ -22,30 +22,30 @@
 ### Setup
 ```
 [ ] Pull + build on PineTab
-[ ] Create @test_alpha_1 on Progressive (fresh account)
+[ ] Create @test_alpha_1 on PCP (fresh account)
 [ ] Create @test_alpha_2 on Faraday/Element (fresh account)
-[ ] Delete old Progressive DB if you want 100% clean state:
-    rm ~/.local/share/progressive-desktop/session.db
+[ ] Delete old PCP DB if you want 100% clean state:
+    rm ~/.local/share/pcp-desktop/session.db
 ```
 
 ### Test
 ```
 [ ] Faraday: New room → enable encryption → invite @test_alpha_1
-[ ] Progressive: accept invite
+[ ] PCP: accept invite
 [ ] Check log: "uploadDeviceKeys: shared=0 needDeviceKeys=1" (first upload)
 [ ] Check log: "uploadDeviceKeys: SUCCESS"
 [ ] Faraday: send "hello encrypted world"
-[ ] Progressive: decrypts? → "[E2EE] DECRYPTED eid=..."
+[ ] PCP: decrypts? → "[E2EE] DECRYPTED eid=..."
 [ ] Check log: "Olm: our key found in ciphertext" (NOT "not found")
 [ ] Check log: "handleRoomKey OK"
-[ ] Progressive: send "hi back"
+[ ] PCP: send "hi back"
 [ ] Faraday: decrypts?
-[ ] Progressive: close → restart
+[ ] PCP: close → restart
 [ ] Check log: "shared=1 needDeviceKeys=0" (skip upload)
 [ ] Check log: "uploadDeviceKeys: OTKs sufficient (count=N), skipping"
 [ ] Check log: "loaded N megolm sessions" (N > 0)
 [ ] Old messages ("hello encrypted world") still decrypt?
-[ ] Faraday: send "after restart test" → Progressive: decrypts?
+[ ] Faraday: send "after restart test" → PCP: decrypts?
 ```
 
 ### Pass criteria
@@ -55,19 +55,19 @@
 - [ ] "loaded N megolm sessions" where N > 0 after restart
 - [ ] Old messages decrypt after restart
 - [ ] New messages decrypt after restart
-- [ ] Both directions decrypt (Faraday→Progressive AND Progressive→Faraday)
+- [ ] Both directions decrypt (Faraday→PCP AND PCP→Faraday)
 
 ---
 
 ## Phase 2: Persistence (restart)
 
 ```
-[ ] Close Progressive
+[ ] Close PCP
 [ ] Restart → check logs for megolm/Olm session counts
 [ ] All old messages decrypt? (not [encrypted])
-[ ] Faraday: send "persistence check" → Progressive: decrypts?
-[ ] Progressive: send "persistence reply" → Faraday: decrypts?
-[ ] Restart Progressive AGAIN → old messages still decrypt?
+[ ] Faraday: send "persistence check" → PCP: decrypts?
+[ ] PCP: send "persistence reply" → Faraday: decrypts?
+[ ] Restart PCP AGAIN → old messages still decrypt?
 ```
 
 ### Pass criteria
@@ -81,7 +81,7 @@
 ## Phase 3: Multi-Account Switch
 
 ```
-[ ] Progressive: add @test_alpha_3 as second account (via "Add Account")
+[ ] PCP: add @test_alpha_3 as second account (via "Add Account")
 [ ] Switch to @test_alpha_3
 [ ] Check log: "shared=0 needDeviceKeys=1" (new account upload)
 [ ] Check log: megolm sessions loaded
@@ -107,24 +107,24 @@
 ## Phase 4: Multi-Device (1 user, 2 devices)
 
 ```
-[ ] Setup: @test_alpha_1 logged in on Progressive (PineTab)
+[ ] Setup: @test_alpha_1 logged in on PCP (PineTab)
 [ ] Setup: @test_alpha_1 logged in on Faraday (Element, phone) — SAME user, different device
 [ ] @test_alpha_2 creates encrypted room with @test_alpha_1
 [ ] @test_alpha_2 sends "multi-device test"
-[ ] Progressive: decrypts? → "[E2EE] DECRYPTED"
+[ ] PCP: decrypts? → "[E2EE] DECRYPTED"
 [ ] Faraday: decrypts? → plaintext visible
 [ ] Check log: "shareRoomKey: user=@test_alpha_1 deviceCount=2"
 [ ] Check log: "claimed 2 one-time keys" (should claim for BOTH devices)
-[ ] Progressive: send "reply from pinetab"
+[ ] PCP: send "reply from pinetab"
 [ ] Faraday: decrypts?
 [ ] @test_alpha_2: decrypts?
 ```
 
 ### Pass criteria
-- [ ] Both Progressive AND Faraday decrypt the same message
+- [ ] Both PCP AND Faraday decrypt the same message
 - [ ] "deviceCount=2" in shareRoomKey log
 - [ ] Both devices receive room_key (grep "found device: @test_alpha_1")
-- [ ] If only Faraday decrypts (Progressive shows [encrypted]):
+- [ ] If only Faraday decrypts (PCP shows [encrypted]):
     → Settings → "Reset device keys" → restart → re-test
     → Both should decrypt after device reset
 
@@ -133,20 +133,20 @@
 ## Phase 5: Device Reset (stale OTK recovery)
 
 ```
-[ ] Progressive: Settings → "Reset device keys" → enter password
+[ ] PCP: Settings → "Reset device keys" → enter password
 [ ] Check log: "deleteDevice: http=200 ok=1" (or similar success)
-[ ] Restart Progressive
+[ ] Restart PCP
 [ ] Check log: "shared=0 needDeviceKeys=1" (fresh upload after reset)
 [ ] Check log: "uploadDeviceKeys: SUCCESS"
 [ ] Check log: "uploadDeviceKeys: account marked as shared"
-[ ] @test_alpha_2 sends message → Progressive decrypts?
-[ ] Faraday (multi-device) sends message → Progressive decrypts?
+[ ] @test_alpha_2 sends message → PCP decrypts?
+[ ] Faraday (multi-device) sends message → PCP decrypts?
 ```
 
 ### Pass criteria
 - [ ] Device deleted on server (POST /delete_devices returns 200)
 - [ ] Fresh upload after restart (shared=0)
-- [ ] Both other clients can send encrypted messages to Progressive
+- [ ] Both other clients can send encrypted messages to PCP
 - [ ] No stale OTKs remaining (OTK count starts fresh, not 167)
 
 ---
@@ -155,16 +155,16 @@
 
 ```
 [ ] @test_alpha_3 (FluffyChat) creates encrypted room
-[ ] Invites @test_alpha_1 (Progressive)
-[ ] Progressive: accept invite
-[ ] FluffyChat: send message → Progressive: decrypts?
-[ ] Progressive: send reply → FluffyChat: decrypts?
+[ ] Invites @test_alpha_1 (PCP)
+[ ] PCP: accept invite
+[ ] FluffyChat: send message → PCP: decrypts?
+[ ] PCP: send reply → FluffyChat: decrypts?
 [ ] Check log: no "Olm: our key not found in ciphertext"
 [ ] Check log: "DECRYPTED" for FluffyChat messages
 ```
 
 ### Pass criteria
-- [ ] Both directions decrypt (FluffyChat→Progressive AND Progressive→FluffyChat)
+- [ ] Both directions decrypt (FluffyChat→PCP AND PCP→FluffyChat)
 - [ ] No Olm key mismatch errors
 - [ ] No "no megolm session" errors
 
@@ -175,7 +175,7 @@
 ```
 [ ] Send message, close app DURING send → restart → no crash
 [ ] Leave encrypted room → rejoin → messages decrypt?
-[ ] Create encrypted room from Progressive → invite others → they decrypt?
+[ ] Create encrypted room from PCP → invite others → they decrypt?
 [ ] Send image in encrypted room → check for crash (image preview is separate bug)
 [ ] Account A sends → switch to B while sync running → no crash → switch back → A's messages decrypt?
 [ ] OTK auto-refresh: observe logs for "OTKs sufficient" vs "uploading fresh keys"
@@ -185,7 +185,7 @@
 ### Pass criteria
 - [ ] No crash on any edge case
 - [ ] Messages decrypt after rejoin
-- [ ] Room created from Progressive works (both directions)
+- [ ] Room created from PCP works (both directions)
 - [ ] No state corruption during rapid account switches
 ```
 
@@ -195,14 +195,14 @@
 [Depends on: Phase 2 SAS state machine + dialog]
 
 ```
-[ ] Progressive + Element (same account): Progressive → Settings → "Verify this device"
+[ ] PCP + Element (same account): PCP → Settings → "Verify this device"
 [ ] Element: accepts incoming verification request
 [ ] Both: 7 emojis displayed — do they match?
 [ ] Both: confirm match → verification complete
-[ ] Element: Progressive device shows GREEN shield (verified)
-[ ] Progressive: send message → Element: green shield on room
-[ ] Progressive: disconnect → reconnect → device still verified?
-[ ] FluffyChat: verify with Progressive → emojis match?
+[ ] Element: PCP device shows GREEN shield (verified)
+[ ] PCP: send message → Element: green shield on room
+[ ] PCP: disconnect → reconnect → device still verified?
+[ ] FluffyChat: verify with PCP → emojis match?
 [ ] Cancel mid-flow → m.key.verification.cancel sent
 [ ] Timeout: wait 10 min without confirming → verification expires
 [ ] User verification: open user profile → "Verify"
@@ -212,7 +212,7 @@
 - [ ] Emojis match on both sides (7 emojis, identical)
 - [ ] Device shows green shield after verification
 - [ ] Verification survives disconnect/reconnect
-- [ ] Cross-client works (Progressive ↔ Element, ↔ FluffyChat)
+- [ ] Cross-client works (PCP ↔ Element, ↔ FluffyChat)
 - [ ] Cancel propagates correctly
 - [ ] Timeout handles gracefully
 
@@ -271,7 +271,7 @@
 [ ] Exhaust all 100 OTKs (let auto-refresh upload only when low, or claim rapidly)
 [ ] Check: /sync returns device_unused_fallback_key_types: ["signed_curve25519"]
 [ ] New device creates Olm session via fallback key → succeeds
-[ ] Element: send encrypted message → Progressive decrypts
+[ ] Element: send encrypted message → PCP decrypts
 [ ] Fallback key used → mark as published → generate new fallback
 ```
 
@@ -288,8 +288,8 @@
 
 ```
 [ ] New device (FluffyChat, same account): joins room
-[ ] FluffyChat sends m.room_key_request → Progressive receives
-[ ] Progressive: shouldShareKey → yes (verified) → send m.forwarded_room_key
+[ ] FluffyChat sends m.room_key_request → PCP receives
+[ ] PCP: shouldShareKey → yes (verified) → send m.forwarded_room_key
 [ ] FluffyChat: import forwarded key → decrypt history
 [ ] Untrusted device request: shouldShareKey → no → don't forward
 [ ] Request cancellation + expiry (10-min window)

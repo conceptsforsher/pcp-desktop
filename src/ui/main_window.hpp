@@ -28,7 +28,7 @@ class QToolBar;
 class QAction;
 class QLabel;
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 class ToolbarHandler;
 class RoomHandler;
@@ -114,4 +114,4 @@ private:
     AccountSwitcher* accountSwitcher_ = nullptr;
 };
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

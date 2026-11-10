@@ -3,7 +3,7 @@
 #include <random>
 #include <cstdio>
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 inline std::string generateUUID() {
     static std::random_device rd;
@@ -15,4 +15,4 @@ inline std::string generateUUID() {
     return std::string("pd-") + buf;
 }
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

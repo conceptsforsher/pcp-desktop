@@ -9,7 +9,7 @@
 class QPushButton;
 class QFormLayout;
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 class ColorSettingsDialog : public QDialog {
     Q_OBJECT
@@ -30,4 +30,4 @@ private:
                  const std::string& qsettingsKey, QFormLayout* form);
 };
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

@@ -5,7 +5,7 @@
 #include <olm/olm.h>
 #include <olm/sas.h>
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 struct SasSession {
     void* sas = nullptr;
@@ -42,4 +42,4 @@ std::string sasCalculateMac(SasSession& sas, const std::string& message,
 bool sasVerifyMac(SasSession& sas, const std::string& theirMacBase64,
                    const std::string& message, const std::string& info);
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

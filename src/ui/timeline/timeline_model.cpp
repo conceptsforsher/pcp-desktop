@@ -3,9 +3,9 @@
 #include <QVariantList>
 #include <QMetaType>
 
-Q_DECLARE_METATYPE(progressive::desktop::ReactionData)
+Q_DECLARE_METATYPE(pcp::desktop::ReactionData)
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 static std::string normEmoji(const std::string& e) {
     std::string out;
@@ -348,4 +348,4 @@ int TimelineModel::findRow(const std::string& eventId) const {
     return it != rowIndex_.end() ? it->second : -1;
 }
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

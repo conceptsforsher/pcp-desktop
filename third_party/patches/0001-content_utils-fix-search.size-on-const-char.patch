@@ -1,7 +1,7 @@
-diff --git a/progressive/src/main/cpp/src/content_utils.cpp b/progressive/src/main/cpp/src/content_utils.cpp
+diff --git a/pcp/src/main/cpp/src/content_utils.cpp b/pcp/src/main/cpp/src/content_utils.cpp
 index a9c72a5..6998d0f 100644
---- a/progressive/src/main/cpp/src/content_utils.cpp
-+++ b/progressive/src/main/cpp/src/content_utils.cpp
+--- a/pcp/src/main/cpp/src/content_utils.cpp
++++ b/pcp/src/main/cpp/src/content_utils.cpp
 @@ -87,15 +87,16 @@ std::string buildMxcUri(const std::string& serverName, const std::string& mediaI
  MessageType parseMessageType(const std::string& contentJson) {
      // Extract msgtype field:

@@ -13,7 +13,7 @@ class QLabel;
 class QListView;
 class QPushButton;
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 class MatrixClient;
 class RoomStore;
@@ -90,4 +90,4 @@ private:
     std::unordered_map<std::string, std::string> memberAvatarCache_;
 };
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

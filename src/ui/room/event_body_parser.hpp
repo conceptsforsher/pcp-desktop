@@ -7,7 +7,7 @@
 #include <string>
 #include <simdjson.h>
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 // Parse a decrypted Megolm plaintext JSON into `outType` and `outContentJson`.
 // The plaintext JSON format is:
@@ -29,4 +29,4 @@ inline bool parsePlaintextBody(const std::string& plaintextJson,
     return true;
 }
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

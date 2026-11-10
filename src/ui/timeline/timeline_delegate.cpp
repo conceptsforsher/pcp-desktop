@@ -19,11 +19,11 @@
 #include <QUrl>
 #include <QRegularExpression>
 #include <QGuiApplication>
-#include <progressive/markdown.hpp>
+#include <pcp/markdown.hpp>
 
-using namespace progressive::desktop::timeline_layout;
+using namespace pcp::desktop::timeline_layout;
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 TimelineDelegate::TimelineDelegate(ImageLoader* loader, QObject* parent)
     : QStyledItemDelegate(parent), loader_(loader) {}
@@ -58,7 +58,7 @@ void TimelineDelegate::paint(QPainter* p, const QStyleOptionViewItem& opt,
     }
 
     QString type = idx.data(TimelineModel::TypeRole).toString();
-    if (type == "progressive.system") {
+    if (type == "pcp.system") {
         timeline_render::drawSystemRow(p, opt.rect, idx, type);
     } else {
         int width = opt.rect.width();
@@ -80,7 +80,7 @@ QSize TimelineDelegate::sizeHint(const QStyleOptionViewItem& opt,
     }
 
     QString type = idx.data(TimelineModel::TypeRole).toString();
-    if (type == "progressive.system") {
+    if (type == "pcp.system") {
         return QSize(opt.rect.width() > kMinUsableViewW ? opt.rect.width() : kFallbackViewW, 28);
     }
 
@@ -126,7 +126,7 @@ bool TimelineDelegate::editorEvent(QEvent* event, QAbstractItemModel* model,
     QString msgtype = index.data(TimelineModel::MsgTypeRole).toString();
     QString body = index.data(TimelineModel::BodyRole).toString();
     QString type = index.data(TimelineModel::TypeRole).toString();
-    if (type == "progressive.system") return false;
+    if (type == "pcp.system") return false;
 
     int width = option.rect.width();
     int bubbleW = qMin(kMaxBubbleW, width - kAvatarSize - kGap - kMargin * 2);
@@ -207,7 +207,7 @@ bool TimelineDelegate::editorEvent(QEvent* event, QAbstractItemModel* model,
     if (msgtype == "m.text" || msgtype.isEmpty()) {
         QTextDocument doc;
         doc.setDefaultFont(QFont(QApplication::font().family(), ds(kFontSizeBody)));
-        std::string html = progressive::markdownToHtml(body.toStdString());
+        std::string html = pcp::markdownToHtml(body.toStdString());
         doc.setHtml(html.empty() ? body.toHtmlEscaped() : QString::fromStdString(html));
         doc.setTextWidth(bubbleW - kBubblePadding * 2);
         int textY = bubbleY + kPadTop;
@@ -230,4 +230,4 @@ bool TimelineDelegate::editorEvent(QEvent* event, QAbstractItemModel* model,
     return true;
 }
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

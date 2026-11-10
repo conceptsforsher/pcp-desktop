@@ -9,7 +9,7 @@
 #include <iostream>
 #include "core/thread_pool.hpp"
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 void E2eeInitHandler::init(MatrixClient* client, SessionStore* store,
                              SyncEngine* sync,
@@ -131,4 +131,4 @@ void E2eeInitHandler::persistCrypto(MatrixClient* client, SessionStore* store,
     if (!olmSessionsPickle.empty()) store->saveOlmSessions(olmSessionsPickle, pickleKey);
 }
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop
