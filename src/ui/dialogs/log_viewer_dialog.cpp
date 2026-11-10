@@ -16,7 +16,7 @@
 #include <QVBoxLayout>
 #include <algorithm>
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 namespace {
 QColor channelColor(LogChannel ch) {
@@ -160,4 +160,4 @@ void LogViewerDialog::rebuild() {
     list_->verticalScrollBar()->setValue(list_->verticalScrollBar()->maximum());
 }
 
-}  // namespace progressive::desktop
+}  // namespace pcp::desktop

@@ -1,4 +1,4 @@
-# AGENTS.md — Critical Coding Rules for Progressive Chat
+# AGENTS.md — Critical Coding Rules for PCP
 
 **Read this file, code_map.json, and memory/REFERENCE.md before any code change.**
 **memory/DREAM.md explains WHY the architecture exists.**
@@ -62,11 +62,11 @@ grep -rn "= new.*client_" src/ --include="*.cpp"
 **B21, B38, B39 (RoomContextMenu), B40 (ThreadHandler) — all fixed by adding setClient() + propagation.**
 
 ### 5. cd to project root first
-All paths relative to project root: `src/ui/room_store.cpp` not `/home/user/progressive-desktop/...`
+All paths relative to project root: `src/ui/room_store.cpp` not `/home/user/pcp-desktop/...`
 
 ### 6. Read before edit. Build after each change.
 ```bash
-ninja -C build CMakeFiles/progressive-desktop.dir/src/ui/<path>/<file>.cpp.o
+ninja -C build CMakeFiles/pcp-desktop.dir/src/ui/<path>/<file>.cpp.o
 ```
 If build or tests fail → revert. Never push broken code.
 
@@ -75,7 +75,7 @@ If build or tests fail → revert. Never push broken code.
 ## Dependencies
 - libsodium (system package) — ed25519 keypair generation + curve25519/AEAD for
   cross-signing (Phase 6) and key backup (Phase 7). Arch/PineTab: `pacman -S libsodium`.
-  CI installs `libsodium-dev`. Linked to progressive_core via PkgConfig::SODIUM.
+  CI installs `libsodium-dev`. Linked to pcp_core via PkgConfig::SODIUM.
 - OpenSSL (libcrypto) — AES-256-CBC for SSSS (m.secret_storage.v1.aes-hmac-sha2)
   + EVP_PKEY_ED25519 public-key derivation (libsodium's seed_keypair segfaults
   on some AArch64 builds). CI installs `libssl-dev`. Linked via OpenSSL::Crypto.
@@ -90,13 +90,13 @@ If build or tests fail → revert. Never push broken code.
 
 ```bash
 # After each change (fast):
-ninja -C build CMakeFiles/progressive-desktop.dir/src/ui/handlers/room_handler.cpp.o
+ninja -C build CMakeFiles/pcp-desktop.dir/src/ui/handlers/room_handler.cpp.o
 
 # Full build + tests (before push):
 ./scripts/build.sh all
 
 # User's command on PineTab:
-git pull && cmake --preset pinetab2 && cmake --build build -j4 && ./build/progressive-desktop
+git pull && cmake --preset pinetab2 && cmake --build build -j4 && ./build/pcp-desktop
 ```
 
 ---
@@ -105,7 +105,7 @@ git pull && cmake --preset pinetab2 && cmake --build build -j4 && ./build/progre
 
 | Directory | Purpose | New files go here? |
 |---|---|---|
-| `src/core/` | Fetched at configure time from `progressive-chat/progressive-core` (Qt-free Matrix logic). Edit the core repo, NOT this dir | No Qt includes allowed |
+| `src/core/` | Fetched at configure time from `pcp-chat/pcp-core` (Qt-free Matrix logic). Edit the core repo, NOT this dir | No Qt includes allowed |
 | `src/ui/handlers/` | Business logic | ✅ New handlers |
 | `src/ui/chat/` | Chat widgets | ✅ Chat UI |
 | `src/ui/timeline/` | Message rendering | ✅ Layout/painter |
@@ -114,26 +114,26 @@ git pull && cmake --preset pinetab2 && cmake --build build -j4 && ./build/progre
 | `src/ui/shared/` | Theme, images, notifications | ✅ Shared utilities |
 | `tests/` | Test files | ✅ New tests |
 
-### The core is the progressive-chat/progressive-core repo
+### The core is the pcp-chat/pcp-core repo
 
 `src/core/` no longer lives in this repo. It is fetched via CMake
-FetchContent from `progressive-chat/progressive-core` (GIT_TAG main) into
-`build/_deps/progressive-core-src/` at configure time. Edit the core there,
+FetchContent from `pcp-chat/pcp-core` (GIT_TAG main) into
+`build/_deps/pcp-core-src/` at configure time. Edit the core there,
 push it, then re-run cmake here (reconfigure picks up the new commit).
 
 The core MUST remain Qt-free. Rationale: Android NDK and WebAssembly
-builds link `progressive_core` without Qt — any Qt include in core fails
-the build (link-time enforcement: `progressive_core` does not link Qt).
+builds link `pcp_core` without Qt — any Qt include in core fails
+the build (link-time enforcement: `pcp_core` does not link Qt).
 CI guard (in the core repo): grep-based check, runs in <1s.
-This protects the sister-project design (`progressive-android-next`)
-and a future WASM target (JS UI + Embind to progressive_core).
+This protects the sister-project design (`pcp-android-next`)
+and a future WASM target (JS UI + Embind to pcp_core).
 
 ### Prebuilt core artifact (fast builds)
 
 The core repo's CI builds + tests every main push (unity build) and
-publishes `libprogressive_native.a` + `libprogressive_core.a` for x86_64
+publishes `libpcp_native.a` + `libpcp_core.a` for x86_64
 and aarch64 as a per-commit GitHub release (`core-<sha>`). This repo
-configures `PROGRESSIVE_CORE_USE_ARTIFACT=ON`: at configure time it
+configures `PCP_CORE_USE_ARTIFACT=ON`: at configure time it
 downloads the archive for the resolved commit + architecture and skips
 compiling the core (PineTab full build ~10 min instead of ~40-50 min).
 If the release is not published yet (race with CI), it falls back to
@@ -143,7 +143,7 @@ compiling from source automatically.
 
 ### Every .hpp file
 - `#pragma once`
-- `namespace progressive::desktop { ... }`
+- `namespace pcp::desktop { ... }`
 - `Q_OBJECT` if QObject-derived
 - Forward-declare dependencies, max 5 `#include`s
 - Max 350 lines (UI), 300 (core) — split if larger
@@ -246,7 +246,7 @@ got room keys — the multi-device CI test caught both. Rule:
 ```cpp
 #include "core/debug_log.hpp"
 LOG(LogChannel::GUI, "msg=%s", str);
-PROGRESSIVE_ASSERT(cond, "reason");
+PCP_ASSERT(cond, "reason");
 TraceFn _t("functionName");  // -> on enter, <- on exit
 ```
 Channels: GUI, SYNC, E2EE, NET, MEM, DBG. F12 = dump state.
@@ -389,8 +389,8 @@ If a class calls `httpPost`/`httpPut` with auth headers (`makeAuthHeaders(token)
 See `docs/E2EE.md` for full multi-account E2EE architecture and the 167 stale OTKs cautionary tale.
 
 ### E2EE Vendored-Native Audit — FAKE Boilerplate Trap Warning (history)
-The old `third_party/progressive-android-experiments/` submodule (removed —
-now vendored as `native/` in `progressive-chat/progressive-core`) had ~90
+The old `third_party/pcp-android-experiments/` submodule (removed —
+now vendored as `native/` in `pcp-chat/pcp-core`) had ~90
 E2EE-relevant files. ~12 are REAL (libolm-backed, safe to port). ~30+ are
 FAKE (auto-generated JSON-echo boilerplate). **Do NOT port files named
 `*_v4.cpp`, `crypto_ops.cpp`, `sas_manager.cpp`, `backup_controller.cpp`,
@@ -431,5 +431,5 @@ See `docs/E2EE.md` for full implementation notes, common mistakes, recovery chai
 ```bash
 git push 2>&1 | grep -q "Everything up-to-date\|-> main" || { echo "NOT PUSHED"; false; }
 ctest --test-dir build 2>&1 | grep -q "100% tests passed" || { echo "TESTS BROKEN"; false; }
-echo "[OK] Pushed. git pull && git submodule update --init --recursive && cmake --preset pinetab2 && cmake --build build -j4 && ./build/progressive-desktop"
+echo "[OK] Pushed. git pull && git submodule update --init --recursive && cmake --preset pinetab2 && cmake --build build -j4 && ./build/pcp-desktop"
 ```

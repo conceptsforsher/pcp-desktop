@@ -8,7 +8,7 @@
 
 #include "timeline_layout.hpp"
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 class ImageLoader;
 
@@ -60,4 +60,4 @@ private:
     static constexpr int kLayoutCacheMax = 2048;
 };
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

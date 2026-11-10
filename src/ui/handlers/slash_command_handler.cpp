@@ -8,7 +8,7 @@
 #include <QMetaObject>
 #include <QPointer>
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 SlashCommandHandler::SlashCommandHandler(TimelineModel* timelineModel, AuthHandler* auth,
                                          QObject* parent)
@@ -178,4 +178,4 @@ void SlashCommandHandler::runLogout(const std::string& roomId, const std::string
     if (auth_) auth_->logout();
 }
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

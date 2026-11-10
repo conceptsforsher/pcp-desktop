@@ -15,14 +15,14 @@ static int failures = 0;
     else { std::cout << "ok: " << msg << "\n"; } \
 } while (0)
 
-using progressive::desktop::SasSession;
-using progressive::desktop::sasCreate;
-using progressive::desktop::sasSetTheirKey;
-using progressive::desktop::sasGenerateBytes;
-using progressive::desktop::sasCalculateMac;
-using progressive::desktop::sasVerifyMac;
-using progressive::desktop::computeSasEmojis;
-using progressive::desktop::computeSasDecimals;
+using pcp::desktop::SasSession;
+using pcp::desktop::sasCreate;
+using pcp::desktop::sasSetTheirKey;
+using pcp::desktop::sasGenerateBytes;
+using pcp::desktop::sasCalculateMac;
+using pcp::desktop::sasVerifyMac;
+using pcp::desktop::computeSasEmojis;
+using pcp::desktop::computeSasDecimals;
 
 static bool isBase64(const std::string& s) {
     static const char* CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";

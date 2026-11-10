@@ -1,6 +1,6 @@
 # memory/LESSONS.md — What I've been taught (and quizzes)
 
-> Plain-language lessons about how Progressive Chat works. Written for the user
+> Plain-language lessons about how PCP works. Written for the user
 > (not a coder) to reread and be quizzed on. If asked, I ask questions from here.
 
 ---
@@ -32,7 +32,7 @@ inbound at all — which is why the always-on presence-node daemon idea exists.)
 **Core idea:** One SQLite file on disk holds your app state. The server stores what's
 *shared*; the file stores what's *yours*.
 
-- File: `~/.local/share/progressive-desktop/session.db` (`main.cpp:236-242`).
+- File: `~/.local/share/pcp-desktop/session.db` (`main.cpp:236-242`).
 - Tables (`session_store.cpp:50-78`):
   | Table | Holds |
   |---|---|
@@ -182,8 +182,8 @@ curl-multi/libevent (Nheko's coeurl) over a full async runtime.
 - Design: `/sync?timeout=3000` = **long-poll**, not polling. The server holds the open
   connection and answers THE INSTANT new data arrives; 3s is only the "nothing new" ceiling.
 - Polling = messages wait for YOU. Long-polling = you wait for messages.
-- BUT real-world: Progressive→Progressive (plaintext) both wait ~3s; Element→Element instant;
-  Progressive→Element arrives late on Element too → delay is on Progressive's SEND side.
+- BUT real-world: PCP→PCP (plaintext) both wait ~3s; Element→Element instant;
+  PCP→Element arrives late on Element too → delay is on PCP's SEND side.
   Tracked as a bug in PROGRESS.md (needs diagnostic LOGs, no guess-fix).
 
 ### Round 3 — "You click a room" (half right: frame cached, history not)
@@ -215,7 +215,7 @@ curl-multi/libevent (Nheko's coeurl) over a full async runtime.
   m.fully_read as ephemeral), and only affects what's on screen now.
 - Room list paints "X is typing..." (`room_list_delegate.cpp:200-210`).
 - FRAGILE because it depends on sync timing (the ~3s issue from Round 2), isn't stored, and
-  Progressive can't SEND typing yet (M2 — PUT /typing not built).
+  PCP can't SEND typing yet (M2 — PUT /typing not built).
 - **Verified gap (tracked as bug):** `RoomListModel::upsertRoom` (room_list_model.cpp:60)
   never copies `typingUsers` into the existing room and never emits dataChanged for it → the
   sidebar indicator likely doesn't refresh live. And there's NO in-chat typing UI at all.
@@ -242,7 +242,7 @@ curl-multi/libevent (Nheko's coeurl) over a full async runtime.
   W16 (offline message cache) exists — persist last N events to SQLite so re-showing is local.
 
 ### Round 10 — "You click a file someone sent" (refused to guess — CORRECT reasoning)
-- Intended path (code): click → `downloadMedia` → write `/tmp/progressive_*.pdf` →
+- Intended path (code): click → `downloadMedia` → write `/tmp/pcp_*.pdf` →
   `QDesktopServices::openUrl` (`attachment_handler.cpp:42-62`). Temp file never cleaned/saved.
 - BUT user's reality: card renders (color bar + 📄/🎵 + filename) yet CANNOT download/open.
 - **CONFIRMED ROOT CAUSE:** `mxcUrl` only parsed for m.image/m.video (`room_store.cpp:376`),

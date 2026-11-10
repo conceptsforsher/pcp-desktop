@@ -36,7 +36,7 @@
 
 #include "core/utils.hpp"
 
-#include <progressive/event_models.hpp>
+#include <pcp/event_models.hpp>
 
 #include "core/version.h"
 #include "core/memory_stats.hpp"
@@ -53,7 +53,7 @@
 #include <iostream>
 #include <cstdio>
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 namespace {
 inline constexpr int kDefaultWinW = 1100;
@@ -74,7 +74,7 @@ void MainWindow::setClient(std::shared_ptr<MatrixClient> client) {
             homeData = std::string(home) + "/.local/share";
             dataHome = homeData.c_str();
         }
-        return std::string(dataHome) + "/progressive-desktop/sessions_backup/";
+        return std::string(dataHome) + "/pcp-desktop/sessions_backup/";
     });
     client_->setInvisibleMode(PrefsDialog::invisibleMode());
     sync_.decryptor()->setShareKeysVerifiedOnly(PrefsDialog::shareKeysVerifiedOnly());
@@ -102,7 +102,7 @@ void MainWindow::setSessionStore(std::shared_ptr<SessionStore> store) {
 }
 
 MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent) {
-    setWindowTitle("Progressive Chat — Desktop");
+    setWindowTitle("PCP — Desktop");
     resize(kDefaultWinW, kDefaultWinH);
 
     imageLoader_ = new ImageLoader(nullptr, this);
@@ -224,7 +224,7 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent) {
         roomModel_->clear(); timelineModel_->clear();
         timelineView_->hide(); timelinePlaceholder_->show();
         messageEdit_->hide(); roomHandler_->clearCurrentRoom();
-        setWindowTitle("Progressive Chat — Desktop");
+        setWindowTitle("PCP — Desktop");
         auth_->showLoginDialog();
     });
 
@@ -592,4 +592,4 @@ void MainWindow::updateStatusText() {
             .arg(s).arg(lastStats_.roomsJoined).arg(lastStats_.timelineEvents));
     }
 }
-} // namespace progressive::desktop
+} // namespace pcp::desktop

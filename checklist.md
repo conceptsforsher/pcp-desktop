@@ -320,7 +320,7 @@ completed items are removed.
 - [x] Key-request delivery with stale peer OTK pools: when encrypted requests
       fail (OTK sig INVALID), fall back to the PLAIN "*" wildcard
       m.room_key_request (Element sends requests in the clear) — requests now
-      reach peers even with stale OTKs (progressive<->progressive deadlock).
+      reach peers even with stale OTKs (pcp<->pcp deadlock).
 - [x] Image preview (Element/Nheko parity): images no longer render a
       filename text bubble + grey rect — one bubble, caption inside the image
       area; mxcs uploaded by this process are exempt from the negative cache

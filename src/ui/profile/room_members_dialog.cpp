@@ -20,7 +20,7 @@
 
 #include <simdjson.h>
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 namespace {
 inline constexpr int kDialogW = 400;
 inline constexpr int kDialogH = 300;
@@ -319,4 +319,4 @@ void RoomMembersDialog::startVerifyForUser(const QString& userId) {
     QMessageBox::information(this, "Verify", "No other devices found to verify.");
 }
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

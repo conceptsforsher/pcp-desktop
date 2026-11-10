@@ -15,7 +15,7 @@
 #include <unordered_map>
 #include <unordered_set>
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 class RoomListModel : public QAbstractListModel {
     Q_OBJECT
@@ -80,4 +80,4 @@ private:
 
 };
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

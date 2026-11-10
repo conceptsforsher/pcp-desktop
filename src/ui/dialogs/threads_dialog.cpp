@@ -14,7 +14,7 @@
 #include <simdjson.h>
 #include <cstdio>
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 namespace {
 inline constexpr int kThreadsW  = 640;
@@ -206,4 +206,4 @@ void ThreadsDialog::onThreadClicked(QListWidgetItem* item) {
     if (onOpenThread_) onOpenThread_(eventId);
 }
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

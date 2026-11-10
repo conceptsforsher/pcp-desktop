@@ -14,9 +14,9 @@
                 "CMAKE_CXX_COMPILER_LAUNCHER": "ccache",
                 "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
                 "CMAKE_EXE_LINKER_FLAGS": "-fuse-ld=mold",
-                "PROGRESSIVE_LTO": "OFF",
-                "PROGRESSIVE_MOBILE": "OFF",
-                "PROGRESSIVE_BUILD_TESTS": "ON"
+                "PCP_LTO": "OFF",
+                "PCP_MOBILE": "OFF",
+                "PCP_BUILD_TESTS": "ON"
             }
         },
         {
@@ -29,9 +29,9 @@
                 "CMAKE_BUILD_TYPE": "Release",
                 "CMAKE_WARN_DEPRECATED": "OFF",
                 "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
-                "PROGRESSIVE_LTO": "ON",
-                "PROGRESSIVE_MOBILE": "OFF",
-                "PROGRESSIVE_BUILD_TESTS": "ON"
+                "PCP_LTO": "ON",
+                "PCP_MOBILE": "OFF",
+                "PCP_BUILD_TESTS": "ON"
             }
         },
         {
@@ -44,9 +44,9 @@
                 "CMAKE_BUILD_TYPE": "Release",
                 "CMAKE_WARN_DEPRECATED": "OFF",
                 "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
-                "PROGRESSIVE_LTO": "OFF",
-                "PROGRESSIVE_MOBILE": "OFF",
-                "PROGRESSIVE_BUILD_TESTS": "ON",
+                "PCP_LTO": "OFF",
+                "PCP_MOBILE": "OFF",
+                "PCP_BUILD_TESTS": "ON",
                 "CMAKE_C_COMPILER_LAUNCHER": "ccache",
                 "CMAKE_CXX_COMPILER_LAUNCHER": "ccache"
             }

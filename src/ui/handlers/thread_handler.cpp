@@ -21,7 +21,7 @@
 #include <simdjson.h>
 #include <chrono>
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 inline constexpr int kTruncLen = 100;
 
@@ -282,7 +282,7 @@ void ThreadHandler::sendThreadReply(const std::string& roomId,
                 if (guard.isNull() || self.isNull()) return;
                 if (sharedFresh) {
                     DisplayedEvent sys;
-                    sys.type = "progressive.system";
+                    sys.type = "pcp.system";
                     sys.eventId = "rks" + sessId.substr(0, 8) + "_" + std::to_string(ts);
                     sys.originServerTs = ts;
                     sys.senderName = "system";
@@ -312,4 +312,4 @@ void ThreadHandler::sendThreadReply(const std::string& roomId,
     });
 }
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

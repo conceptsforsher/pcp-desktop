@@ -11,7 +11,7 @@ class QLabel;
 class QPushButton;
 class QWidget;
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 class MatrixClient;
 class SyncEngine;
@@ -55,4 +55,4 @@ private:
     std::string dialogTxnId_;
 };
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

@@ -6,7 +6,7 @@
 
 class QLabel;
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 class MatrixClient;
 class TimelineModel;
@@ -27,4 +27,4 @@ private:
     QLabel* statusLabel_ = nullptr;
 };
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

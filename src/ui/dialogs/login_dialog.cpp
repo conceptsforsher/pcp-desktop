@@ -24,14 +24,14 @@
 #include <filesystem>
 #include <cstdlib>
 
-#include <progressive/well_known.hpp>
+#include <pcp/well_known.hpp>
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 LoginDialog::LoginDialog(MatrixClient* client, SessionStore* store, QWidget* parent)
     : QDialog(parent), client_(client), store_(store) {
 
-    setWindowTitle("Progressive Chat — Login");
+    setWindowTitle("PCP — Login");
     setModal(true);
 
     serverCombo_ = new QComboBox(this);
@@ -159,8 +159,8 @@ void LoginDialog::onRegisterClicked() {
         if (store_) {
             const char* xdg = getenv("XDG_DATA_HOME");
             std::string dataPath;
-            if (xdg && xdg[0]) { dataPath = std::string(xdg) + "/progressive-desktop"; }
-            else { const char* home = getenv("HOME"); dataPath = std::string(home ? home : "/tmp") + "/.local/share/progressive-desktop"; }
+            if (xdg && xdg[0]) { dataPath = std::string(xdg) + "/pcp-desktop"; }
+            else { const char* home = getenv("HOME"); dataPath = std::string(home ? home : "/tmp") + "/.local/share/pcp-desktop"; }
             std::filesystem::create_directories(dataPath);
             QString dbPath = QString::fromStdString(dataPath + "/session.db");
         store_->open(dbPath.toStdString());
@@ -246,7 +246,7 @@ void LoginDialog::onRegisterClicked() {
                     "only) — no chat app and no browser can bypass that "
                     "policy.\n\n"
                     "You can register normally on servers that allow it, "
-                    "like progressive.chat.\n\n"
+                    "like pcp.chat.\n\n"
                     "If you still want to look at this server's page:\n%1")
                 .arg(regUrl),
             QMessageBox::NoButton, this);
@@ -319,7 +319,7 @@ void LoginDialog::onLoginClicked() {
     // Generate a unique device_id for this installation if not already set.
     // This prevents M_UNKNOWN_TOKEN when multiple devices share the same ID.
     std::string deviceId = client_->account().deviceId;
-    if (deviceId.empty() || deviceId == "PROGRESSIVE_DESKTOP") {
+    if (deviceId.empty() || deviceId == "PCP_DESKTOP") {
         deviceId = generateUUID();
     }
     auto result = client_->loginWithPassword(userStr, pass.toStdString(), deviceId);
@@ -343,8 +343,8 @@ void LoginDialog::onLoginClicked() {
     if (store_ && !store_->isOpen()) {
         const char* xdg = getenv("XDG_DATA_HOME");
         std::string dataPath;
-        if (xdg && xdg[0]) { dataPath = std::string(xdg) + "/progressive-desktop"; }
-        else { const char* home = getenv("HOME"); dataPath = std::string(home ? home : "/tmp") + "/.local/share/progressive-desktop"; }
+        if (xdg && xdg[0]) { dataPath = std::string(xdg) + "/pcp-desktop"; }
+        else { const char* home = getenv("HOME"); dataPath = std::string(home ? home : "/tmp") + "/.local/share/pcp-desktop"; }
         std::filesystem::create_directories(dataPath);
         QString dbPath = QString::fromStdString(dataPath + "/session.db");
         bool opened = store_->open(dbPath.toStdString());
@@ -361,4 +361,4 @@ void LoginDialog::onLoginClicked() {
     accept();
 }
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

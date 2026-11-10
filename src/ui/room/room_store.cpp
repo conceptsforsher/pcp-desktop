@@ -22,7 +22,7 @@
 #include <simdjson.h>
 #include "core/json_utils.hpp"
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 // Forward declaration (the helpers were moved to SyncApplier; this stays).
 static void appendTimelineForRoom(const std::string& roomId,
@@ -111,7 +111,7 @@ void RoomStore::batchLoadRoomStates(RoomListModel* model, LifeToken token) {
 
 static DisplayedEvent makeSystemEvent(const FastEvent& e) {
     DisplayedEvent sys;
-    sys.type = "progressive.system";
+    sys.type = "pcp.system";
     sys.eventId = std::string(e.eventId);
     sys.originServerTs = e.originServerTs;
     sys.senderName = "system";
@@ -193,4 +193,4 @@ static void appendTimelineForRoom(const std::string& roomId,
         model->addReaction(pr.targetId, pr.emoji, pr.sender);
 }
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

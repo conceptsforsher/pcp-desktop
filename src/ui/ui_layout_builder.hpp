@@ -11,7 +11,7 @@ class QComboBox;
 class QAction;
 class QWidget;
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 class ImageLoader;
 class RoomListModel;
@@ -45,4 +45,4 @@ UILayout buildMainWindowLayout(QWidget* window,
     TimelineModel* timelineModel,
     TimelineDelegate* timelineDelegate);
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

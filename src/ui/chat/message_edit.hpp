@@ -17,7 +17,7 @@ Q_DECLARE_METATYPE(std::string)
 
 class QLabel;
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 class MessageEdit : public QWidget {
     Q_OBJECT
@@ -66,5 +66,5 @@ private:
     void setupUi();
 };
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop
 

@@ -7,7 +7,7 @@
 class QWidget;
 class QLabel;
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 class MatrixClient;
 class TimelineModel;
@@ -34,4 +34,4 @@ void handlePin(QPointer<QWidget> parent, const std::shared_ptr<MatrixClient>& cl
 void handleCopyLink(QPointer<QWidget> parent, const std::string& roomId,
                      const std::string& eventId, QLabel* statusLabel);
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

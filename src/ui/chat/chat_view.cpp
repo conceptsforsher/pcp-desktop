@@ -24,7 +24,7 @@
 #include <sstream>
 #include <simdjson.h>
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 ChatView::ChatView(std::shared_ptr<MatrixClient> client, TimelineModel* model, MessageEdit* edit,
                    SyncEngine* sync, QWidget* parent)
@@ -247,7 +247,7 @@ void ChatView::doSend(const std::string& body) {
                 if (sharedFresh) {
                     auto nowMs = static_cast<int64_t>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
                     DisplayedEvent sys;
-                    sys.type = "progressive.system";
+                    sys.type = "pcp.system";
                     sys.eventId = "rks" + sessId.substr(0, 8) + "_" + std::to_string(nowMs);
                     sys.originServerTs = nowMs;
                     sys.senderName = "system";
@@ -327,12 +327,12 @@ void ChatView::doAttachFile(const QString& filePath) {
             // Encrypt the media bytes (m.encrypted v2): the media repo only
             // ever sees ciphertext, and Element renders the file: object.
             std::string encKey, encIv;
-            if (!progressive::desktop::generateMediaKeyIv(encKey, encIv)) {
+            if (!pcp::desktop::generateMediaKeyIv(encKey, encIv)) {
                 failNotice("❌ Media key generation failed"); return;
             }
-            std::vector<uint8_t> encBytes = progressive::desktop::aesCtrCrypt(bytes, encKey, encIv);
+            std::vector<uint8_t> encBytes = pcp::desktop::aesCtrCrypt(bytes, encKey, encIv);
             if (encBytes.empty()) { failNotice("❌ Media encryption failed"); return; }
-            std::string encSha = progressive::desktop::sha256Base64(bytes);
+            std::string encSha = pcp::desktop::sha256Base64(bytes);
             auto up = client->uploadMedia(encBytes, fn, ct);
             if (!up.ok) {
                 failNotice("❌ Upload failed: " + up.error.message);
@@ -433,11 +433,11 @@ void ChatView::doQuickReact(const QString& emoji) {
 
 void ChatView::onImagePasted(const QImage& image) {
     if (roomId_.empty() || !client_) return;
-    QString tempPath = QDir::tempPath() + "/progressive_paste_" +
+    QString tempPath = QDir::tempPath() + "/pcp_paste_" +
         QString::number(QDateTime::currentMSecsSinceEpoch()) + ".png";
     if (!image.save(tempPath, "PNG")) return;
     doAttachFile(tempPath);
     // DEBT(UI): temp file cleanup — left in Qt temp dir, auto-cleaned on exit
 }
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

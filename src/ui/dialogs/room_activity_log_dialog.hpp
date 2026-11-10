@@ -5,7 +5,7 @@
 
 class QTextEdit;
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 class RoomActivityLogDialog : public QDialog {
     Q_OBJECT
@@ -15,4 +15,4 @@ private:
     QTextEdit* view_ = nullptr;
 };
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

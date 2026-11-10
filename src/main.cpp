@@ -34,14 +34,14 @@
 #include "ui/shared/theme.hpp"
 
 #include <simdjson.h>
-#include <progressive/markdown.hpp>
+#include <pcp/markdown.hpp>
 
-using namespace progressive::desktop;
+using namespace pcp::desktop;
 
 // ---- CLI test subcommands (kept for Phase 1 compat) ----
 
 static int smoke() {
-    std::cout << "=== progressive-desktop Phase 2 smoke test ===\n";
+    std::cout << "=== pcp-desktop Phase 2 smoke test ===\n";
     std::cout << "  http_client   : OK (libcurl " << curl_version() << ")\n";
     auto c = std::make_shared<MatrixClient>();
     std::cout << "  matrix_client  : OK (constructed)\n";
@@ -52,8 +52,8 @@ static int smoke() {
     se.setClient(c);
     se.setSessionStore(s);
     std::cout << "  sync_engine    : OK (constructed)\n";
-    std::cout << "  progressive_native::markdownToHtml(\"**hi**\") = "
-              << progressive::markdownToHtml("**hi**") << "\n";
+    std::cout << "  pcp_native::markdownToHtml(\"**hi**\") = "
+              << pcp::markdownToHtml("**hi**") << "\n";
     std::cout << "All Phase 2 components linked successfully.\n";
     return 0;
 }
@@ -95,7 +95,7 @@ static int loginTest(const std::string& user, const std::string& pass) {
     std::cout << "logged in as " << r.data.userId
               << " (device " << r.data.deviceId << ")\n";
     SessionStore s;
-    s.open("/tmp/progressive-desktop-test.db");
+    s.open("/tmp/pcp-desktop-test.db");
     c->setSessionStore(&s);
     c->persistSession();
     std::cout << "session saved\n";
@@ -104,7 +104,7 @@ static int loginTest(const std::string& user, const std::string& pass) {
 
 static int syncTest(int count) {
     auto s = std::make_shared<SessionStore>();
-    s->open("/tmp/progressive-desktop-test.db");
+    s->open("/tmp/pcp-desktop-test.db");
     auto acct_opt = s->loadAccount();
     if (!acct_opt) { std::cerr << "no saved session — run --login first\n"; return 1; }
     auto acct = *acct_opt;
@@ -192,9 +192,9 @@ static int memcheck() {
 
 static void runGui(int argc, char** argv) {
     QApplication app(argc, argv);
-    QApplication::setApplicationName("progressive-desktop");
-    QApplication::setApplicationVersion(PROGRESSIVE_DESKTOP_VERSION);
-    QApplication::setOrganizationName("progressive.chat");
+    QApplication::setApplicationName("pcp-desktop");
+    QApplication::setApplicationVersion(PCP_DESKTOP_VERSION);
+    QApplication::setOrganizationName("pcp.chat");
 
     // Find the best available emoji font on the system.
     // Noto Color Emoji (COLRv0) works everywhere. OpenMoji/Twemoji (COLRv1)
@@ -232,10 +232,10 @@ static void runGui(int argc, char** argv) {
     const char* xdg = getenv("XDG_DATA_HOME");
     std::string dataPath;
     if (xdg && xdg[0]) {
-        dataPath = std::string(xdg) + "/progressive-desktop";
+        dataPath = std::string(xdg) + "/pcp-desktop";
     } else {
         const char* home = getenv("HOME");
-        dataPath = std::string(home ? home : "/tmp") + "/.local/share/progressive-desktop";
+        dataPath = std::string(home ? home : "/tmp") + "/.local/share/pcp-desktop";
     }
     std::filesystem::create_directories(dataPath);
     QString dbPath = QString::fromStdString(dataPath + "/session.db");
@@ -281,20 +281,20 @@ void onSigint(int) { QApplication::exit(0); }
 
 int main(int argc, char** argv) {
     signal(SIGINT, onSigint);
-    progressive::crash::installCrashHandler();
+    pcp::crash::installCrashHandler();
 
     // QSettings needs the names even for the CLI subcommands below (they
     // read the persisted proxy settings).
-    QCoreApplication::setOrganizationName("progressive.chat");
-    QCoreApplication::setApplicationName("progressive-desktop");
+    QCoreApplication::setOrganizationName("pcp.chat");
+    QCoreApplication::setApplicationName("pcp-desktop");
 
     // Initialize libcurl once for the whole process
-    progressive::desktop::httpInit();
+    pcp::desktop::httpInit();
 
     // Apply the persisted proxy (Tor/I2P) BEFORE any network activity —
     // sync, media, well-known discovery, login and registration all route
     // through it from this point on.
-    progressive::desktop::applyProxyFromSettings();
+    pcp::desktop::applyProxyFromSettings();
 
     if (argc >= 2) {
         std::string cmd = argv[1];

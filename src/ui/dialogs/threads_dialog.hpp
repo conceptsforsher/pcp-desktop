@@ -8,7 +8,7 @@
 #include <string>
 #include "core/matrix_client.hpp"
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 class TimelineModel;
 
@@ -43,4 +43,4 @@ private:
     void loadThreads();
 };
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop
