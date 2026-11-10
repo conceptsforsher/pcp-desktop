@@ -28,6 +28,33 @@ namespace progressive::desktop {
 TimelineDelegate::TimelineDelegate(ImageLoader* loader, QObject* parent)
     : QStyledItemDelegate(parent), loader_(loader) {}
 
+QString TimelineDelegate::cacheKey(const QModelIndex& idx, int width) const {
+    QString eid = idx.data(TimelineModel::EventIdRole).toString();
+    if (eid.isEmpty()) eid = QString("#%1").arg(idx.row());
+    return QString::number(width) + '|' + eid;
+}
+
+const BubbleLayout& TimelineDelegate::layoutFor(const QModelIndex& idx, int width) const {
+    int bubbleW = qMin(kMaxBubbleW, width - kAvatarSize - kGap - kMargin * 2);
+    QString key = cacheKey(idx, width);
+    auto it = layoutCache_.find(key);
+    if (it == layoutCache_.end()) {
+        if ((int)layoutCache_.size() >= kLayoutCacheMax) layoutCache_.clear();
+        BubbleLayout L = computeLayout(idx, myUserId_, bubbleW);
+        it = layoutCache_.emplace(key, L).first;
+    }
+    return it->second;
+}
+
+void TimelineDelegate::invalidateEvent(const QString& eventId) const {
+    if (eventId.isEmpty()) { layoutCache_.clear(); return; }
+    QString suffix = '|' + eventId;
+    for (auto it = layoutCache_.begin(); it != layoutCache_.end();) {
+        if (it->first.endsWith(suffix)) it = layoutCache_.erase(it);
+        else ++it;
+    }
+}
+
 void TimelineDelegate::paint(QPainter* p, const QStyleOptionViewItem& opt,
                                const QModelIndex& idx) const {
     p->save();
@@ -63,14 +90,7 @@ void TimelineDelegate::paint(QPainter* p, const QStyleOptionViewItem& opt,
     } else {
         int width = opt.rect.width();
         if (width <= kMinUsableViewW) width = kFallbackViewW;
-        int bubbleW = qMin(kMaxBubbleW, width - kAvatarSize - kGap - kMargin * 2);
-        int row = idx.row();
-        auto it = layoutCache_.find(row);
-        if (it == layoutCache_.end()) {
-            BubbleLayout L = computeLayout(idx, myUserId_, bubbleW);
-            it = layoutCache_.emplace(row, L).first;
-        }
-        timeline_render::drawMessageBubble(p, opt.rect, idx, it->second, myUserId_,
+        timeline_render::drawMessageBubble(p, opt.rect, idx, layoutFor(idx, width), myUserId_,
                                            loader_, pendingFetches_);
     }
 
@@ -91,16 +111,8 @@ QSize TimelineDelegate::sizeHint(const QStyleOptionViewItem& opt,
 
     int width = opt.rect.width();
     if (width <= kMinUsableViewW) width = kFallbackViewW;
-    int bubbleW = qMin(kMaxBubbleW, width - kAvatarSize - kGap - kMargin * 2);
 
-    int row = idx.row();
-    auto it = layoutCache_.find(row);
-    if (it == layoutCache_.end()) {
-        BubbleLayout L = computeLayout(idx, myUserId_, bubbleW);
-        it = layoutCache_.emplace(row, L).first;
-    }
-
-    int totalH = it->second.totalHeight();
+    int totalH = layoutFor(idx, width).totalHeight();
     return QSize(width, qMax(totalH, kAvatarSize + 8));
 }
 
@@ -139,8 +151,9 @@ bool TimelineDelegate::editorEvent(QEvent* event, QAbstractItemModel* model,
     if (type == "progressive.system") return false;
 
     int width = option.rect.width();
+    if (width <= kMinUsableViewW) width = kFallbackViewW;
+    const BubbleLayout& L = layoutFor(index, width);
     int bubbleW = qMin(kMaxBubbleW, width - kAvatarSize - kGap - kMargin * 2);
-    BubbleLayout L = computeLayout(index, myUserId_, bubbleW);
     QString senderId = index.data(TimelineModel::SenderRole).toString();
     bool isOutgoing = !myUserId_.isEmpty() && senderId == myUserId_;
     int bubbleX = isOutgoing ? (option.rect.right() - kMargin - kAvatarSize - kGap - bubbleW)

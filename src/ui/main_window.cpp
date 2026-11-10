@@ -137,8 +137,14 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent) {
     connect(timelineModel_, &QAbstractItemModel::modelAboutToBeReset, timelineDelegate_, [this]() {
         timelineDelegate_->invalidateLayoutCache();
     });
-    connect(timelineModel_, &QAbstractItemModel::dataChanged, timelineDelegate_, [this]() {
-        timelineDelegate_->invalidateLayoutCache();
+    connect(timelineModel_, &QAbstractItemModel::dataChanged, timelineDelegate_, [this](const QModelIndex& topLeft, const QModelIndex& bottomRight) {
+        // Targeted erase: only the changed rows lose their cached layout.
+        // (The cache is keyed by event id, so inserts/prepends need no handling.)
+        for (int r = topLeft.row(); r <= bottomRight.row(); ++r) {
+            const auto* e = timelineModel_->at(r);
+            if (e && !e->eventId.empty())
+                timelineDelegate_->invalidateEvent(QString::fromStdString(e->eventId));
+        }
     });
     timelinePlaceholder_ = ui.timelinePlaceholder;
     loadMoreBtn_ = ui.loadMoreBtn;
