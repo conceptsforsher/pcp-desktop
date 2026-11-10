@@ -28,7 +28,7 @@
 
 #include <simdjson.h>
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 
 RoomHandler::RoomHandler(std::shared_ptr<MatrixClient> client, RoomStore* roomStore,
@@ -94,7 +94,7 @@ void RoomHandler::onRoomClicked(const QModelIndex& idx) {
     mainWindow_->threadBtn()->show();
     loadMoreBtn_->parentWidget()->show();
     messageEdit_->setFocus();
-    mainWindow_->setWindowTitle(QString("Progressive Chat — %1").arg(QString::fromStdString(r->name)));
+    mainWindow_->setWindowTitle(QString("PCP — %1").arg(QString::fromStdString(r->name)));
 
     std::vector<std::string> senderIds;
     for (int i = 0; i < timelineModel_->rowCount(QModelIndex()); ++i) {
@@ -342,4 +342,4 @@ void RoomHandler::rejectInvite(const QString& roomId) {
     });
 }
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

@@ -11,7 +11,7 @@ class QLabel;
 class QWidget;
 class QPushButton;
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 class MatrixClient;
 class RoomListModel;
@@ -83,4 +83,4 @@ private:
     QAction* fullscreenAction_ = nullptr;
 };
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

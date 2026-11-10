@@ -5,7 +5,7 @@
 #include <QFontMetrics>
 #include <algorithm>
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 RoomListModel::RoomListModel(QObject* parent)
     : QAbstractListModel(parent) {}
@@ -177,4 +177,4 @@ void RoomListModel::updateHeader(QLabel* header, QLabel* inviteHeader) const {
     }
 }
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

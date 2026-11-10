@@ -13,7 +13,7 @@
 #include <QAbstractItemView>
 #include <QScrollBar>
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 namespace {
 inline constexpr int kBtnW       = 36;
@@ -188,5 +188,5 @@ void MessageEdit::setMembers(const QStringList& names) {
     });
 }
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop
 

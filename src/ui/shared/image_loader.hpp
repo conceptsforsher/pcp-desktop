@@ -8,7 +8,7 @@
 #include <functional>
 #include <string>
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 class MatrixClient;
 
@@ -45,4 +45,4 @@ private:
     QHash<QString, QMovie*> moviePool_;
 };
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

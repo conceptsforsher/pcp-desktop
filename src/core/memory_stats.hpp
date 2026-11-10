@@ -2,7 +2,7 @@
 // Non-invasive — only adds logging, never changes behaviour.
 #pragma once
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 struct MemSnapshot {
     long vmRSS_kb = 0;      // resident set size — real RAM used by this process
@@ -28,4 +28,4 @@ void logStructSizes();
 // Returns 1 on success, 0 on failure/no-op.
 int trimMemory();
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

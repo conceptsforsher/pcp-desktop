@@ -6,7 +6,7 @@
 #include <QString>
 #include <unordered_set>
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 class ImageLoader;
 class TimelineModel;
@@ -23,4 +23,4 @@ void drawMessageBubble(QPainter* p, const QRect& rowRect, const QModelIndex& idx
                        std::unordered_set<std::string>& pendingFetches);
 
 } // namespace timeline_render
-} // namespace progressive::desktop
+} // namespace pcp::desktop

@@ -10,7 +10,7 @@
 #include <ctime>
 #include "core/debug_log.hpp"
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 SyncEngine::SyncEngine() = default;
 
@@ -343,7 +343,7 @@ void SyncEngine::uploadDeviceKeys(bool force) {
 
     std::string userId = client_->account().userId;
     std::string deviceId = client_->account().deviceId;
-    if (deviceId.empty()) deviceId = "PROGRESSIVE_DESKTOP";
+    if (deviceId.empty()) deviceId = "PCP_DESKTOP";
 
     int serverCount = decryptor_.account()->uploadedKeyCount();
     int maxKeys = 100;
@@ -411,4 +411,4 @@ void SyncEngine::uploadDeviceKeys(bool force) {
     }
 }
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

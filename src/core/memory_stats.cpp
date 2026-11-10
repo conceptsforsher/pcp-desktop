@@ -19,7 +19,7 @@
 #include "../core/crypto/megolm_store.hpp"
 #include "../core/crypto/decryptor.hpp"
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 MemSnapshot takeMemorySnapshot() {
     MemSnapshot s;
@@ -85,4 +85,4 @@ int trimMemory() {
 #endif
 }
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

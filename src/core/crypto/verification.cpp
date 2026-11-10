@@ -7,7 +7,7 @@
 #include <iomanip>
 #include <olm/olm.h>
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 std::string cancelCodeToString(CancelCode code) {
     switch (code) {
@@ -318,4 +318,4 @@ std::string VerificationManager::macInfo(const std::string& txnId,
     return "MATRIX_KEY_VERIFICATION_MAC" + txnId + deviceId + keyId;
 }
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

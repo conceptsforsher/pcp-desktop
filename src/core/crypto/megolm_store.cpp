@@ -4,14 +4,14 @@
 
 #include "core/debug_log.hpp"
 
-#include <progressive/megolm_decryptor.hpp>
-#include <progressive/olm.hpp>
+#include <pcp/megolm_decryptor.hpp>
+#include <pcp/olm.hpp>
 
 #include <algorithm>
 #include <sstream>
 #include <simdjson.h>
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 struct SessionParams {
     std::string roomId;
@@ -21,7 +21,7 @@ struct SessionParams {
 };
 
 struct MegolmStore::Impl {
-    progressive::MegolmSessionManager mgr;
+    pcp::MegolmSessionManager mgr;
     std::vector<SessionParams> params;  // for persistence
 };
 
@@ -45,7 +45,7 @@ std::string MegolmStore::decrypt(const std::string& roomId,
     std::lock_guard<std::mutex> lk(mtx_);
     auto* sess = impl_->mgr.findSession(roomId, senderKey, sessionId);
     if (!sess) return {};
-    return progressive::megolmDecrypt(*sess, ciphertext);
+    return pcp::megolmDecrypt(*sess, ciphertext);
 }
 
 bool MegolmStore::hasSession(const std::string& roomId,
@@ -171,4 +171,4 @@ int MegolmStore::pendingCount() {
     return static_cast<int>(pending_.size());
 }
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

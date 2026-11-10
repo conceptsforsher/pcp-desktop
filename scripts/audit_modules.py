@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""scripts/audit_modules.py — classify progressive_native modules into tiers.
+"""scripts/audit_modules.py — classify pcp_native modules into tiers.
 
 Tiers:
   A — Real hand-written implementations (parse real Matrix JSON, real logic).
@@ -23,7 +23,7 @@ from pathlib import Path
 # Resolve the submodule root regardless of where the script is invoked from.
 SCRIPT_DIR = Path(__file__).resolve().parent
 REPO_ROOT = SCRIPT_DIR.parent
-CPP_ROOT = REPO_ROOT / "third_party" / "progressive-android-experiments" / "progressive" / "src" / "main" / "cpp"
+CPP_ROOT = REPO_ROOT / "third_party" / "pcp-android-experiments" / "pcp" / "src" / "main" / "cpp"
 SRC_DIR = CPP_ROOT / "src"
 
 # --- Classification rules ---
@@ -73,10 +73,10 @@ def classify(path: Path) -> tuple[str, str]:
         return ('D', 'jni bridge/stubs by filename')
 
     # --- Tier C: broken header (auto-generated garbage declarations) ---
-    # Check the corresponding .hpp file in include/progressive/.
+    # Check the corresponding .hpp file in include/pcp/.
     # If the header is broken, the .cpp can't be safely included/linked.
     stem = path.stem  # e.g. "poll_vote_utils" from "poll_vote_utils.cpp"
-    header_path = path.parent.parent / 'include' / 'progressive' / f'{stem}.hpp'
+    header_path = path.parent.parent / 'include' / 'pcp' / f'{stem}.hpp'
     if header_path.is_file():
         try:
             header_text = header_path.read_text(errors='replace')
@@ -119,7 +119,7 @@ def classify(path: Path) -> tuple[str, str]:
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Classify progressive_native modules into tiers A/B/C/D.')
+    parser = argparse.ArgumentParser(description='Classify pcp_native modules into tiers A/B/C/D.')
     parser.add_argument('--csv', action='store_true', help='Output CSV instead of summary')
     parser.add_argument('--tsv', action='store_true', help='Output TSV (tab-separated, no quoting) instead of summary')
     parser.add_argument('--verbose', action='store_true', help='Print per-file classification')
@@ -165,7 +165,7 @@ def main():
         tier_bytes[tier] = tier_bytes.get(tier, 0) + size
 
     total = len(results)
-    print(f'progressive_native module audit')
+    print(f'pcp_native module audit')
     print(f'  source dir: {src_dir}')
     print(f'  total .cpp files: {total}')
     print()

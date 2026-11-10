@@ -16,7 +16,7 @@
 #include <QMetaObject>
 #include <simdjson.h>
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 RoomDataLoader::RoomDataLoader(std::shared_ptr<MatrixClient> client, std::shared_ptr<SessionStore> store, QObject* parent)
     : QObject(parent), client_(std::move(client)), store_(std::move(store)) {}
@@ -65,7 +65,7 @@ void RoomDataLoader::loadHistory(const std::string& roomId, TimelineModel* model
                     auto body = makeSystemBody(de.type, de.contentJson, stateKey);
                     if (!body.empty()) {
                         DisplayedEvent sys;
-                        sys.type = "progressive.system";
+                        sys.type = "pcp.system";
                         sys.eventId = de.eventId;
                         sys.senderName = "system";
                         sys.originServerTs = de.originServerTs;
@@ -305,4 +305,4 @@ void RoomDataLoader::batchLoadRoomStates(RoomListModel* model, LifeToken token) 
     });
 }
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

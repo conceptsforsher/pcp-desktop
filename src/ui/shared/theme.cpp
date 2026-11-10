@@ -15,7 +15,7 @@
 #include <QSettings>
 #include <QCoreApplication>
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 void applyDarkTheme(QApplication& app) {
     app.setStyle(QStyleFactory::create("Fusion"));
@@ -152,4 +152,4 @@ void Theme::addListener(std::function<void()> cb) {
     listeners().push_back(std::move(cb));
 }
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

@@ -15,7 +15,7 @@ static int failures = 0;
 } while (0)
 
 static void test_megolm_empty_pickle() {
-    progressive::desktop::MegolmStore store;
+    pcp::desktop::MegolmStore store;
     std::string pkl = store.pickleAll("empty-key");
     CHECK(pkl == "[]" || pkl.empty(),
         "pickleAll on empty store returns [] or empty");
@@ -26,13 +26,13 @@ static void test_megolm_empty_pickle() {
 }
 
 static void test_megolm_garbage_unpickle() {
-    progressive::desktop::MegolmStore store;
+    pcp::desktop::MegolmStore store;
     bool ok = store.unpickleAll("garbage-key", "not valid json at all");
     CHECK(!ok, "unpickleAll with garbage data returns false");
 }
 
 static void test_stale_device_cap() {
-    progressive::desktop::Decryptor dec;
+    pcp::desktop::Decryptor dec;
     dec.init();
 
     // Insert 1000 entries — should all be stale

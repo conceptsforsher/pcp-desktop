@@ -1,6 +1,6 @@
-# cmake/progressive_native.cmake
-# Builds the progressive_native static library from the
-# progressive-android-experiments submodule (progressive/src/main/cpp/).
+# cmake/pcp_native.cmake
+# Builds the pcp_native static library from the
+# pcp-android-experiments submodule (pcp/src/main/cpp/).
 #
 # On desktop we:
 #   - Glob all .cpp files in src/
@@ -10,13 +10,13 @@
 #   - Fetch libolm 3.2.16 via FetchContent (same as upstream)
 #   - Download SQLite3 amalgamation at configure time (same as upstream)
 #
-# Result: static lib `progressive_native` — bit-identical source to Android,
+# Result: static lib `pcp_native` — bit-identical source to Android,
 # minus the JNI callback layer (which desktop replaces with direct C++ calls).
 
-set(PN_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/third_party/progressive-android-experiments/progressive/src/main/cpp")
+set(PN_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/third_party/pcp-android-experiments/pcp/src/main/cpp")
 
 # --- Apply downstream patches to the submodule (idempotent) ---
-# Patches fix bugs in progressive_native that prevent compilation on strict
+# Patches fix bugs in pcp_native that prevent compilation on strict
 # gcc/clang (Android NDK is more permissive). Patches live in
 # third_party/patches/ and are applied at configure time. Each patch is
 # applied with `git apply --check` first; if already applied, skip.
@@ -25,7 +25,7 @@ file(GLOB PN_PATCHES CONFIGURE_DEPENDS "${PN_PATCH_DIR}/*.patch")
 foreach(patch IN LISTS PN_PATCHES)
     execute_process(
         COMMAND git apply --check --verbose ${patch}
-        WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/third_party/progressive-android-experiments"
+        WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/third_party/pcp-android-experiments"
         RESULT_VARIABLE check_rc
         OUTPUT_VARIABLE check_out
         ERROR_VARIABLE check_err
@@ -35,16 +35,16 @@ foreach(patch IN LISTS PN_PATCHES)
     if(check_rc EQUAL 0)
         execute_process(
             COMMAND git apply ${patch}
-            WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/third_party/progressive-android-experiments"
+            WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/third_party/pcp-android-experiments"
             RESULT_VARIABLE apply_rc
         )
         if(apply_rc EQUAL 0)
-            message(STATUS "progressive_native: applied patch ${patch}")
+            message(STATUS "pcp_native: applied patch ${patch}")
         else()
-            message(WARNING "progressive_native: failed to apply ${patch} (rc=${apply_rc})")
+            message(WARNING "pcp_native: failed to apply ${patch} (rc=${apply_rc})")
         endif()
     else()
-        message(STATUS "progressive_native: patch already applied or not relevant: ${patch}")
+        message(STATUS "pcp_native: patch already applied or not relevant: ${patch}")
     endif()
 endforeach()
 
@@ -97,7 +97,7 @@ set(PN_EXCLUDE_REGEX "(jni_bridge|jni_stubs_part[0-9]+|tls_bridge|decryptor_util
 list(FILTER PN_SOURCES EXCLUDE REGEX "${PN_EXCLUDE_REGEX}")
 
 list(LENGTH PN_SOURCES PN_SOURCES_COUNT)
-message(STATUS "progressive_native: ${PN_SOURCES_COUNT} sources after Tier-C/D + broken-file filter")
+message(STATUS "pcp_native: ${PN_SOURCES_COUNT} sources after Tier-C/D + broken-file filter")
 
 # --- Android log shim ---
 # Lets #include <android/log.h> resolve on Linux desktop.
@@ -115,7 +115,7 @@ set(OLM_TESTS OFF CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(olm)
 
 # --- simdjson (fast JSON parsing for /sync + json_parser patches) ---
-# Apache 2.0. Used by both progressive_native (patched json_parser.cpp) and
+# Apache 2.0. Used by both pcp_native (patched json_parser.cpp) and
 # the desktop fast_sync.{hpp,cpp} layer (zero-copy /sync parsing).
 FetchContent_Declare(
     simdjson
@@ -128,7 +128,7 @@ set(SIMDJSON_DISABLE_DEPRECATED_API ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(simdjson)
 
 # --- SQLite3 amalgamation (downloaded + cached in build dir) ---
-# Same recipe as upstream progressive_native CMakeLists.txt.
+# Same recipe as upstream pcp_native CMakeLists.txt.
 set(SQLITE3_DIR "${CMAKE_BINARY_DIR}/sqlite-amalgamation-3450200")
 set(SQLITE3_SRC "${SQLITE3_DIR}/sqlite3.c")
 if(NOT EXISTS "${SQLITE3_SRC}")
@@ -164,18 +164,18 @@ if(NOT EXISTS "${SQLITE3_SRC}")
 endif()
 
 # --- The static library ---
-add_library(progressive_native STATIC ${PN_SOURCES} "${SQLITE3_SRC}")
+add_library(pcp_native STATIC ${PN_SOURCES} "${SQLITE3_SRC}")
 
-# progressive_native is pure C++ (no Q_OBJECT, no Qt MOC). Disable AUTOMOC
+# pcp_native is pure C++ (no Q_OBJECT, no Qt MOC). Disable AUTOMOC
 # to avoid scanning 889 files for Q_OBJECT — saves time and silences the
 # "AutoGen warning: ... is empty" noise from empty .cpp stubs.
-set_target_properties(progressive_native PROPERTIES
+set_target_properties(pcp_native PROPERTIES
     AUTOMOC OFF
     AUTORCC OFF
     AUTOUIC OFF
 )
 
-target_include_directories(progressive_native
+target_include_directories(pcp_native
     PUBLIC
         "${PN_ROOT}/include"
         "${SQLITE3_DIR}"
@@ -183,18 +183,18 @@ target_include_directories(progressive_native
         "${PN_SHIM_DIR}"
 )
 
-target_link_libraries(progressive_native PUBLIC olm simdjson::simdjson)
+target_link_libraries(pcp_native PUBLIC olm simdjson::simdjson)
 
-target_compile_definitions(progressive_native PRIVATE PROGRESSIVE_HAS_OLM=1)
+target_compile_definitions(pcp_native PRIVATE PCP_HAS_OLM=1)
 
-# Same compile flags as upstream (minus LTO which is opt-in via PROGRESSIVE_LTO)
-target_compile_options(progressive_native PRIVATE
+# Same compile flags as upstream (minus LTO which is opt-in via PCP_LTO)
+target_compile_options(pcp_native PRIVATE
     -fdata-sections
     -ffunction-sections
     -fvisibility=hidden
 )
 
-# Force-include progressive_compat.h on every C++ TU. The Android NDK transitively
+# Force-include pcp_compat.h on every C++ TU. The Android NDK transitively
 # pulls in <algorithm>, <cctype>, <numeric>, etc. via <string>/<vector>; gcc 16
 # on Linux does NOT. Many real modules call std::remove/std::find/std::sort
 # without #include <algorithm>, so they break without this shim.
@@ -204,10 +204,10 @@ target_compile_options(progressive_native PRIVATE
 # C++ headers like <algorithm>).
 #
 # This is the smallest possible fix: one -include, no source patches to
-# progressive_native (which is a read-only submodule from a different repo).
-target_compile_options(progressive_native PRIVATE
+# pcp_native (which is a read-only submodule from a different repo).
+target_compile_options(pcp_native PRIVATE
     $<$<COMPILE_LANGUAGE:CXX>:-include>
-    $<$<COMPILE_LANGUAGE:CXX>:${PN_SHIM_DIR}/progressive_compat.h>
+    $<$<COMPILE_LANGUAGE:CXX>:${PN_SHIM_DIR}/pcp_compat.h>
 )
 
 set_source_files_properties(
@@ -217,16 +217,16 @@ set_source_files_properties(
 )
 
 # Dead-code stripping at link time
-target_link_options(progressive_native PRIVATE
+target_link_options(pcp_native PRIVATE
     -Wl,--gc-sections
     -Wl,--exclude-libs,ALL
 )
 
 # Optional LTO (OFF by default on ARM — 491 TUs × LTO can OOM 4GB PinePhone)
-option(PROGRESSIVE_LTO "Enable LTO for progressive_native (slow link, smaller binary)" OFF)
-if(PROGRESSIVE_LTO)
-    target_compile_options(progressive_native PRIVATE -flto)
-    target_link_options(progressive_native PRIVATE -flto)
+option(PCP_LTO "Enable LTO for pcp_native (slow link, smaller binary)" OFF)
+if(PCP_LTO)
+    target_compile_options(pcp_native PRIVATE -flto)
+    target_link_options(pcp_native PRIVATE -flto)
 else()
-    target_compile_options(progressive_native PRIVATE -Os)
+    target_compile_options(pcp_native PRIVATE -Os)
 endif()

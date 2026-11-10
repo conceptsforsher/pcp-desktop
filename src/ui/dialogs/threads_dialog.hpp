@@ -7,7 +7,7 @@
 #include <QLineEdit>
 #include "core/matrix_client.hpp"
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 class ThreadsDialog : public QDialog {
     Q_OBJECT
@@ -30,4 +30,4 @@ private:
     void loadThreads();
 };
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

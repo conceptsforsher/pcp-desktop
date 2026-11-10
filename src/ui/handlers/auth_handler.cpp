@@ -9,7 +9,7 @@
 #include <QLabel>
 #include <QTimer>
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 AuthHandler::AuthHandler(std::shared_ptr<MatrixClient> client, std::shared_ptr<SessionStore> store, SyncEngine* sync,
                            QLabel* userLabel, QLabel* statusLabel, QObject* parent)
@@ -54,4 +54,4 @@ void AuthHandler::logout() {
     emit loggedOut();
 }
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

@@ -2,7 +2,7 @@
 #pragma once
 #include <string>
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 // Build canonical JSON for device_keys verification (mirrors buildKeysUploadBody).
 std::string buildDeviceKeysCanonical(const std::string& userId,
@@ -22,4 +22,4 @@ bool verifyOtk(const std::string& deviceEd25519Key,
                  const std::string& otkCurve25519Key,
                  const std::string& signatureBase64);
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

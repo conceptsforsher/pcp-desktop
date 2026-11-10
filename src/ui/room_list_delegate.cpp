@@ -14,7 +14,7 @@
 #include <QMouseEvent>
 #include <cstdio>
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 namespace {
 inline constexpr int kAvatarPad      = 8;
@@ -260,4 +260,4 @@ bool RoomListDelegate::editorEvent(QEvent* event, QAbstractItemModel* model,
     return false;
 }
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

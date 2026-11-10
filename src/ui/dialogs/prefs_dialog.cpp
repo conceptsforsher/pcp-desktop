@@ -7,7 +7,7 @@
 #include <QPushButton>
 #include <QFormLayout>
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 namespace {
 inline constexpr int kPrefsW   = 500;
@@ -77,4 +77,4 @@ void PrefsDialog::onSave() {
     emit settingsChanged();
 }
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

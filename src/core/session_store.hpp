@@ -13,7 +13,7 @@
 
 struct sqlite3;
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 struct OlmAccountRecord {
     std::string pickle;
@@ -84,4 +84,4 @@ private:
     bool createSchema();
 };
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

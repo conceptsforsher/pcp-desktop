@@ -17,7 +17,7 @@
 #include <QPointer>
 #include <QListView>
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 RoomContextMenu::RoomContextMenu(std::shared_ptr<MatrixClient> client, TimelineModel* timelineModel,
                                    RoomListModel* roomModel, QListView* roomList,
@@ -226,7 +226,7 @@ void RoomContextMenu::showTimelineContextMenu(const QString& eventId,
         if (evt) {
             isOwnMessage = (evt->senderId == myUserId);
             isPinned = evt->isPinned;
-            isSystemEvent = (evt->type == "progressive.system");
+            isSystemEvent = (evt->type == "pcp.system");
             if (evt->threadReplyCount > 0) { canViewThread = true; threadRootForView = eventId; }
             else if (evt->isThreadReply && !evt->threadRootId.empty()) {
                 canViewThread = true; threadRootForView = QString::fromStdString(evt->threadRootId);
@@ -315,4 +315,4 @@ void RoomContextMenu::showTimelineContextMenu(const QString& eventId,
     }
 }
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

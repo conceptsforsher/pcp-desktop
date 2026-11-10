@@ -3,7 +3,7 @@
 #include <string>
 #include <vector>
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 struct VerificationEmoji {
     std::string emoji;
@@ -16,4 +16,4 @@ std::vector<int> computeSasDecimals(const std::string& sasBytes);
 std::string formatSasEmojis(const std::vector<VerificationEmoji>& emojis);
 std::string formatSasDecimals(const std::vector<int>& decimals);
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

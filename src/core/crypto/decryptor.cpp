@@ -5,7 +5,7 @@
 #include "random.hpp"
 #include "sig_verify.hpp"
 
-#include <progressive/olm.hpp>
+#include <pcp/olm.hpp>
 #include <olm/olm.h>
 #include <olm/outbound_group_session.h>
 
@@ -22,7 +22,7 @@
 #include <atomic>
 #include <chrono>
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 static std::atomic<uint64_t> g_txnCounter{0};
 
@@ -274,7 +274,7 @@ std::string Decryptor::buildKeysUploadBody(const std::string& userId,
         + userId + "\":{\"ed25519:" + deviceId + "\":\"" + signature + "\"}}}";
 
     // 4. Parse the one-time keys JSON and sign each one.
-    // The oneTimeKeysJson from progressive::OlmAccount looks like:
+    // The oneTimeKeysJson from pcp::OlmAccount looks like:
     //   {"curve25519:AAAA":"<key>","curve25519:BBBB":"<key>"}
     // We need to:
     //   a) Rename "curve25519:" prefix to "signed_curve25519:"
@@ -424,8 +424,8 @@ std::string Decryptor::handleOlmEncryptedToDevice(const std::string& senderId,
     std::fprintf(stderr, "[E2EE] DBG6: lock acquired\n");
     std::string plaintext;
 
-    progressive::OlmSession session;
-    auto* underlyingAccount = static_cast<progressive::OlmAccount*>(account_->rawAccount());
+    pcp::OlmSession session;
+    auto* underlyingAccount = static_cast<pcp::OlmAccount*>(account_->rawAccount());
     std::fprintf(stderr, "[E2EE] DBG7: account ready\n");
 
     if (msgType == 0) {
@@ -478,7 +478,7 @@ std::string Decryptor::handleOlmEncryptedToDevice(const std::string& senderId,
         }
         bool decrypted = false;
         for (size_t i = 0; i < it->second.size(); ++i) {
-            progressive::OlmSession sess;
+            pcp::OlmSession sess;
             // libolm mutates the pickle buffer in-place via (void*) cast — pass a copy
             std::string pickleCopy = it->second[i];
             auto unpickleResult = sess.unpickle("", pickleCopy);
@@ -984,8 +984,8 @@ bool Decryptor::shareRoomKey(const std::string& roomId,
         }
 
         // Create OlmSession outbound
-        progressive::OlmSession session;
-        auto* underlyingAccount = static_cast<progressive::OlmAccount*>(account_->rawAccount());
+        pcp::OlmSession session;
+        auto* underlyingAccount = static_cast<pcp::OlmAccount*>(account_->rawAccount());
         auto sessResult = session.createOutbound(*underlyingAccount, theirCurve, ck.oneTimeKey);
         if (!sessResult.success) {
             std::fprintf(stderr, "[e2ee] createOutbound failed for %s/%s\n",
@@ -1209,8 +1209,8 @@ void Decryptor::forceNewOlmSession(const std::string& senderId, const std::strin
         return;
     }
 
-    progressive::OlmSession session;
-    auto* underlyingAccount = static_cast<progressive::OlmAccount*>(account_->rawAccount());
+    pcp::OlmSession session;
+    auto* underlyingAccount = static_cast<pcp::OlmAccount*>(account_->rawAccount());
     auto sessResult = session.createOutbound(*underlyingAccount, senderKey, oneTimeKey);
     if (!sessResult.success) {
         std::fprintf(stderr, "[e2ee] forceNewOlmSession: createOutbound failed\n");
@@ -1427,4 +1427,4 @@ bool Decryptor::unpickleOutboundSessions(const std::string& key, const std::stri
     return true;
 }
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

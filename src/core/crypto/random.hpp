@@ -4,7 +4,7 @@
 #include <cstddef>
 #include <functional>
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 // Fill `buf` with `len` cryptographically-secure random bytes.
 // Default impl uses std::random_device (backed by /dev/urandom on
@@ -17,4 +17,4 @@ void fillCryptoRandom(uint8_t* buf, size_t len);
 // Pass nullptr to restore the default.
 void setCryptoRandomProvider(std::function<void(uint8_t*, size_t)> provider);
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

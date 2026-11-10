@@ -3,7 +3,7 @@
 #include <string>
 #include <functional>
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 class MatrixClient;
 class SessionStore;
@@ -19,4 +19,4 @@ public:
                               SyncEngine* sync);
 };
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

@@ -7,7 +7,7 @@
 
 class QLabel;
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 class MatrixClient;
 class TimelineModel;
@@ -48,4 +48,4 @@ private:
     std::string currentThreadRoot_;
 };
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

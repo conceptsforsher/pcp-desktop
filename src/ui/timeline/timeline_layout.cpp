@@ -6,9 +6,9 @@
 #include <QApplication>
 #include <QFont>
 #include <QTextDocument>
-#include <progressive/markdown.hpp>
+#include <pcp/markdown.hpp>
 
-namespace progressive::desktop::timeline_layout {
+namespace pcp::desktop::timeline_layout {
 
 int ds(double pt) { return qMax(1, (int)(pt * Design::fontScale)); }
 
@@ -17,7 +17,7 @@ int calcTextHeight(const QString& body, const QString& msgtype, int textWidth) {
     QTextDocument doc;
     doc.setDefaultFont(QFont(QApplication::font().family(), ds(kFontSizeBody)));
     if (msgtype == "m.text" || msgtype == "m.emote" || msgtype.isEmpty()) {
-        std::string html = progressive::markdownToHtml(body.toStdString());
+        std::string html = pcp::markdownToHtml(body.toStdString());
         if (html.empty()) doc.setPlainText(body);
         else doc.setHtml(QString::fromStdString(html));
     } else {
@@ -132,4 +132,4 @@ std::vector<ReactionRow> computeReactionLayout(
     return rows;
 }
 
-} // namespace progressive::desktop::timeline_layout
+} // namespace pcp::desktop::timeline_layout

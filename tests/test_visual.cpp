@@ -31,7 +31,7 @@
 #include "core/debug_log.hpp"
 #include "fake_client.hpp"
 
-using namespace progressive::desktop;
+using namespace pcp::desktop;
 
 static int failures = 0;
 #define CHECK(cond, msg) do { \
@@ -280,20 +280,20 @@ static void test_quickReact_fake() {
     msg.eventId = "$testevent";
     msg.body = "Hello world";
     model->appendBack(msg);
-    PROGRESSIVE_ASSERT(model->rowCount() == 1, "should have 1 event after appendBack");
+    PCP_ASSERT(model->rowCount() == 1, "should have 1 event after appendBack");
 
     FakeClient fake;
     auto r = fake.sendReaction("!testroom", "$testevent", "❤");
-    PROGRESSIVE_ASSERT(r.ok, "fake reaction should succeed");
-    PROGRESSIVE_ASSERT(r.httpStatus == 200, "http status should be 200");
-    PROGRESSIVE_ASSERT(fake.lastReaction_ == "❤", "fake should store emoji");
+    PCP_ASSERT(r.ok, "fake reaction should succeed");
+    PCP_ASSERT(r.httpStatus == 200, "http status should be 200");
+    PCP_ASSERT(fake.lastReaction_ == "❤", "fake should store emoji");
 
     model->addReaction("$testevent", "❤", "@mock:localhost", r.data);
     auto* evt = model->at(0);
-    PROGRESSIVE_ASSERT(evt != nullptr, "event 0 should exist");
-    PROGRESSIVE_ASSERT(!evt->reactions.empty(), "should have reactions");
-    PROGRESSIVE_ASSERT(evt->reactions[0].emoji == "❤", "reaction emoji should be ❤");
-    PROGRESSIVE_ASSERT(evt->reactions[0].count == 1, "reaction count should be 1");
+    PCP_ASSERT(evt != nullptr, "event 0 should exist");
+    PCP_ASSERT(!evt->reactions.empty(), "should have reactions");
+    PCP_ASSERT(evt->reactions[0].emoji == "❤", "reaction emoji should be ❤");
+    PCP_ASSERT(evt->reactions[0].count == 1, "reaction count should be 1");
 
     std::fprintf(stderr, "ok: test_quickReact_fake passed — %s count=%d\n",
                  evt->reactions[0].emoji.c_str(), evt->reactions[0].count);
@@ -364,7 +364,7 @@ static void test_threadHandler_smoke() {
 
 int main(int argc, char** argv) {
     QApplication app(argc, argv);
-    std::cout << "=== Progressive Visual Tests ===\n\n";
+    std::cout << "=== PCP Visual Tests ===\n\n";
 
     test_widgetExistence();
     test_widgetProperties();

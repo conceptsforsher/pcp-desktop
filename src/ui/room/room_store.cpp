@@ -21,7 +21,7 @@
 #include <simdjson.h>
 #include "core/json_utils.hpp"
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 std::string extractStringDec(std::string_view json, const std::string& key) {
     std::string p = "\"" + key + "\":\"";
@@ -435,7 +435,7 @@ std::string makeSystemBody(const std::string& type, const std::string& contentJs
 
 static DisplayedEvent makeSystemEvent(const FastEvent& e) {
     DisplayedEvent sys;
-    sys.type = "progressive.system";
+    sys.type = "pcp.system";
     sys.eventId = std::string(e.eventId);
     sys.originServerTs = e.originServerTs;
     sys.senderName = "system";
@@ -498,4 +498,4 @@ static void appendTimelineForRoom(const std::string& roomId,
         model->addReaction(pr.targetId, pr.emoji, pr.sender);
 }
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

@@ -16,7 +16,7 @@
 
 #include <simdjson.h>
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 namespace {
 inline constexpr int kDialogW = 400;
 inline constexpr int kDialogH = 300;
@@ -298,4 +298,4 @@ void UserProfileDialog::onCopyMXID() {
     statusLabel_->setText("MXID copied!");
 }
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

@@ -1,13 +1,13 @@
-# Progressive Chat — Desktop
+# PCP — Desktop
 
-A Matrix client in the making. Built with Qt6 QWidgets, libolm, and a shared `progressive_native` C++ core. For Linux desktop and PineTab 2 / PinePhone.
+A Matrix client in the making. Built with Qt6 QWidgets, libolm, and a shared `pcp_native` C++ core. For Linux desktop and PineTab 2 / PinePhone.
 
-**Website:** [progressive.chat](https://progressive.chat)
+**Website:** [pcp.chat](https://pcp.chat)
 
 ## Vision
 
 - **Pure C++ core** — no Electron, no JVM, no Rust SDK.
-- **One shared core** with the Android side — `progressive_native` is built from the same source.
+- **One shared core** with the Android side — `pcp_native` is built from the same source.
 - **Clean, snappy UI** that respects your attention.
 - **Full Matrix compatibility** — no compromises on federation.
 - **Open source** — AGPLv3.
@@ -55,10 +55,10 @@ sudo pacman -S base-devel cmake ninja ccache git \
 ### Configure + build
 
 ```bash
-git clone --recurse-submodules https://github.com/MaurerAnton/progressive-desktop.git
-cd progressive-desktop
+git clone --recurse-submodules https://github.com/MaurerAnton/pcp-desktop.git
+cd pcp-desktop
 ./scripts/build-pt2.sh         # or: cmake --preset pinetab2 && cmake --build build -j4
-./build/progressive-desktop
+./build/pcp-desktop
 ```
 
 ### Other presets
@@ -73,16 +73,16 @@ cmake --preset ci              # CI
 The binary also runs headless for testing:
 
 ```bash
-./build/progressive-desktop --smoke                # link + markdown probe
-./build/progressive-desktop --discover matrix.org  # server discovery + versions + login flows
-./build/progressive-desktop --login <user> <pass>  # login + persist session
-./build/progressive-desktop --sync <n>             # do N syncs then stop
-./build/progressive-desktop --memcheck             # struct-size + memory snapshots
+./build/pcp-desktop --smoke                # link + markdown probe
+./build/pcp-desktop --discover matrix.org  # server discovery + versions + login flows
+./build/pcp-desktop --login <user> <pass>  # login + persist session
+./build/pcp-desktop --sync <n>             # do N syncs then stop
+./build/pcp-desktop --memcheck             # struct-size + memory snapshots
 ```
 
 ## Module audit
 
-`progressive_native` is built from the [`progressive-android-experiments`](https://github.com/MaurerAnton/progressive-android-experiments) submodule. Of the 878 `.cpp` files, not all are real implementations; Tier filtering drops 283 stubs + 8 JNI files — **595 sources** actually compiled. Run the audit:
+`pcp_native` is built from the [`pcp-android-experiments`](https://github.com/MaurerAnton/pcp-android-experiments) submodule. Of the 878 `.cpp` files, not all are real implementations; Tier filtering drops 283 stubs + 8 JNI files — **595 sources** actually compiled. Run the audit:
 
 ```bash
 ./scripts/audit_modules.py            # summary
@@ -100,13 +100,13 @@ Tiers:
 ## Architecture
 
 ```
-progressive-desktop/
+pcp-desktop/
   CMakeLists.txt          top-level
   CMakePresets.json       pinetab2 / desktop / ci
   cmake/
-    progressive_native.cmake    builds the shared C++ core (Tier filter)
+    pcp_native.cmake    builds the shared C++ core (Tier filter)
   third_party/
-    progressive-android-experiments/   git submodule (sparse: progressive/src/main/cpp/)
+    pcp-android-experiments/   git submodule (sparse: pcp/src/main/cpp/)
     android_shim/                    <android/log.h> + STL compat shims for desktop
   src/
     main.cpp              entry: CLI subcommands + GUI mode

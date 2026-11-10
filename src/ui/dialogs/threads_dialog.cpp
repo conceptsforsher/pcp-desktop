@@ -9,11 +9,11 @@
 #include <QMessageBox>
 #include "core/thread_pool.hpp"
 
-#include <progressive/json_parser.hpp>
+#include <pcp/json_parser.hpp>
 #include <simdjson.h>
 #include <cstdio>
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 namespace {
 inline constexpr int kThreadsW  = 600;
@@ -130,4 +130,4 @@ void ThreadsDialog::onThreadDoubleClicked(QListWidgetItem* item) {
     });
 }
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

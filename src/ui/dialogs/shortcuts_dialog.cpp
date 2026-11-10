@@ -5,7 +5,7 @@
 #include <QVBoxLayout>
 #include <QHeaderView>
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 ShortcutsDialog::ShortcutsDialog(QWidget* parent) : QDialog(parent) {
     setWindowTitle("Keyboard Shortcuts");
@@ -45,4 +45,4 @@ ShortcutsDialog::ShortcutsDialog(QWidget* parent) : QDialog(parent) {
     root->addWidget(table);
 }
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

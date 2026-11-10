@@ -32,7 +32,7 @@ static int countOTKs(const std::string& json) {
 }
 
 static void test_otk_count_lifecycle() {
-    progressive::desktop::OlmAccountStore store;
+    pcp::desktop::OlmAccountStore store;
     CHECK(store.create(), "create() succeeds");
     CHECK_EQ(store.uploadedKeyCount(), 0, "uploadedKeyCount 0 after create");
 
@@ -54,7 +54,7 @@ static void test_otk_count_lifecycle() {
 }
 
 static void test_count_roundtrip() {
-    progressive::desktop::OlmAccountStore store1;
+    pcp::desktop::OlmAccountStore store1;
     CHECK(store1.create(), "store1 create()");
     store1.generateOneTimeKeys(5);
     store1.markOneTimeKeysPublished();
@@ -63,7 +63,7 @@ static void test_count_roundtrip() {
     std::string pickle = store1.save("otk-roundtrip-key");
     CHECK(!pickle.empty(), "save() non-empty");
 
-    progressive::desktop::OlmAccountStore store2;
+    pcp::desktop::OlmAccountStore store2;
     CHECK(store2.load(pickle, "otk-roundtrip-key"), "load() succeeds");
     // uploadedKeyCount is NOT in libolm pickle — DB-layer, verified in test_e2ee_account
 }

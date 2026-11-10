@@ -6,7 +6,7 @@
 
 #include <string>
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 struct AccountInfo {
     std::string userId;                      // "@user:server"
@@ -20,4 +20,4 @@ struct AccountInfo {
     }
 };
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

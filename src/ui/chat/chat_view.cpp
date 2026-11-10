@@ -22,7 +22,7 @@
 #include <sstream>
 #include <simdjson.h>
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 ChatView::ChatView(std::shared_ptr<MatrixClient> client, TimelineModel* model, MessageEdit* edit,
                    SyncEngine* sync, QWidget* parent)
@@ -302,11 +302,11 @@ void ChatView::doQuickReact(const QString& emoji) {
 
 void ChatView::onImagePasted(const QImage& image) {
     if (roomId_.empty() || !client_) return;
-    QString tempPath = QDir::tempPath() + "/progressive_paste_" +
+    QString tempPath = QDir::tempPath() + "/pcp_paste_" +
         QString::number(QDateTime::currentMSecsSinceEpoch()) + ".png";
     if (!image.save(tempPath, "PNG")) return;
     doAttachFile(tempPath);
     // DEBT(UI): temp file cleanup — left in Qt temp dir, auto-cleaned on exit
 }
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

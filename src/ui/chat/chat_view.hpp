@@ -6,7 +6,7 @@
 #include <functional>
 #include <string>
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 class MessageEdit;
 class SyncEngine;
@@ -48,4 +48,4 @@ private:
     RoomListModel* roomListModel_ = nullptr;
 };
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

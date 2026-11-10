@@ -2,7 +2,7 @@
 #include <QObject>
 #include <string>
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 class TimelineModel;
 class AuthHandler;
@@ -21,4 +21,4 @@ private:
     AuthHandler* auth_;
 };
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

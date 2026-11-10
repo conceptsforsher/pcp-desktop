@@ -5,7 +5,7 @@
 #include <QString>
 #include <QDateTime>
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 void ChatLogger::start(const std::string& roomId, const std::string& roomName) {
     stop();
@@ -17,7 +17,7 @@ void ChatLogger::start(const std::string& roomId, const std::string& roomName) {
         const char* home = getenv("HOME");
         base = home ? std::string(home) + "/.local/share" : "/tmp";
     }
-    base += "/progressive-desktop/chat_logs";
+    base += "/pcp-desktop/chat_logs";
     std::filesystem::create_directories(base);
     auto ts = QDateTime::currentDateTime().toString("yyyy-MM-dd_HH-mm-ss").toStdString();
     std::string path = base + "/" + roomId_ + "_" + ts + ".log";

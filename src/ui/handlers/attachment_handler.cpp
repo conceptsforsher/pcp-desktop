@@ -13,7 +13,7 @@
 #include <chrono>
 #include <cstdlib>
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 AttachmentHandler::AttachmentHandler(std::shared_ptr<MatrixClient> client, TimelineModel* timelineModel,
                                      QLabel* statusLabel, QObject* parent)
@@ -49,7 +49,7 @@ void AttachmentHandler::openAttachment(const QString& eventId, const QString& mx
                 QString suffix = msgtype == "m.video" ? ".mp4" : (msgtype == "m.audio" ? ".mp3" : ".bin");
                 const char* tmpDir = getenv("TMPDIR");
                 if (!tmpDir || !tmpDir[0]) tmpDir = "/tmp";
-                QString tempPath = QString::fromStdString(std::string(tmpDir) + "/progressive_") +
+                QString tempPath = QString::fromStdString(std::string(tmpDir) + "/pcp_") +
                     QString::number(std::chrono::duration_cast<std::chrono::milliseconds>(
                         std::chrono::system_clock::now().time_since_epoch()).count()) + suffix;
                 QFile f(tempPath);
@@ -85,4 +85,4 @@ void AttachmentHandler::openAttachment(const QString& eventId, const QString& mx
     });
 }
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

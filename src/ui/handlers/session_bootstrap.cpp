@@ -15,7 +15,7 @@
 #include <cstdio>
 #include <iostream>
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 void SessionBootstrap::start(const std::shared_ptr<MatrixClient>& client, const std::shared_ptr<SessionStore>& store, SyncEngine* sync,
                       QComboBox* accountCombo, QLabel* userLabel, QLabel* statusLabel,
@@ -26,7 +26,7 @@ void SessionBootstrap::start(const std::shared_ptr<MatrixClient>& client, const 
     auto acct = client->account();
     LOG(LogChannel::E2EE, "bootstrap: deviceId=%.20s (empty=%d)",
         acct.deviceId.c_str(), acct.deviceId.empty() ? 1 : 0);
-    if (acct.deviceId.empty() || acct.deviceId == "PROGRESSIVE_DESKTOP") {
+    if (acct.deviceId.empty() || acct.deviceId == "PCP_DESKTOP") {
         acct.deviceId = generateUUID();
         client->setAccount(acct);
         client->persistSession();
@@ -102,4 +102,4 @@ void SessionBootstrap::start(const std::shared_ptr<MatrixClient>& client, const 
         });
 }
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

@@ -14,7 +14,7 @@
 
 class QListView;
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 struct ReactionData {
     std::string emoji;
@@ -140,4 +140,4 @@ private:
     QPointer<QListView> view_;
 };
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

@@ -7,7 +7,7 @@
 #include <QKeyEvent>
 #include <QApplication>
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 namespace {
 inline constexpr int kSwitcherW = 420;
@@ -93,4 +93,4 @@ bool RoomSwitcherDialog::eventFilter(QObject* obj, QEvent* event) {
     return QDialog::eventFilter(obj, event);
 }
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

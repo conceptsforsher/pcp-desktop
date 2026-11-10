@@ -1,6 +1,6 @@
 # docs/E2EE-troubleshooting.md — E2EE Diagnostic Guide
 
-> **Who this is for:** Developers debugging E2EE issues in Progressive Chat.
+> **Who this is for:** Developers debugging E2EE issues in PCP.
 > Quick reference: grep the logs for the symptom → read the cause → apply the fix.
 > **Last updated:** July 30, 2026
 

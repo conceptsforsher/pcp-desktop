@@ -10,7 +10,7 @@
 #include <QTimer>
 #include <sstream>
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 namespace {
 inline constexpr int kNetLogW    = 750;
@@ -137,4 +137,4 @@ void NetworkLogDialog::onClear() {
     logView_->clear();
 }
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

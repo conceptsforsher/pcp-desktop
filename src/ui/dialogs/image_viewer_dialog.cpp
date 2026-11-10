@@ -12,7 +12,7 @@
 #include <QUrl>
 #include <QMessageBox>
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 namespace {
 inline constexpr int kViewerW = 800;
@@ -86,7 +86,7 @@ void ImageViewerDialog::fitToWindow() {
 void ImageViewerDialog::openExternally() {
     if (image_.isNull()) return;
     QString tmpDir = QStandardPaths::writableLocation(QStandardPaths::TempLocation);
-    QString path = tmpDir + "/progressive-desktop-image.png";
+    QString path = tmpDir + "/pcp-desktop-image.png";
     if (!image_.save(path, "PNG")) {
         QMessageBox::warning(this, "Error", "Failed to save image to temp file.");
         return;
@@ -94,4 +94,4 @@ void ImageViewerDialog::openExternally() {
     QDesktopServices::openUrl(QUrl::fromLocalFile(path));
 }
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

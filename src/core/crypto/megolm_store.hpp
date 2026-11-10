@@ -1,6 +1,6 @@
 // src/core/crypto/megolm_store.hpp — Inbound Megolm session storage.
 //
-// Wraps progressive::MegolmSessionManager with:
+// Wraps pcp::MegolmSessionManager with:
 //   - O(1) lookup by (roomId, senderKey, sessionId)
 //   - Persistence of pickled sessions to SQLite
 //   - Pending event queue (events we couldn't decrypt yet, awaiting room_key)
@@ -12,7 +12,7 @@
 #include <mutex>
 #include <memory>
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 struct PendingEncryptedEvent {
     std::string roomId;
@@ -75,4 +75,4 @@ private:
     std::vector<PendingEncryptedEvent> pending_;
 };
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

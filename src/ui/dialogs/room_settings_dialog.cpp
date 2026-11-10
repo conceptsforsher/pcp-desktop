@@ -14,10 +14,10 @@
 #include <QThread>
 #include "core/thread_pool.hpp"
 
-#include <progressive/json_parser.hpp>
+#include <pcp/json_parser.hpp>
 #include <simdjson.h>
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 namespace {
 inline constexpr int kSettingsW   = 600;
@@ -279,4 +279,4 @@ void RoomSettingsDialog::showMemberMenu(const QString& userId, const QPoint& glo
     }
 }
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

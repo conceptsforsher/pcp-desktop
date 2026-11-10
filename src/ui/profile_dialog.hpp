@@ -6,7 +6,7 @@
 #include <QPushButton>
 #include "core/matrix_client.hpp"
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 class ProfileDialog : public QDialog {
     Q_OBJECT
@@ -28,4 +28,4 @@ private:
     std::string currentAvatarMxc_;
 };
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

@@ -7,7 +7,7 @@
 #include <QThread>
 #include "core/thread_pool.hpp"
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 ImageLoader::ImageLoader(std::shared_ptr<MatrixClient> client, QObject* parent)
     : QObject(parent), client_(std::move(client)) {}
@@ -78,4 +78,4 @@ QImage ImageLoader::getCached(const std::string& mxcUrl) const {
     return {};
 }
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop

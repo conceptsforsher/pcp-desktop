@@ -9,7 +9,7 @@
 #include <cstdlib>
 #include <vector>
 
-namespace progressive::desktop {
+namespace pcp::desktop {
 
 static const char B64_C[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
@@ -128,4 +128,4 @@ bool sasVerifyMac(SasSession& sas, const std::string& theirMacBase64,
     return true;
 }
 
-} // namespace progressive::desktop
+} // namespace pcp::desktop
